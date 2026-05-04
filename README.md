@@ -1,5 +1,5 @@
 <h1 align="center">
-  PaperExamplePlugin
+  TriBingo
 </h1>
 
 A template repository for creating Paper (Minecraft) plugins with Kotlin. It comes with an auto-registration system for
@@ -14,19 +14,19 @@ handles the rest.
 
 | Placeholder                 | File(s)                                                       | Description                               |
 |:----------------------------|:--------------------------------------------------------------|:------------------------------------------|
-| `ExamplePlugin`             | `settings.gradle.kts`, `plugin.yml`, source files, docs       | Your plugin's display name                |
-| `exampleplugin`             | `plugin.yml`, source files, docs                              | Lowercase plugin name (used for commands) |
-| `ep`                        | `plugin.yml`, `CommandRegistrar.kt`                           | Short command alias                       |
-| `com.example`               | `build.gradle.kts`                                            | Your Maven group ID                       |
-| `com.example.exampleplugin` | All source files under `src/main/kotlin/`, `plugin.yml`, docs | Your full base package path               |
+| `TriBingo`             | `settings.gradle.kts`, `plugin.yml`, source files, docs       | Your plugin's display name                |
+| `tribingo`             | `plugin.yml`, source files, docs                              | Lowercase plugin name (used for commands) |
+| `tb`                        | `plugin.yml`, `CommandRegistrar.kt`                           | Short command alias                       |
+| `net.trilleo`               | `build.gradle.kts`                                            | Your Maven group ID                       |
+| `net.trilleo.mc.plugins.trihunt` | All source files under `src/main/kotlin/`, `plugin.yml`, docs | Your full base package path               |
 
-3. Rename the source directory `src/main/kotlin/com/example/exampleplugin/` to match your package.
+3. Rename the source directory `src/main/kotlin/net/trilleo/mc/plugins/trihunt/` to match your package.
 4. Update the `FUNDING.yml` with your own sponsorship links (or remove it).
 
 ## Project Structure
 
 ```
-src/main/kotlin/com/example/exampleplugin/
+src/main/kotlin/net/trilleo/mc/plugins/trihunt/
 ├── Main.kt                  # Plugin entry point
 ├── commands/                # Auto-registered commands (extend PluginCommand)
 ├── config/                  # Typed configuration wrapper (PluginConfig)
