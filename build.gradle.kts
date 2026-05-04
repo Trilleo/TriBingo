@@ -38,12 +38,6 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:26.1.2.build.+")
 }
 
-tasks.processResources {
-    filesMatching("*.yml") {
-        expand("projectVersion" to project.version)
-    }
-}
-
 tasks.jar {
     from(configurations.runtimeClasspath.get().map { zipTree(it) })
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
