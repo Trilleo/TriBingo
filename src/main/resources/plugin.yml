@@ -1,6 +1,6 @@
 name: TriBingo
-main: net.trilleo.mc.plugins.trihunt.Main
-version: ${projectVersion}
+main: net.trilleo.mc.plugins.tribingo.Main
+version: 0.1.0
 api-version: 1.21
 author: Trilleo
 

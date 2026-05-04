@@ -12,10 +12,10 @@ TriBingo uses a `PackageScanner` to discover classes at runtime. When the plugin
 for concrete (non-abstract) classes and registers them automatically. You never need to edit `plugin.yml` or manually
 wire anything up.
 
-| System        | Base Class / Interface    | Package                               |
-|:--------------|:--------------------------|:--------------------------------------|
+| System        | Base Class / Interface    | Package                                    |
+|:--------------|:--------------------------|:-------------------------------------------|
 | Commands      | `PluginCommand`           | `net.trilleo.mc.plugins.trihunt.commands`  |
-| Permissions   | *(derived from commands)* | *(automatic — no package needed)*     |
+| Permissions   | *(derived from commands)* | *(automatic — no package needed)*          |
 | Listeners     | `Listener`                | `net.trilleo.mc.plugins.trihunt.listeners` |
 | GUIs          | `PluginGUI`               | `net.trilleo.mc.plugins.trihunt.guis`      |
 | Tasks         | `PluginTask`              | `net.trilleo.mc.plugins.trihunt.tasks`     |
@@ -72,8 +72,8 @@ meaningful `description` so the help output is informative.
 
 | Property        | Type           | Default        | Description                                                              |
 |:----------------|:---------------|:---------------|:-------------------------------------------------------------------------|
-| `name`          | `String`       | *(required)*   | The command name (e.g. `"reload"` for `/tribingo reload`)           |
-| `description`   | `String`       | `""`           | A brief description shown in `/tribingo help` — always provide one  |
+| `name`          | `String`       | *(required)*   | The command name (e.g. `"reload"` for `/tribingo reload`)                |
+| `description`   | `String`       | `""`           | A brief description shown in `/tribingo help` — always provide one       |
 | `usage`         | `String`       | `"/<command>"` | Usage hint shown when the command fails                                  |
 | `aliases`       | `List<String>` | `emptyList()`  | Alternative names for the command (applicable to main commands only)     |
 | `permission`    | `String?`      | `null`         | Permission node required to use the command (auto-registered at startup) |
@@ -181,7 +181,7 @@ class ReloadCommand(private val plugin: JavaPlugin) : PluginCommand(
     permission = "tribingo.reload"
 ) {
     override fun execute(sender: CommandSender, args: Array<out String>): Boolean {
-        val main = plugin as? net.trilleo.mc.plugins.trihunt.Main
+        val main = plugin as? net.trilleo.mc.plugins.tribingo.Main
         if (main == null) {
             sender.sendMessage("Error: Plugin instance type mismatch. Unable to reload configuration.")
             return true
@@ -652,14 +652,14 @@ constructor is needed.
 
 ### PluginItem Properties and Methods
 
-| Member        | Signature                  | Description                                                                       |
-|:--------------|:---------------------------|:----------------------------------------------------------------------------------|
-| `id`          | `String` *(constructor)*   | Unique lower-case identifier stored in every produced stack's PDC                 |
+| Member        | Signature                  | Description                                                                  |
+|:--------------|:---------------------------|:-----------------------------------------------------------------------------|
+| `id`          | `String` *(constructor)*   | Unique lower-case identifier stored in every produced stack's PDC            |
 | `ITEM_ID_KEY` | `NamespacedKey` *(static)* | The PDC key used to stamp the ID; namespace `tribingo`, key `custom_item_id` |
-| `create`      | `create(amount: Int = 1)`  | Returns a fully configured, ID-stamped `ItemStack`                                |
-| `buildItem`   | `buildItem(amount: Int)`   | **Override** — define material, name, lore, etc. using the `itemStack` DSL        |
-| `matches`     | `matches(ItemStack)`       | Returns `true` when the stack carries this item's ID in its PDC                   |
-| `asChoice`    | `asChoice()`               | Returns a `RecipeChoice.ExactChoice` for use as a recipe ingredient               |
+| `create`      | `create(amount: Int = 1)`  | Returns a fully configured, ID-stamped `ItemStack`                           |
+| `buildItem`   | `buildItem(amount: Int)`   | **Override** — define material, name, lore, etc. using the `itemStack` DSL   |
+| `matches`     | `matches(ItemStack)`       | Returns `true` when the stack carries this item's ID in its PDC              |
+| `asChoice`    | `asChoice()`               | Returns a `RecipeChoice.ExactChoice` for use as a recipe ingredient          |
 
 ### Example (Kotlin Object)
 
