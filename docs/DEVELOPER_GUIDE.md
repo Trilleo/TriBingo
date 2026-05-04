@@ -1,29 +1,29 @@
-# ExamplePlugin - Developer Guide
+# TriBingo - Developer Guide
 
 This guide explains how to create **commands**, **listeners**, **GUIs**, **tasks**, **custom items**, **recipes**, and
-work with the **configuration** system using ExamplePlugin's registration system. Commands, listeners, GUIs, tasks,
+work with the **configuration** system using TriBingo's registration system. Commands, listeners, GUIs, tasks,
 custom items, and recipes all follow the same pattern: extend a base class (or implement an interface), place the file
 in the correct package, and the plugin handles the rest automatically at startup. The configuration system provides
 typed access to `config.yml` values.
 
 ## How Auto-Registration Works
 
-ExamplePlugin uses a `PackageScanner` to discover classes at runtime. When the plugin starts, it scans specific packages
+TriBingo uses a `PackageScanner` to discover classes at runtime. When the plugin starts, it scans specific packages
 for concrete (non-abstract) classes and registers them automatically. You never need to edit `plugin.yml` or manually
 wire anything up.
 
 | System        | Base Class / Interface    | Package                               |
 |:--------------|:--------------------------|:--------------------------------------|
-| Commands      | `PluginCommand`           | `com.example.exampleplugin.commands`  |
+| Commands      | `PluginCommand`           | `net.trilleo.mc.plugins.trihunt.commands`  |
 | Permissions   | *(derived from commands)* | *(automatic — no package needed)*     |
-| Listeners     | `Listener`                | `com.example.exampleplugin.listeners` |
-| GUIs          | `PluginGUI`               | `com.example.exampleplugin.guis`      |
-| Tasks         | `PluginTask`              | `com.example.exampleplugin.tasks`     |
-| Custom Items  | `PluginItem`              | `com.example.exampleplugin.items`     |
-| Recipes       | `PluginRecipe`            | `com.example.exampleplugin.recipes`   |
-| Configuration | `PluginConfig`            | `com.example.exampleplugin.config`    |
-| Player Data   | `PlayerData`              | `com.example.exampleplugin.data`      |
-| Server Data   | `ServerData`              | `com.example.exampleplugin.data`      |
+| Listeners     | `Listener`                | `net.trilleo.mc.plugins.trihunt.listeners` |
+| GUIs          | `PluginGUI`               | `net.trilleo.mc.plugins.trihunt.guis`      |
+| Tasks         | `PluginTask`              | `net.trilleo.mc.plugins.trihunt.tasks`     |
+| Custom Items  | `PluginItem`              | `net.trilleo.mc.plugins.trihunt.items`     |
+| Recipes       | `PluginRecipe`            | `net.trilleo.mc.plugins.trihunt.recipes`   |
+| Configuration | `PluginConfig`            | `net.trilleo.mc.plugins.trihunt.config`    |
+| Player Data   | `PlayerData`              | `net.trilleo.mc.plugins.trihunt.data`      |
+| Server Data   | `ServerData`              | `net.trilleo.mc.plugins.trihunt.data`      |
 
 Subpackages are also scanned, so you can freely organize classes into folders like `commands/game/`,
 `listeners/player/`, or `guis/menus/`.
@@ -45,16 +45,16 @@ The plugin instance is injected automatically when a `JavaPlugin` constructor is
 
 To create a command, extend `PluginCommand` and place the class anywhere inside the `commands` package or a subpackage.
 
-By default every command is registered as a **sub-command** of `/exampleplugin` (alias `/ep`). For example, a command
-with `name = "reload"` becomes `/exampleplugin reload`. Set `isMainCommand = true` to register the command as a
+By default every command is registered as a **sub-command** of `/tribingo` (alias `/tb`). For example, a command
+with `name = "reload"` becomes `/tribingo reload`. Set `isMainCommand = true` to register the command as a
 standalone top-level command instead.
 
-When a player types `/exampleplugin` in-game, tab-completion automatically lists all available sub-commands.
+When a player types `/tribingo` in-game, tab-completion automatically lists all available sub-commands.
 
 ### Categories
 
 Commands are automatically categorised based on their **subpackage** (folder) inside the `commands` package. The
-category is used by the built-in `/exampleplugin help` command to group commands for display.
+category is used by the built-in `/tribingo help` command to group commands for display.
 
 | Command Location                | Category |
 |:--------------------------------|:---------|
@@ -64,7 +64,7 @@ category is used by the built-in `/exampleplugin help` command to group commands
 
 ### Help Command
 
-The plugin ships with a built-in `/exampleplugin help` command. It lists every registered command grouped by category,
+The plugin ships with a built-in `/tribingo help` command. It lists every registered command grouped by category,
 sorted alphabetically within each group, and formatted with colours for readability. Every command should provide a
 meaningful `description` so the help output is informative.
 
@@ -72,8 +72,8 @@ meaningful `description` so the help output is informative.
 
 | Property        | Type           | Default        | Description                                                              |
 |:----------------|:---------------|:---------------|:-------------------------------------------------------------------------|
-| `name`          | `String`       | *(required)*   | The command name (e.g. `"reload"` for `/exampleplugin reload`)           |
-| `description`   | `String`       | `""`           | A brief description shown in `/exampleplugin help` — always provide one  |
+| `name`          | `String`       | *(required)*   | The command name (e.g. `"reload"` for `/tribingo reload`)           |
+| `description`   | `String`       | `""`           | A brief description shown in `/tribingo help` — always provide one  |
 | `usage`         | `String`       | `"/<command>"` | Usage hint shown when the command fails                                  |
 | `aliases`       | `List<String>` | `emptyList()`  | Alternative names for the command (applicable to main commands only)     |
 | `permission`    | `String?`      | `null`         | Permission node required to use the command (auto-registered at startup) |
@@ -101,20 +101,20 @@ system handles the rest.
 
 ### Example (Sub-Command)
 
-This command is registered as `/exampleplugin ping` (the default behavior):
+This command is registered as `/tribingo ping` (the default behavior):
 
 ```kotlin
-package com.example.exampleplugin.commands
+package net.trilleo.mc.plugins.trihunt.commands
 
-import com.example.exampleplugin.registration.PluginCommand
+import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class PingCommand : PluginCommand(
     name = "ping",
     description = "Check your latency",
-    usage = "/exampleplugin ping",
-    permission = "exampleplugin.ping"
+    usage = "/tribingo ping",
+    permission = "tribingo.ping"
 ) {
     override fun execute(sender: CommandSender, args: Array<out String>): Boolean {
         if (sender !is Player) {
@@ -129,26 +129,26 @@ class PingCommand : PluginCommand(
 
 ### Example with Tab Completion (Sub-Command)
 
-This command is registered as `/exampleplugin team`:
+This command is registered as `/tribingo team`:
 
 ```kotlin
-package com.example.exampleplugin.commands.game
+package net.trilleo.mc.plugins.trihunt.commands.game
 
-import com.example.exampleplugin.registration.PluginCommand
+import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class TeamCommand : PluginCommand(
     name = "team",
     description = "Join a team",
-    usage = "/exampleplugin team <hunters|runners>",
-    permission = "exampleplugin.team"
+    usage = "/tribingo team <hunters|runners>",
+    permission = "tribingo.team"
 ) {
     private val teams = listOf("hunters", "runners")
 
     override fun execute(sender: CommandSender, args: Array<out String>): Boolean {
         if (args.isEmpty() || args[0] !in teams) {
-            sender.sendMessage("Usage: /exampleplugin team <hunters|runners>")
+            sender.sendMessage("Usage: /tribingo team <hunters|runners>")
             return false
         }
         sender.sendMessage("You joined the ${args[0]} team!")
@@ -166,22 +166,22 @@ class TeamCommand : PluginCommand(
 
 ### Example with Plugin Instance (Sub-Command)
 
-This command is registered as `/exampleplugin reload`:
+This command is registered as `/tribingo reload`:
 
 ```kotlin
-package com.example.exampleplugin.commands
+package net.trilleo.mc.plugins.trihunt.commands
 
-import com.example.exampleplugin.registration.PluginCommand
+import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 
 class ReloadCommand(private val plugin: JavaPlugin) : PluginCommand(
     name = "reload",
     description = "Reload the plugin configuration",
-    permission = "exampleplugin.reload"
+    permission = "tribingo.reload"
 ) {
     override fun execute(sender: CommandSender, args: Array<out String>): Boolean {
-        val main = plugin as? com.example.exampleplugin.Main
+        val main = plugin as? net.trilleo.mc.plugins.trihunt.Main
         if (main == null) {
             sender.sendMessage("Error: Plugin instance type mismatch. Unable to reload configuration.")
             return true
@@ -199,9 +199,9 @@ Set `isMainCommand = true` to register a standalone top-level command.
 This command is registered as `/globaltool`:
 
 ```kotlin
-package com.example.exampleplugin.commands
+package net.trilleo.mc.plugins.trihunt.commands
 
-import com.example.exampleplugin.registration.PluginCommand
+import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
 import org.bukkit.command.CommandSender
 
 class GlobalToolCommand : PluginCommand(
@@ -231,7 +231,7 @@ Annotate each event handler method with `@EventHandler`. The method must accept 
 ### Example
 
 ```kotlin
-package com.example.exampleplugin.listeners
+package net.trilleo.mc.plugins.trihunt.listeners
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -251,7 +251,7 @@ class JoinListener : Listener {
 ### Example with Subpackage and Plugin Instance
 
 ```kotlin
-package com.example.exampleplugin.listeners.player
+package net.trilleo.mc.plugins.trihunt.listeners.player
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -304,7 +304,7 @@ or a subpackage.
 Use `GUIManager.open(player, id)` to open a registered GUI for a player:
 
 ```kotlin
-import com.example.exampleplugin.registration.GUIManager
+import net.trilleo.mc.plugins.trihunt.registration.GUIManager
 
 // Returns true if the GUI was found and opened, false otherwise
 GUIManager.open(player, "settings")
@@ -313,10 +313,10 @@ GUIManager.open(player, "settings")
 ### Example
 
 ```kotlin
-package com.example.exampleplugin.guis
+package net.trilleo.mc.plugins.trihunt.guis
 
-import com.example.exampleplugin.enums.FillMode
-import com.example.exampleplugin.registration.PluginGUI
+import net.trilleo.mc.plugins.trihunt.enums.FillMode
+import net.trilleo.mc.plugins.trihunt.registration.PluginGUI
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -350,20 +350,20 @@ class SettingsGUI : PluginGUI(
 
 ### Opening a GUI from a Command
 
-A common pattern is opening a GUI when a player runs a command. This command is registered as `/exampleplugin settings`:
+A common pattern is opening a GUI when a player runs a command. This command is registered as `/tribingo settings`:
 
 ```kotlin
-package com.example.exampleplugin.commands
+package net.trilleo.mc.plugins.trihunt.commands
 
-import com.example.exampleplugin.registration.GUIManager
-import com.example.exampleplugin.registration.PluginCommand
+import net.trilleo.mc.plugins.trihunt.registration.GUIManager
+import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class SettingsCommand : PluginCommand(
     name = "settings",
     description = "Open the settings menu",
-    permission = "exampleplugin.settings"
+    permission = "tribingo.settings"
 ) {
     override fun execute(sender: CommandSender, args: Array<out String>): Boolean {
         if (sender !is Player) {
@@ -433,9 +433,9 @@ The last row of the inventory contains:
 ### Example (LIST mode)
 
 ```kotlin
-package com.example.exampleplugin.guis
+package net.trilleo.mc.plugins.trihunt.guis
 
-import com.example.exampleplugin.registration.PagedPluginGUI
+import net.trilleo.mc.plugins.trihunt.registration.PagedPluginGUI
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -471,10 +471,10 @@ map key is the **zero-based page index**; the inner map key is the **zero-based 
 `contentSlots - 1`).
 
 ```kotlin
-package com.example.exampleplugin.guis
+package net.trilleo.mc.plugins.trihunt.guis
 
-import com.example.exampleplugin.enums.PagedGUIMode
-import com.example.exampleplugin.registration.PagedPluginGUI
+import net.trilleo.mc.plugins.trihunt.enums.PagedGUIMode
+import net.trilleo.mc.plugins.trihunt.registration.PagedPluginGUI
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -505,17 +505,17 @@ class StagesGUI : PagedPluginGUI(
 Paged GUIs are opened the same way as regular GUIs, using `GUIManager.open(player, id)`:
 
 ```kotlin
-package com.example.exampleplugin.commands
+package net.trilleo.mc.plugins.trihunt.commands
 
-import com.example.exampleplugin.registration.GUIManager
-import com.example.exampleplugin.registration.PluginCommand
+import net.trilleo.mc.plugins.trihunt.registration.GUIManager
+import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class RewardsCommand : PluginCommand(
     name = "rewards",
     description = "Browse available rewards",
-    permission = "exampleplugin.rewards"
+    permission = "tribingo.rewards"
 ) {
     override fun execute(sender: CommandSender, args: Array<out String>): Boolean {
         if (sender !is Player) {
@@ -566,9 +566,9 @@ The combination of `period` and `async` determines which Bukkit scheduler method
 This task broadcasts a message to all players every 5 minutes:
 
 ```kotlin
-package com.example.exampleplugin.tasks
+package net.trilleo.mc.plugins.trihunt.tasks
 
-import com.example.exampleplugin.registration.PluginTask
+import net.trilleo.mc.plugins.trihunt.registration.PluginTask
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -579,7 +579,7 @@ class BroadcastTask : PluginTask(
 ) {
     override fun run() {
         Bukkit.broadcast(
-            Component.text("[ExamplePlugin] ", NamedTextColor.GOLD)
+            Component.text("[TriBingo] ", NamedTextColor.GOLD)
                 .append(Component.text("The server is running smoothly!", NamedTextColor.YELLOW))
         )
     }
@@ -591,9 +591,9 @@ class BroadcastTask : PluginTask(
 This task runs once 5 seconds after the plugin enables, off the main thread:
 
 ```kotlin
-package com.example.exampleplugin.tasks
+package net.trilleo.mc.plugins.trihunt.tasks
 
-import com.example.exampleplugin.registration.PluginTask
+import net.trilleo.mc.plugins.trihunt.registration.PluginTask
 
 class CleanupTask : PluginTask(
     delay = 100L,
@@ -610,9 +610,9 @@ class CleanupTask : PluginTask(
 When you need access to the plugin, declare a `JavaPlugin` constructor parameter:
 
 ```kotlin
-package com.example.exampleplugin.tasks
+package net.trilleo.mc.plugins.trihunt.tasks
 
-import com.example.exampleplugin.registration.PluginTask
+import net.trilleo.mc.plugins.trihunt.registration.PluginTask
 import org.bukkit.plugin.java.JavaPlugin
 
 class MetricsTask(private val plugin: JavaPlugin) : PluginTask(
@@ -634,7 +634,7 @@ The item is automatically discovered by `ItemRegistrar` at startup and added to 
 
 Each stack produced by `create()` has the item's `id` embedded in its
 [Persistent Data Container](https://docs.papermc.io/paper/dev/pdc) under the key
-`exampleplugin:custom_item_id`. This marker is used by `matches()` to identify the item in inventory checks, and by
+`tribingo:custom_item_id`. This marker is used by `matches()` to identify the item in inventory checks, and by
 `asChoice()` to match the item as a recipe ingredient.
 
 ### Declaring Items as Kotlin Objects
@@ -655,7 +655,7 @@ constructor is needed.
 | Member        | Signature                  | Description                                                                       |
 |:--------------|:---------------------------|:----------------------------------------------------------------------------------|
 | `id`          | `String` *(constructor)*   | Unique lower-case identifier stored in every produced stack's PDC                 |
-| `ITEM_ID_KEY` | `NamespacedKey` *(static)* | The PDC key used to stamp the ID; namespace `exampleplugin`, key `custom_item_id` |
+| `ITEM_ID_KEY` | `NamespacedKey` *(static)* | The PDC key used to stamp the ID; namespace `tribingo`, key `custom_item_id` |
 | `create`      | `create(amount: Int = 1)`  | Returns a fully configured, ID-stamped `ItemStack`                                |
 | `buildItem`   | `buildItem(amount: Int)`   | **Override** — define material, name, lore, etc. using the `itemStack` DSL        |
 | `matches`     | `matches(ItemStack)`       | Returns `true` when the stack carries this item's ID in its PDC                   |
@@ -664,10 +664,10 @@ constructor is needed.
 ### Example (Kotlin Object)
 
 ```kotlin
-package com.example.exampleplugin.items
+package net.trilleo.mc.plugins.trihunt.items
 
-import com.example.exampleplugin.registration.PluginItem
-import com.example.exampleplugin.utils.itemStack
+import net.trilleo.mc.plugins.trihunt.registration.PluginItem
+import net.trilleo.mc.plugins.trihunt.utils.itemStack
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
@@ -693,10 +693,10 @@ When you need access to the plugin (e.g. for a `NamespacedKey` beyond the built-
 constructor parameter:
 
 ```kotlin
-package com.example.exampleplugin.items
+package net.trilleo.mc.plugins.trihunt.items
 
-import com.example.exampleplugin.registration.PluginItem
-import com.example.exampleplugin.utils.itemStack
+import net.trilleo.mc.plugins.trihunt.registration.PluginItem
+import net.trilleo.mc.plugins.trihunt.utils.itemStack
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
@@ -718,7 +718,7 @@ class TrackedItem(private val plugin: JavaPlugin) : PluginItem("tracked_item") {
 Use `matches` in a listener to detect when a player is holding or using a specific custom item:
 
 ```kotlin
-import com.example.exampleplugin.items.ExcaliburItem
+import net.trilleo.mc.plugins.trihunt.items.ExcaliburItem
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
@@ -742,7 +742,7 @@ class ExcaliburListener : Listener {
 When you only have the item ID as a string (e.g. from config), use `ItemRegistrar.get`:
 
 ```kotlin
-import com.example.exampleplugin.registration.ItemRegistrar
+import net.trilleo.mc.plugins.trihunt.registration.ItemRegistrar
 
 val item = ItemRegistrar.get("excalibur") ?: return
 player.inventory.addItem(item.create())
@@ -795,10 +795,10 @@ Recipe classes follow the same constructor rules as commands and tasks:
 ### Example (Shaped Crafting Recipe — Custom Item Result)
 
 ```kotlin
-package com.example.exampleplugin.recipes
+package net.trilleo.mc.plugins.trihunt.recipes
 
-import com.example.exampleplugin.items.ExcaliburItem
-import com.example.exampleplugin.registration.PluginRecipe
+import net.trilleo.mc.plugins.trihunt.items.ExcaliburItem
+import net.trilleo.mc.plugins.trihunt.registration.PluginRecipe
 import org.bukkit.Material
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapedRecipe
@@ -824,10 +824,10 @@ class ExcaliburRecipe : PluginRecipe("excalibur_recipe") {
 Use `customChoice(item)` to require a plugin custom item as an ingredient:
 
 ```kotlin
-package com.example.exampleplugin.recipes
+package net.trilleo.mc.plugins.trihunt.recipes
 
-import com.example.exampleplugin.items.ExcaliburItem
-import com.example.exampleplugin.registration.PluginRecipe
+import net.trilleo.mc.plugins.trihunt.items.ExcaliburItem
+import net.trilleo.mc.plugins.trihunt.registration.PluginRecipe
 import org.bukkit.Material
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapelessRecipe
@@ -847,9 +847,9 @@ class ExcaliburRepairRecipe : PluginRecipe("excalibur_repair") {
 ### Example (Furnace Recipe)
 
 ```kotlin
-package com.example.exampleplugin.recipes
+package net.trilleo.mc.plugins.trihunt.recipes
 
-import com.example.exampleplugin.registration.PluginRecipe
+import net.trilleo.mc.plugins.trihunt.registration.PluginRecipe
 import org.bukkit.Material
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
@@ -873,10 +873,10 @@ class IronNuggetRecipe : PluginRecipe("iron_nugget_smelt") {
 ### Example (Smithing Table Recipe)
 
 ```kotlin
-package com.example.exampleplugin.recipes
+package net.trilleo.mc.plugins.trihunt.recipes
 
-import com.example.exampleplugin.items.ExcaliburItem
-import com.example.exampleplugin.registration.PluginRecipe
+import net.trilleo.mc.plugins.trihunt.items.ExcaliburItem
+import net.trilleo.mc.plugins.trihunt.registration.PluginRecipe
 import org.bukkit.Material
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.SmithingTransformRecipe
@@ -1060,7 +1060,7 @@ val headerStyle = Style.style(
     TextDecoration.BOLD
 )
 
-val header = Component.text("ExamplePlugin", headerStyle)
+val header = Component.text("TriBingo", headerStyle)
 sender.sendMessage(header)
 ```
 
@@ -1090,7 +1090,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 
-val message = Component.text("[ExamplePlugin] ", NamedTextColor.GOLD, TextDecoration.BOLD)
+val message = Component.text("[TriBingo] ", NamedTextColor.GOLD, TextDecoration.BOLD)
     .append(Component.text("Welcome to the server!", NamedTextColor.YELLOW))
 
 sender.sendMessage(message)
@@ -1405,7 +1405,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 
 player.sendPlayerListHeaderAndFooter(
-    Component.text("ExamplePlugin Server", NamedTextColor.GOLD, TextDecoration.BOLD),
+    Component.text("TriBingo Server", NamedTextColor.GOLD, TextDecoration.BOLD),
     Component.text("${player.ping}ms", NamedTextColor.GRAY)
 )
 ```
@@ -1420,13 +1420,13 @@ player.sendPlayerListHeaderAndFooter(Component.empty(), Component.empty())
 
 ## Utilities
 
-The `utils` package (`com.example.exampleplugin.utils`) contains helper classes and functions that reduce
+The `utils` package (`net.trilleo.mc.plugins.trihunt.utils`) contains helper classes and functions that reduce
 boilerplate across the plugin. See the [Utility Guide](UTILITY_GUIDE.md) for full documentation on the
 `itemStack` DSL builder and `CountdownUtil`.
 
 ### Enums
 
-Plugin-wide enums live in `com.example.exampleplugin.enums`.
+Plugin-wide enums live in `net.trilleo.mc.plugins.trihunt.enums`.
 
 #### DisplayLocation
 
@@ -1459,8 +1459,8 @@ Plugin-wide enums live in `com.example.exampleplugin.enums`.
 
 ## Configuration
 
-ExamplePlugin provides a typed configuration wrapper — `PluginConfig` — around the standard Bukkit `config.yml`. It
-lives in the `com.example.exampleplugin.config` package and is created automatically when the plugin starts.
+TriBingo provides a typed configuration wrapper — `PluginConfig` — around the standard Bukkit `config.yml`. It
+lives in the `net.trilleo.mc.plugins.trihunt.config` package and is created automatically when the plugin starts.
 
 ### How It Works
 
@@ -1490,10 +1490,10 @@ Place default values in `src/main/resources/config.yml`. They are copied to the 
 run:
 
 ```yaml
-# ExamplePlugin Configuration
+# TriBingo Configuration
 
 # A friendly prefix shown before plugin messages
-message-prefix: "[ExamplePlugin]"
+message-prefix: "[TriBingo]"
 ```
 
 ### Typed Getters
@@ -1519,28 +1519,28 @@ keys into the file, saves it, and refreshes the in-memory values:
 pluginConfig.reload()
 ```
 
-The built-in `/exampleplugin reload` command already calls this method.
+The built-in `/tribingo reload` command already calls this method.
 
 ### Accessing the Config from a Command
 
 Cast the injected `JavaPlugin` to `Main` to reach `pluginConfig`:
 
 ```kotlin
-package com.example.exampleplugin.commands
+package net.trilleo.mc.plugins.trihunt.commands
 
-import com.example.exampleplugin.Main
-import com.example.exampleplugin.registration.PluginCommand
+import net.trilleo.mc.plugins.trihunt.Main
+import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 
 class PrefixCommand(private val plugin: JavaPlugin) : PluginCommand(
     name = "prefix",
     description = "Show the configured message prefix",
-    permission = "exampleplugin.prefix"
+    permission = "tribingo.prefix"
 ) {
     override fun execute(sender: CommandSender, args: Array<out String>): Boolean {
         val main = plugin as? Main ?: return true
-        val prefix = main.pluginConfig.getString("message-prefix", "[ExamplePlugin]")
+        val prefix = main.pluginConfig.getString("message-prefix", "[TriBingo]")
         sender.sendMessage("Current prefix: $prefix")
         return true
     }
@@ -1552,9 +1552,9 @@ class PrefixCommand(private val plugin: JavaPlugin) : PluginCommand(
 The same pattern works for listeners — accept a `JavaPlugin` constructor parameter and cast to `Main`:
 
 ```kotlin
-package com.example.exampleplugin.listeners
+package net.trilleo.mc.plugins.trihunt.listeners
 
-import com.example.exampleplugin.Main
+import net.trilleo.mc.plugins.trihunt.Main
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -1565,7 +1565,7 @@ class WelcomeListener(private val plugin: JavaPlugin) : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val main = plugin as? Main ?: return
-        val prefix = main.pluginConfig.getString("message-prefix", "[ExamplePlugin]")
+        val prefix = main.pluginConfig.getString("message-prefix", "[TriBingo]")
         event.player.sendMessage("$prefix Welcome, ${event.player.name}!")
     }
 }
@@ -1588,7 +1588,7 @@ The manager is already initialised in `Main.onEnable` and requires no further se
 Retrieve a player's data container from anywhere with a `Player` reference:
 
 ```kotlin
-import com.example.exampleplugin.data.PlayerDataManager
+import net.trilleo.mc.plugins.trihunt.data.PlayerDataManager
 
 val data = PlayerDataManager.get(player)
 val kills = data.getInt("kills")
@@ -1613,7 +1613,7 @@ data.set("kills", kills + 1)
 Extend `PlayerData` to add strongly-typed Kotlin properties:
 
 ```kotlin
-package com.example.exampleplugin.data
+package net.trilleo.mc.plugins.trihunt.data
 
 import java.util.UUID
 
@@ -1648,9 +1648,9 @@ data.kills++
 ### Example Listener
 
 ```kotlin
-package com.example.exampleplugin.listeners
+package net.trilleo.mc.plugins.trihunt.listeners
 
-import com.example.exampleplugin.data.PlayerDataManager
+import net.trilleo.mc.plugins.trihunt.data.PlayerDataManager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
@@ -1682,7 +1682,7 @@ The manager is already initialised in `Main.onEnable` and requires no further se
 Retrieve the server data container from anywhere:
 
 ```kotlin
-import com.example.exampleplugin.data.ServerDataManager
+import net.trilleo.mc.plugins.trihunt.data.ServerDataManager
 
 val data = ServerDataManager.get()
 val events = data.getInt("eventCount")
@@ -1709,7 +1709,7 @@ data.set("eventCount", events + 1)
 Extend `ServerData` to add strongly-typed Kotlin properties:
 
 ```kotlin
-package com.example.exampleplugin.data
+package net.trilleo.mc.plugins.trihunt.data
 
 class MyServerData : ServerData() {
     var totalKills: Int
@@ -1741,16 +1741,16 @@ data.totalKills++
 ### Example Command
 
 ```kotlin
-package com.example.exampleplugin.commands
+package net.trilleo.mc.plugins.trihunt.commands
 
-import com.example.exampleplugin.data.ServerDataManager
-import com.example.exampleplugin.registration.PluginCommand
+import net.trilleo.mc.plugins.trihunt.data.ServerDataManager
+import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
 import org.bukkit.command.CommandSender
 
 class StatsCommand : PluginCommand(
     name = "stats",
     description = "Show server-wide statistics",
-    permission = "exampleplugin.stats"
+    permission = "tribingo.stats"
 ) {
     override fun execute(sender: CommandSender, args: Array<out String>): Boolean {
         val data = ServerDataManager.get()

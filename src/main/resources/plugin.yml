@@ -1,11 +1,12 @@
-name: ExamplePlugin
-main: com.example.exampleplugin.Main
+name: TriBingo
+main: net.trilleo.mc.plugins.trihunt.Main
 version: ${projectVersion}
 api-version: 1.21
+author: Trilleo
 
 commands:
-  exampleplugin:
-    description: Main command for the ExamplePlugin plugin
-    usage: /exampleplugin <subcommand> [args]
+  tribingo:
+    description: Main command for the TriBingo plugin
+    usage: /tribingo <subcommand> [args]
     aliases:
-      - ep
+      - tb
