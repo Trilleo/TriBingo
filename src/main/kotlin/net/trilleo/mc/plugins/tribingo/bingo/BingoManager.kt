@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.trilleo.mc.plugins.tribingo.Main
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.init
+import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.plugin
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.resetGame
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.save
 import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry
@@ -246,7 +247,10 @@ object BingoManager {
             state.completedLines.add("diag_main")
             state.points += diagPts
         }
-        if (row + col == BingoBoard.SIZE - 1 && "diag_anti" !in state.completedLines && game.board.isDiagAntiComplete(state)) {
+        if (row + col == BingoBoard.SIZE - 1 && "diag_anti" !in state.completedLines && game.board.isDiagAntiComplete(
+                state
+            )
+        ) {
             state.completedLines.add("diag_anti")
             state.points += diagPts
         }

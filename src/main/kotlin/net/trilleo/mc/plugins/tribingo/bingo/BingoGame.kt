@@ -95,7 +95,12 @@ class BingoGame(
                     Component.text(winner.name, NamedTextColor.YELLOW)
                         .decoration(TextDecoration.BOLD, true)
                 )
-                .append(Component.text(" has won the Bingo game with $winnerPoints point$ptsSuffix!", NamedTextColor.GOLD))
+                .append(
+                    Component.text(
+                        " has won the Bingo game with $winnerPoints point$ptsSuffix!",
+                        NamedTextColor.GOLD
+                    )
+                )
                 .build()
         } else {
             Component.text("The Bingo game has ended.", NamedTextColor.GRAY)

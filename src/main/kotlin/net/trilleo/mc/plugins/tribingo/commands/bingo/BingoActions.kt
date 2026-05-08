@@ -1,6 +1,7 @@
 package net.trilleo.mc.plugins.tribingo.commands.bingo
 
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
+import net.trilleo.mc.plugins.tribingo.commands.bingo.BingoActions.resetGame
 import net.trilleo.mc.plugins.tribingo.enums.GameState
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
 import org.bukkit.entity.Player
@@ -114,7 +115,10 @@ object BingoActions {
             return if (result.isSuccess) {
                 ActionResult(true, "<green>New 5×5 board created.")
             } else {
-                ActionResult(false, "<red>Could not create game: ${result.exceptionOrNull()?.message ?: "unknown error"}")
+                ActionResult(
+                    false,
+                    "<red>Could not create game: ${result.exceptionOrNull()?.message ?: "unknown error"}"
+                )
             }
         }
         if (game.state != GameState.INACTIVE) {

@@ -1,5 +1,8 @@
 package net.trilleo.mc.plugins.tribingo.bingo
 
+import net.trilleo.mc.plugins.tribingo.bingo.BingoBoard.Companion.SIZE
+
+
 /**
  * A 5×5 Bingo board backed by a flat, row-major list of [BingoCell]s.
  *
