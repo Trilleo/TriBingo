@@ -1,10 +1,10 @@
 package net.trilleo.mc.plugins.tribingo.bingo.registry
 
 import net.trilleo.mc.plugins.tribingo.bingo.BingoObjective
-import net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry.init
 import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry.register
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
+import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -43,9 +43,13 @@ object BingoObjectiveRegistry {
     /**
      * Registers [objective] in the registry.
      *
-     * If [objective] is an [EventBingoObjective] it is also registered as a
-     * Bukkit event listener.  Duplicate IDs are silently ignored with a
-     * warning so that plugins can safely call this method multiple times.
+     * If [objective] implements Bukkit's [Listener] (which covers both
+     * [EventBingoObjective][net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective]
+     * and [MultiEventBingoObjective][net.trilleo.mc.plugins.tribingo.bingo.MultiEventBingoObjective]
+     * as well as any custom subclass that implements [Listener] directly), it
+     * is also registered as a Bukkit event listener.  Duplicate IDs are
+     * silently ignored with a warning so that plugins can safely call this
+     * method multiple times.
      *
      * @param objective the objective to register
      */
@@ -57,7 +61,7 @@ object BingoObjectiveRegistry {
             return
         }
         objectives[objective.id] = objective
-        if (objective is EventBingoObjective<*>) {
+        if (objective is Listener) {
             plugin.server.pluginManager.registerEvents(objective, plugin)
         }
         plugin.logger.fine("[BingoObjectiveRegistry] Registered objective: ${objective.id}")
