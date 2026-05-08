@@ -40,7 +40,7 @@ class BingoBoardGUI : PluginGUI(
     title = Component.text("✦ Bingo Board ✦").color(NamedTextColor.GOLD)
         .decoration(TextDecoration.BOLD, true),
     rows = 6,
-    fillMode = FillMode.DARK
+    fillMode = FillMode.LIGHT
 ) {
 
     /** Inventories currently open, keyed by player. */
