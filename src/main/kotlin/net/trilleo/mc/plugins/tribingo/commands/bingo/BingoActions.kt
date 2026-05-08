@@ -114,7 +114,7 @@ object BingoActions {
             return if (result.isSuccess) {
                 ActionResult(true, "<green>New 5×5 board created.")
             } else {
-                ActionResult(false, "<red>Could not create game: ${result.exceptionOrNull()?.message}")
+                ActionResult(false, "<red>Could not create game: ${result.exceptionOrNull()?.message ?: "unknown error"}")
             }
         }
         if (game.state != GameState.INACTIVE) {
@@ -127,7 +127,7 @@ object BingoActions {
         return if (result.isSuccess) {
             ActionResult(true, "<green>Board objectives have been refreshed.")
         } else {
-            ActionResult(false, "<red>Refresh failed: ${result.exceptionOrNull()?.message}")
+            ActionResult(false, "<red>Refresh failed: ${result.exceptionOrNull()?.message ?: "unknown error"}")
         }
     }
 

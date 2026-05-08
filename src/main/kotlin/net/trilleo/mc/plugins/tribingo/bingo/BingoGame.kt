@@ -85,6 +85,7 @@ class BingoGame(
         state = GameState.ENDED
 
         val msg = if (winner != null) {
+            val ptsSuffix = if (winnerPoints == 1) "" else "s"
             Component.text()
                 .append(
                     Component.text("🏆 BINGO! ", NamedTextColor.GOLD)
@@ -94,8 +95,7 @@ class BingoGame(
                     Component.text(winner.name, NamedTextColor.YELLOW)
                         .decoration(TextDecoration.BOLD, true)
                 )
-                .append(Component.text(" has won the Bingo game", NamedTextColor.GOLD))
-                .append(Component.text(" with $winnerPoints point${if (winnerPoints == 1) "" else "s"}!", NamedTextColor.GOLD))
+                .append(Component.text(" has won the Bingo game with $winnerPoints point$ptsSuffix!", NamedTextColor.GOLD))
                 .build()
         } else {
             Component.text("The Bingo game has ended.", NamedTextColor.GRAY)

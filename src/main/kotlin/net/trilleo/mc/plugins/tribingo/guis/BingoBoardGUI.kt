@@ -55,13 +55,16 @@ import org.bukkit.plugin.java.JavaPlugin
  *
  * @param plugin the owning plugin instance, used to read point configuration
  */
-class BingoBoardGUI(private val plugin: JavaPlugin) : PluginGUI(
+class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
     id = "bingo_board",
     title = Component.text("✦ Bingo Board ✦").color(NamedTextColor.GOLD)
         .decoration(TextDecoration.BOLD, true),
     rows = 6,
     fillMode = FillMode.NONE
 ) {
+
+    /** Typed plugin config, resolved once at construction time. */
+    private val pluginConfig = (plugin as? Main)?.pluginConfig
 
     /** Inventories currently open, keyed by player. */
     private val openInventories = mutableMapOf<Player, Inventory>()
@@ -129,7 +132,6 @@ class BingoBoardGUI(private val plugin: JavaPlugin) : PluginGUI(
      * or a "no game" placeholder if there is no current game.
      */
     private fun populateBoard(player: Player, inventory: Inventory) {
-        val pluginConfig = (plugin as? Main)?.pluginConfig
         val linePoints = pluginConfig?.linePoints ?: 3
         val diagPoints = pluginConfig?.diagonalPoints ?: 5
 

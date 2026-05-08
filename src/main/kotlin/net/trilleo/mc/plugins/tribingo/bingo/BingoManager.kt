@@ -41,6 +41,14 @@ object BingoManager {
     private lateinit var plugin: JavaPlugin
 
     /**
+     * Convenience accessor for the typed plugin configuration.
+     *
+     * Returns `null` when [plugin] has not been initialised yet or is not an
+     * instance of [Main].
+     */
+    private val pluginConfig get() = (plugin as? Main)?.pluginConfig
+
+    /**
      * The currently active (or most-recently-created) [BingoGame], or `null`
      * if no game has been set up yet.
      */
@@ -214,7 +222,7 @@ object BingoManager {
         state.markCompleted(cell.cellIndex)
 
         // Extract config values once for use throughout this method
-        val config = (plugin as? Main)?.pluginConfig
+        val config = pluginConfig
         val objPts = config?.objectivePoints ?: 1
         val linePts = config?.linePoints ?: 3
         val diagPts = config?.diagonalPoints ?: 5
