@@ -377,7 +377,7 @@ class MyMultiEventObjective : MultiEventBingoObjective(
 A helper base class for objectives that require a fixed sequence of named steps to be completed
 **in order**. Extends `BingoObjective` and implements `Listener`.
 
-Declare the ordered step tokens in the `steps` constructor parameter.  From within `@EventHandler` methods,
+Declare the ordered step tokens in the `steps` constructor parameter. From within `@EventHandler` methods,
 call `advanceStep(state, step)` — the method records the step only if it is the next expected one and
 returns `true` when the final step is reached (signal to call `BingoManager.checkCompletion`). Call
 `hasStep(state, step)` to guard handlers that should only fire after a prior step is complete.
@@ -385,13 +385,13 @@ returns `true` when the final step is reached (signal to call `BingoManager.chec
 `isCompletedBy` and `onReset` are already implemented by this class; do not override them unless you need
 additional behaviour.
 
-| Method / Property                              | Description                                                                             |
-|:-----------------------------------------------|:----------------------------------------------------------------------------------------|
-| `steps: List<String>`                          | Ordered list of step tokens that must be completed in sequence                          |
-| `advanceStep(state, step): Boolean`            | Records `step` if it is the expected next step; returns `true` when sequence is complete |
-| `hasStep(state, step): Boolean`                | Returns `true` when `step` has already been recorded                                    |
-| `isCompletedBy(player, state): Boolean`        | Implemented; returns `true` when all steps are recorded                                 |
-| `onReset(player, state)`                       | Implemented; clears the step set from `state.stepData`                                  |
+| Method / Property                       | Description                                                                              |
+|:----------------------------------------|:-----------------------------------------------------------------------------------------|
+| `steps: List<String>`                   | Ordered list of step tokens that must be completed in sequence                           |
+| `advanceStep(state, step): Boolean`     | Records `step` if it is the expected next step; returns `true` when sequence is complete |
+| `hasStep(state, step): Boolean`         | Returns `true` when `step` has already been recorded                                     |
+| `isCompletedBy(player, state): Boolean` | Implemented; returns `true` when all steps are recorded                                  |
+| `onReset(player, state)`                | Implemented; clears the step set from `state.stepData`                                   |
 
 ---
 
@@ -424,15 +424,15 @@ All built-in objectives listen at `EventPriority.MONITOR` with `ignoreCancelled 
 
 In-memory registry of all available `BingoObjective` instances. Objectives are stored in insertion order.
 
-| Method                                              | Description                                                                                                                     |
-|:----------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------|
-| `init(plugin)`                                      | Stores the plugin reference; must be called before `register`                                                                   |
+| Method                                              | Description                                                                                                                                     |
+|:----------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------|
+| `init(plugin)`                                      | Stores the plugin reference; must be called before `register`                                                                                   |
 | `register(objective)`                               | Adds the objective to the registry; auto-registers any `Listener` implementation as a Bukkit listener; duplicate IDs are skipped with a warning |
-| `unregister(id)`                                    | Removes an objective by ID (listener remains active but is a no-op while the game is inactive)                                  |
-| `getAll(): List<BingoObjective>`                    | Returns all registered objectives in insertion order                                                                            |
-| `getByDifficulty(difficulty): List<BingoObjective>` | Returns objectives filtered by `Difficulty`                                                                                     |
-| `get(id): BingoObjective?`                          | Returns the objective with the given ID, or `null`                                                                              |
-| `clear()`                                           | Removes all objectives; intended for tests or full plugin reloads                                                               |
+| `unregister(id)`                                    | Removes an objective by ID (listener remains active but is a no-op while the game is inactive)                                                  |
+| `getAll(): List<BingoObjective>`                    | Returns all registered objectives in insertion order                                                                                            |
+| `getByDifficulty(difficulty): List<BingoObjective>` | Returns objectives filtered by `Difficulty`                                                                                                     |
+| `get(id): BingoObjective?`                          | Returns the objective with the given ID, or `null`                                                                                              |
+| `clear()`                                           | Removes all objectives; intended for tests or full plugin reloads                                                                               |
 
 ---
 
@@ -443,9 +443,9 @@ In-memory registry of all available `BingoObjective` instances. Objectives are s
 Discovers and registers code objectives — concrete `BingoObjective` subclasses
 annotated with `@CustomObjective` — from one or more designated packages.
 
-| Method                                   | Description                                                                                    |
-|:-----------------------------------------|:-----------------------------------------------------------------------------------------------|
-| `load(plugin, registry, vararg packages)` | Scans the given packages, instantiates annotated classes, and registers them with `registry`  |
+| Method                                    | Description                                                                                  |
+|:------------------------------------------|:---------------------------------------------------------------------------------------------|
+| `load(plugin, registry, vararg packages)` | Scans the given packages, instantiates annotated classes, and registers them with `registry` |
 
 The default package scanned by `Main.onEnable` is
 `net.trilleo.mc.plugins.tribingo.bingo.custom`. For each class the loader
@@ -809,12 +809,12 @@ including Bukkit event listener registration if applicable.
 
 ### Choosing a Base Class
 
-| Base class                  | When to use                                                                                         |
-|:----------------------------|:----------------------------------------------------------------------------------------------------|
-| `BingoObjective`            | Snapshot-based check (e.g. "player currently has ≥ 20 hearts"). No events needed.                  |
-| `EventBingoObjective<T>`    | Reacts to exactly one Bukkit event type. The generic parameter `T` is the event class.              |
-| `MultiEventBingoObjective`  | Reacts to multiple Bukkit event types. Add as many `@EventHandler` methods as needed.               |
-| `SequentialBingoObjective`  | Must be completed by performing a fixed sequence of named steps in the correct order.               |
+| Base class                 | When to use                                                                            |
+|:---------------------------|:---------------------------------------------------------------------------------------|
+| `BingoObjective`           | Snapshot-based check (e.g. "player currently has ≥ 20 hearts"). No events needed.      |
+| `EventBingoObjective<T>`   | Reacts to exactly one Bukkit event type. The generic parameter `T` is the event class. |
+| `MultiEventBingoObjective` | Reacts to multiple Bukkit event types. Add as many `@EventHandler` methods as needed.  |
+| `SequentialBingoObjective` | Must be completed by performing a fixed sequence of named steps in the correct order.  |
 
 All event-driven classes (`EventBingoObjective`, `MultiEventBingoObjective`,
 `SequentialBingoObjective`) implement Bukkit's `Listener`. The registry
@@ -911,23 +911,23 @@ Beyond the integer `progressData` map inherited from `BingoObjective`,
 Keyed by a compound `"objectiveId:fieldName"` string. Use the typed accessors
 rather than accessing the map directly.
 
-| Method                                    | Description                                             |
-|:------------------------------------------|:--------------------------------------------------------|
-| `getString(objectiveId, field): String?`  | Returns the stored value, or `null` if absent           |
-| `setString(objectiveId, field, value)`    | Stores a string value                                   |
-| `removeString(objectiveId, field)`        | Removes a stored value                                  |
+| Method                                   | Description                                   |
+|:-----------------------------------------|:----------------------------------------------|
+| `getString(objectiveId, field): String?` | Returns the stored value, or `null` if absent |
+| `setString(objectiveId, field, value)`   | Stores a string value                         |
+| `removeString(objectiveId, field)`       | Removes a stored value                        |
 
 #### `stepData` — ordered sets of completed step tokens
 
 Keyed by `objectiveId`. Each set is a `LinkedHashSet` that preserves
 insertion order, making it suitable for sequential objectives.
 
-| Method                                         | Description                                                                  |
-|:-----------------------------------------------|:-----------------------------------------------------------------------------|
-| `getSteps(objectiveId): MutableSet<String>`    | Returns the live step set (creates an empty one on first call)               |
-| `addStep(objectiveId, step): Boolean`          | Adds a step; returns `true` if it was new, `false` if already present        |
-| `hasStep(objectiveId, step): Boolean`          | Returns `true` when the step has already been recorded                       |
-| `clearSteps(objectiveId)`                      | Removes all steps for the objective (call from `onReset`)                    |
+| Method                                      | Description                                                           |
+|:--------------------------------------------|:----------------------------------------------------------------------|
+| `getSteps(objectiveId): MutableSet<String>` | Returns the live step set (creates an empty one on first call)        |
+| `addStep(objectiveId, step): Boolean`       | Adds a step; returns `true` if it was new, `false` if already present |
+| `hasStep(objectiveId, step): Boolean`       | Returns `true` when the step has already been recorded                |
+| `clearSteps(objectiveId)`                   | Removes all steps for the objective (call from `onReset`)             |
 
 All three stores (`progressData`, `stringData`, `stepData`) are serialised
 to `serverdata.json` and rehydrated on server restart, so progress survives
@@ -1141,6 +1141,7 @@ override fun displayItem(player: Player, completed: Boolean): ItemStack {
 ```
 
 The helper renders:
+
 ```
 Difficulty: <difficulty>
 
@@ -1148,6 +1149,7 @@ Difficulty: <difficulty>
 
 <progressLines>   ← shown only when not completed; falls back to "○ Not yet completed" when empty
 ```
+
 When `completed` is `true` the progress lines are omitted and `"✓ Completed"` is shown instead.
 
 ---

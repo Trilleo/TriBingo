@@ -12,18 +12,18 @@ TriBingo uses a `PackageScanner` to discover classes at runtime. When the plugin
 for concrete (non-abstract) classes and registers them automatically. You never need to edit `plugin.yml` or manually
 wire anything up.
 
-| System        | Base Class / Interface    | Package                                    |
-|:--------------|:--------------------------|:-------------------------------------------|
-| Commands      | `PluginCommand`           | `net.trilleo.mc.plugins.trihunt.commands`  |
-| Permissions   | *(derived from commands)* | *(automatic — no package needed)*          |
-| Listeners     | `Listener`                | `net.trilleo.mc.plugins.trihunt.listeners` |
-| GUIs          | `PluginGUI`               | `net.trilleo.mc.plugins.trihunt.guis`      |
-| Tasks         | `PluginTask`              | `net.trilleo.mc.plugins.trihunt.tasks`     |
-| Custom Items  | `PluginItem`              | `net.trilleo.mc.plugins.trihunt.items`     |
-| Recipes       | `PluginRecipe`            | `net.trilleo.mc.plugins.trihunt.recipes`   |
-| Configuration | `PluginConfig`            | `net.trilleo.mc.plugins.trihunt.config`    |
-| Player Data   | `PlayerData`              | `net.trilleo.mc.plugins.trihunt.data`      |
-| Server Data   | `ServerData`              | `net.trilleo.mc.plugins.trihunt.data`      |
+| System          | Base Class / Interface                | Package                                        |
+|:----------------|:--------------------------------------|:-----------------------------------------------|
+| Commands        | `PluginCommand`                       | `net.trilleo.mc.plugins.trihunt.commands`      |
+| Permissions     | *(derived from commands)*             | *(automatic — no package needed)*              |
+| Listeners       | `Listener`                            | `net.trilleo.mc.plugins.trihunt.listeners`     |
+| GUIs            | `PluginGUI`                           | `net.trilleo.mc.plugins.trihunt.guis`          |
+| Tasks           | `PluginTask`                          | `net.trilleo.mc.plugins.trihunt.tasks`         |
+| Custom Items    | `PluginItem`                          | `net.trilleo.mc.plugins.trihunt.items`         |
+| Recipes         | `PluginRecipe`                        | `net.trilleo.mc.plugins.trihunt.recipes`       |
+| Configuration   | `PluginConfig`                        | `net.trilleo.mc.plugins.trihunt.config`        |
+| Player Data     | `PlayerData`                          | `net.trilleo.mc.plugins.trihunt.data`          |
+| Server Data     | `ServerData`                          | `net.trilleo.mc.plugins.trihunt.data`          |
 | Code Objectives | `BingoObjective` + `@CustomObjective` | `net.trilleo.mc.plugins.tribingo.bingo.custom` |
 
 Subpackages are also scanned, so you can freely organize classes into folders like `commands/game/`,
@@ -1770,13 +1770,13 @@ multi-step state, and sequential logic that cannot be expressed in `bingo_object
 
 ### Key Types
 
-| Type / Annotation            | Package                                                | Purpose                                                            |
-|:-----------------------------|:-------------------------------------------------------|:-------------------------------------------------------------------|
-| `@CustomObjective`           | `net.trilleo.mc.plugins.tribingo.bingo.annotation`     | Marks a class for auto-discovery by `CodeObjectiveLoader`          |
-| `BingoObjectiveFactory`      | `net.trilleo.mc.plugins.tribingo.bingo`                | Companion-object interface for parameterised construction           |
-| `MultiEventBingoObjective`   | `net.trilleo.mc.plugins.tribingo.bingo`                | Base class for objectives listening to multiple event types         |
-| `SequentialBingoObjective`   | `net.trilleo.mc.plugins.tribingo.bingo`                | Base class for objectives requiring an ordered sequence of steps    |
-| `CodeObjectiveLoader`        | `net.trilleo.mc.plugins.tribingo.bingo.registry`       | Scans designated packages and registers annotated objectives        |
+| Type / Annotation          | Package                                            | Purpose                                                          |
+|:---------------------------|:---------------------------------------------------|:-----------------------------------------------------------------|
+| `@CustomObjective`         | `net.trilleo.mc.plugins.tribingo.bingo.annotation` | Marks a class for auto-discovery by `CodeObjectiveLoader`        |
+| `BingoObjectiveFactory`    | `net.trilleo.mc.plugins.tribingo.bingo`            | Companion-object interface for parameterised construction        |
+| `MultiEventBingoObjective` | `net.trilleo.mc.plugins.tribingo.bingo`            | Base class for objectives listening to multiple event types      |
+| `SequentialBingoObjective` | `net.trilleo.mc.plugins.tribingo.bingo`            | Base class for objectives requiring an ordered sequence of steps |
+| `CodeObjectiveLoader`      | `net.trilleo.mc.plugins.tribingo.bingo.registry`   | Scans designated packages and registers annotated objectives     |
 
 ### Designated Package
 
