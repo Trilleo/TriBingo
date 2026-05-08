@@ -188,8 +188,10 @@ class BingoServerData : ServerData() {
                     if (obj.has("ssd") && obj.get("ssd").isJsonObject) {
                         obj.getAsJsonObject("ssd").entrySet().associate { (oid, el) ->
                             oid to if (el.isJsonArray) {
-                                el.asJsonArray.map { it.asString }.toMutableSet()
-                            } else emptySet()
+                                // Use LinkedHashSet to preserve the insertion order stored in the JSON
+                                // array; order matters for SequentialBingoObjective step tracking.
+                                el.asJsonArray.map { it.asString }.toCollection(LinkedHashSet())
+                            } else LinkedHashSet()
                         }
                     } else emptyMap()
 

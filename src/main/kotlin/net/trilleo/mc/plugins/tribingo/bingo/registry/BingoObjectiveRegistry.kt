@@ -17,8 +17,12 @@ import org.bukkit.plugin.java.JavaPlugin
  * ```
  *
  * ### Event-driven objectives
- * Any [EventBingoObjective] passed to [register] is automatically registered
- * as a Bukkit event listener, so no manual `registerEvents` call is needed.
+ * Any objective that implements Bukkit's [Listener] (e.g.
+ * [EventBingoObjective][net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective],
+ * [MultiEventBingoObjective][net.trilleo.mc.plugins.tribingo.bingo.MultiEventBingoObjective],
+ * or [SequentialBingoObjective][net.trilleo.mc.plugins.tribingo.bingo.SequentialBingoObjective])
+ * is automatically registered as a Bukkit event listener when [register] is
+ * called, so no manual `registerEvents` call is needed.
  *
  * ### Lifecycle
  * Call [init] once during plugin startup (before [register] is first invoked)
@@ -70,7 +74,7 @@ object BingoObjectiveRegistry {
     /**
      * Removes the objective with [id] from the registry.
      *
-     * Note: if the objective was an [EventBingoObjective] its Bukkit event
+     * Note: if the objective implemented [Listener] its Bukkit event
      * listener registration cannot be undone at runtime; the objective will
      * simply be a no-op while the game is inactive.
      *

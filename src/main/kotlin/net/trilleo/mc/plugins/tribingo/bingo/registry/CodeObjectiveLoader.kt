@@ -112,12 +112,16 @@ object CodeObjectiveLoader {
      * [BingoObjectiveFactory], its [BingoObjectiveFactory.create] method is
      * called and the resulting objective is returned.
      *
+     * `setAccessible(true)` is called on the field because the `Companion`
+     * field's modifier may be package-private in some compilation contexts.
+     * This is safe for classes in the plugin's own JAR.
+     *
      * @return the newly created objective, or `null` if no factory companion exists
      */
     private fun tryCompanionFactory(clazz: Class<out BingoObjective>): BingoObjective? {
         return runCatching {
             val companionField = clazz.getDeclaredField("Companion")
-            companionField.isAccessible = true
+            companionField.setAccessible(true)
             val companion = companionField.get(null)
             (companion as? BingoObjectiveFactory)?.create()
         }.getOrNull()
