@@ -74,10 +74,11 @@ class BingoGame(
      * Ends the game: transitions [state] from [GameState.ACTIVE] to
      * [GameState.ENDED] and broadcasts a result message.
      *
-     * @param winner the winning player, or `null` if the game ended without a winner
+     * @param winner       the winning player, or `null` if the game ended without a winner
+     * @param winnerPoints the winning player's final point total (used in the broadcast)
      * @throws IllegalStateException if [state] is not [GameState.ACTIVE]
      */
-    fun end(winner: Player?) {
+    fun end(winner: Player?, winnerPoints: Int = 0) {
         check(state == GameState.ACTIVE) {
             "Cannot end: game is in state $state (expected ACTIVE)"
         }
@@ -93,7 +94,8 @@ class BingoGame(
                     Component.text(winner.name, NamedTextColor.YELLOW)
                         .decoration(TextDecoration.BOLD, true)
                 )
-                .append(Component.text(" has won the Bingo game!", NamedTextColor.GOLD))
+                .append(Component.text(" has won the Bingo game", NamedTextColor.GOLD))
+                .append(Component.text(" with $winnerPoints point${if (winnerPoints == 1) "" else "s"}!", NamedTextColor.GOLD))
                 .build()
         } else {
             Component.text("The Bingo game has ended.", NamedTextColor.GRAY)
@@ -140,9 +142,9 @@ class BingoGame(
         check(state == GameState.INACTIVE) {
             "Cannot refresh: game is in state $state (expected INACTIVE). Call reset() first."
         }
-        val needed = board.size * board.size
+        val needed = BingoBoard.SIZE * BingoBoard.SIZE
         require(objectives.size >= needed) {
-            "Need at least $needed objectives for a ${board.size}×${board.size} board, " +
+            "Need at least $needed objectives for a ${BingoBoard.SIZE}×${BingoBoard.SIZE} board, " +
                     "only ${objectives.size} available"
         }
 
@@ -150,7 +152,7 @@ class BingoGame(
         val cells = objectives.shuffled()
             .take(needed)
             .mapIndexed { i, obj -> BingoCell(i, obj) }
-        board = BingoBoard(board.size, cells)
+        board = BingoBoard(BingoBoard.SIZE, cells)
     }
 
     // ── Player state ─────────────────────────────────────────────────────

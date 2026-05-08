@@ -61,15 +61,13 @@ object BingoManager {
     fun init(plugin: JavaPlugin) {
         this.plugin = plugin
         if (!rehydrate()) {
-            val main = plugin as? Main ?: return
-            val defaultSize = main.pluginConfig.boardDefaultSize
-            val needed = defaultSize * defaultSize
+            val needed = BingoBoard.SIZE * BingoBoard.SIZE
             if (BingoObjectiveRegistry.getAll().size >= needed) {
-                newGame(defaultSize)
+                newGame()
             } else {
                 plugin.logger.info(
-                    "[BingoManager] Not enough objectives for a ${defaultSize}×${defaultSize} board; " +
-                            "create a game manually with /bingo size <3-6>"
+                    "[BingoManager] Not enough objectives for a ${BingoBoard.SIZE}×${BingoBoard.SIZE} board; " +
+                            "create a game manually with /bingo refresh"
                 )
             }
         }
@@ -105,29 +103,25 @@ object BingoManager {
      * Creates a new [BingoGame] with a randomly-selected set of objectives
      * drawn from [BingoObjectiveRegistry], replacing any existing game.
      *
-     * @param size the side-length of the new board (`3..6`)
      * @return the newly created game
-     * @throws IllegalArgumentException if [size] is not in `3..6`
      * @throws IllegalStateException if the registry doesn't have enough objectives
      */
-    fun newGame(size: Int): BingoGame {
-        require(size in 3..6) { "Board size must be between 3 and 6, got $size" }
-
+    fun newGame(): BingoGame {
         val objectives = BingoObjectiveRegistry.getAll()
-        val needed = size * size
+        val needed = BingoBoard.SIZE * BingoBoard.SIZE
         check(objectives.size >= needed) {
-            "Need at least $needed objectives for a ${size}×${size} board; " +
+            "Need at least $needed objectives for a ${BingoBoard.SIZE}×${BingoBoard.SIZE} board; " +
                     "only ${objectives.size} are registered"
         }
 
         val cells = objectives.shuffled()
             .take(needed)
             .mapIndexed { i, obj -> BingoCell(i, obj) }
-        val board = BingoBoard(size, cells)
+        val board = BingoBoard(BingoBoard.SIZE, cells)
         val game = BingoGame(board, plugin)
         currentGame = game
 
-        plugin.logger.info("[BingoManager] Created new ${size}×${size} game")
+        plugin.logger.info("[BingoManager] Created new ${BingoBoard.SIZE}×${BingoBoard.SIZE} game")
         return game
     }
 
@@ -189,24 +183,6 @@ object BingoManager {
         game.refresh(BingoObjectiveRegistry.getAll())
     }
 
-    /**
-     * Changes the board size to [size], creating a new game if necessary.
-     *
-     * If a game already exists with the requested size and is in
-     * [GameState.INACTIVE] state, the board is refreshed instead of creating a
-     * new game object.
-     *
-     * @param size the desired board side-length (`3..6`)
-     */
-    fun setBoardSize(size: Int) {
-        val game = currentGame
-        if (game != null && game.board.size == size && game.state == GameState.INACTIVE) {
-            refreshBoard()
-        } else {
-            newGame(size)
-        }
-    }
-
     // ── Completion ────────────────────────────────────────────────────────
 
     /**
@@ -216,10 +192,12 @@ object BingoManager {
      * 1. Verifies the game is active and the corresponding cell has not yet
      *    been completed for [player].
      * 2. Marks the cell as complete in the player's [BingoPlayerState].
-     * 3. Optionally broadcasts a completion announcement (see
+     * 3. Awards objective points (A) and any newly-earned line/diagonal bonuses
+     *    (B for rows/columns, C for diagonals) to the player's point total.
+     * 4. Optionally broadcasts a completion announcement (see
      *    [net.trilleo.mc.plugins.tribingo.config.PluginConfig.announceCompletions]).
-     * 4. Refreshes the player's open board GUI if any.
-     * 5. Checks the configured win condition and ends the game if met.
+     * 5. Refreshes the player's open board GUI if any.
+     * 6. Ends the game when the player has completed every cell on the board.
      *
      * @param player    the player who completed the objective
      * @param objective the objective that was completed
@@ -235,9 +213,34 @@ object BingoManager {
 
         state.markCompleted(cell.cellIndex)
 
-        // Announce completion
+        // Award objective points
         val main = plugin as? Main
-        if (main?.pluginConfig?.announceCompletions == true) {
+        val config = main?.pluginConfig
+        state.points += config?.objectivePoints ?: 1
+
+        // Award line-completion bonuses
+        val row = cell.cellIndex / BingoBoard.SIZE
+        val col = cell.cellIndex % BingoBoard.SIZE
+
+        if ("row_$row" !in state.completedLines && game.board.isRowComplete(state, row)) {
+            state.completedLines.add("row_$row")
+            state.points += config?.linePoints ?: 3
+        }
+        if ("col_$col" !in state.completedLines && game.board.isColComplete(state, col)) {
+            state.completedLines.add("col_$col")
+            state.points += config?.linePoints ?: 3
+        }
+        if (row == col && "diag_main" !in state.completedLines && game.board.isDiagMainComplete(state)) {
+            state.completedLines.add("diag_main")
+            state.points += config?.diagonalPoints ?: 5
+        }
+        if (row + col == BingoBoard.SIZE - 1 && "diag_anti" !in state.completedLines && game.board.isDiagAntiComplete(state)) {
+            state.completedLines.add("diag_anti")
+            state.points += config?.diagonalPoints ?: 5
+        }
+
+        // Announce completion
+        if (config?.announceCompletions == true) {
             val msg = Component.text()
                 .append(Component.text("[Bingo] ", NamedTextColor.GOLD))
                 .append(Component.text(player.name, NamedTextColor.YELLOW))
@@ -250,11 +253,9 @@ object BingoManager {
         // Refresh the player's open board GUI
         (GUIManager.getGUI("bingo_board") as? BingoBoardGUI)?.refreshFor(player)
 
-        // Win condition check
-        val winByLine = main?.pluginConfig?.winConditionLine ?: true
-        val won = if (winByLine) game.board.isLineComplete(state) else game.board.isBoardFull(state)
-        if (won) {
-            game.end(player)
+        // Win condition: first player to complete the full board wins
+        if (game.board.isBoardFull(state)) {
+            game.end(player, state.points)
         }
     }
 
@@ -271,11 +272,18 @@ object BingoManager {
         val boardSize = data.boardSize
         if (boardSize == 0) return false
 
+        if (boardSize != BingoBoard.SIZE) {
+            plugin.logger.warning(
+                "[BingoManager] Saved board size $boardSize is no longer supported (only ${BingoBoard.SIZE}×${BingoBoard.SIZE} boards are allowed); skipping rehydration"
+            )
+            return false
+        }
+
         val objectiveIds = data.boardLayout
-        if (objectiveIds.size != boardSize * boardSize) {
+        if (objectiveIds.size != BingoBoard.SIZE * BingoBoard.SIZE) {
             plugin.logger.warning(
                 "[BingoManager] Saved board layout size mismatch " +
-                        "(expected ${boardSize * boardSize}, got ${objectiveIds.size}); skipping rehydration"
+                        "(expected ${BingoBoard.SIZE * BingoBoard.SIZE}, got ${objectiveIds.size}); skipping rehydration"
             )
             return false
         }
@@ -292,20 +300,22 @@ object BingoManager {
             cells += BingoCell(i, obj)
         }
 
-        val board = BingoBoard(boardSize, cells)
+        val board = BingoBoard(BingoBoard.SIZE, cells)
         val gameState = runCatching { GameState.valueOf(data.gameStateName) }
             .getOrDefault(GameState.INACTIVE)
         val game = BingoGame(board, plugin, gameState)
 
-        data.loadPlayerStates().forEach { (uuid, pair) ->
+        data.loadPlayerStates().forEach { (uuid, saved) ->
             val ps = game.getOrCreateState(uuid)
-            pair.first.forEach { ps.markCompleted(it) }
-            pair.second.forEach { (k, v) -> ps.setProgress(k, v) }
+            saved.completedCells.forEach { ps.markCompleted(it) }
+            saved.progressData.forEach { (k, v) -> ps.setProgress(k, v) }
+            saved.completedLines.forEach { ps.completedLines.add(it) }
+            ps.points = saved.points
         }
 
         currentGame = game
         plugin.logger.info(
-            "[BingoManager] Rehydrated ${boardSize}×${boardSize} game (state=${gameState})"
+            "[BingoManager] Rehydrated ${BingoBoard.SIZE}×${BingoBoard.SIZE} game (state=${gameState})"
         )
         return true
     }

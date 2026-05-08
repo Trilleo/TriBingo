@@ -45,22 +45,11 @@ class PluginConfig(private val plugin: JavaPlugin) {
     // ── Bingo Properties ─────────────────────────────────────────────────
 
     /**
-     * Default side-length for a new Bingo board (3–6).
-     * Taken from `bingo.default-board-size` in `config.yml`.
+     * Default side-length for a new Bingo board. Always `5`.
+     * Kept for compatibility; the value is locked to `5` regardless of config.
      */
     val boardDefaultSize: Int
-        get() = getInt("bingo.default-board-size", 4).coerceIn(3, 6)
-
-    /**
-     * Win condition mode. When `true` (default), the first player to complete
-     * a full row, column, or diagonal wins. When `false`, a player must complete
-     * the entire board.
-     *
-     * Taken from `bingo.win-condition` in `config.yml`. Set to `LINE` for line
-     * wins, or `FULL_BOARD` for a full-board win.
-     */
-    val winConditionLine: Boolean
-        get() = getString("bingo.win-condition", "LINE").uppercase() == "LINE"
+        get() = 5
 
     /**
      * When `true`, a server-wide announcement is sent whenever any player
@@ -68,6 +57,27 @@ class PluginConfig(private val plugin: JavaPlugin) {
      */
     val announceCompletions: Boolean
         get() = getBoolean("bingo.announce-completions", true)
+
+    /**
+     * Points awarded to a player for completing a single objective (cell).
+     * Taken from `bingo.points.objective`.
+     */
+    val objectivePoints: Int
+        get() = getInt("bingo.points.objective", 1)
+
+    /**
+     * Additional points awarded when a player completes an entire row or column.
+     * Taken from `bingo.points.line`.
+     */
+    val linePoints: Int
+        get() = getInt("bingo.points.line", 3)
+
+    /**
+     * Additional points awarded when a player completes a diagonal.
+     * Taken from `bingo.points.diagonal`.
+     */
+    val diagonalPoints: Int
+        get() = getInt("bingo.points.diagonal", 5)
 
     // ── Typed Getters ───────────────────────────────────────────────────
 
