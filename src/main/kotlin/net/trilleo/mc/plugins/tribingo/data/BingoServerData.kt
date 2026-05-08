@@ -3,7 +3,6 @@ package net.trilleo.mc.plugins.tribingo.data
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
-import net.trilleo.mc.plugins.tribingo.data.BingoServerData.Companion.KEY_PLAYER_STATES
 import net.trilleo.mc.plugins.tribingo.enums.GameState
 import java.util.*
 
@@ -21,12 +20,12 @@ import java.util.*
  * ```
  *
  * ### Stored keys
- * | Key                        | Type          | Description                          |
- * |:---------------------------|:--------------|:-------------------------------------|
+ * | Key                        | Type          | Description                              |
+ * |:---------------------------|:--------------|:-----------------------------------------|
  * | `bingo_board_size`         | Int           | Side-length of the last board (0 = none) |
- * | `bingo_game_state`         | String        | Serialised [GameState] name          |
- * | `bingo_board_layout`       | JsonArray     | Objective IDs in cell order          |
- * | `bingo_player_states`      | JsonObject    | Per-player completion/progress data  |
+ * | `bingo_game_state`         | String        | Serialised [GameState] name              |
+ * | `bingo_board_layout`       | JsonArray     | Objective IDs in cell order              |
+ * | `bingo_player_states`      | JsonObject    | Per-player completion/progress/points data |
  */
 class BingoServerData : ServerData() {
 
@@ -36,6 +35,21 @@ class BingoServerData : ServerData() {
         private const val KEY_BOARD_LAYOUT = "bingo_board_layout"
         private const val KEY_PLAYER_STATES = "bingo_player_states"
     }
+
+    /**
+     * Deserialized per-player state returned by [loadPlayerStates].
+     *
+     * @param completedCells  set of completed cell indices
+     * @param progressData    per-objective progress counters
+     * @param completedLines  set of line keys that have received bonus points
+     * @param points          accumulated point total
+     */
+    data class PersistedPlayerState(
+        val completedCells: Set<Int>,
+        val progressData: Map<String, Int>,
+        val completedLines: Set<String>,
+        val points: Int
+    )
 
     // ── Typed properties ─────────────────────────────────────────────────
 
@@ -84,6 +98,12 @@ class BingoServerData : ServerData() {
             ps.progressData.forEach { (k, v) -> progress.addProperty(k, v) }
             obj.add("p", progress)
 
+            val lines = JsonArray()
+            ps.completedLines.forEach { lines.add(it) }
+            obj.add("l", lines)
+
+            obj.addProperty("pts", ps.points)
+
             root.add(uuid.toString(), obj)
         }
         set(KEY_PLAYER_STATES, root)
@@ -92,10 +112,10 @@ class BingoServerData : ServerData() {
     /**
      * Deserialises and returns all previously saved player states.
      *
-     * The returned map is keyed by [UUID]; each value is a pair of
-     * (completedCells, progressData).
+     * The returned map is keyed by [UUID]; each value is a [PersistedPlayerState]
+     * containing cells, progress, completed lines, and point total.
      */
-    fun loadPlayerStates(): Map<UUID, Pair<Set<Int>, Map<String, Int>>> {
+    fun loadPlayerStates(): Map<UUID, PersistedPlayerState> {
         if (!json.has(KEY_PLAYER_STATES) || !json.get(KEY_PLAYER_STATES).isJsonObject) {
             return emptyMap()
         }
@@ -114,7 +134,13 @@ class BingoServerData : ServerData() {
                     obj.getAsJsonObject("p").entrySet().associate { (k, v) -> k to v.asInt }
                 } else emptyMap()
 
-                put(uuid, cells to progress)
+                val lines: Set<String> = if (obj.has("l") && obj.get("l").isJsonArray) {
+                    obj.getAsJsonArray("l").map { it.asString }.toSet()
+                } else emptySet()
+
+                val points: Int = if (obj.has("pts")) obj.get("pts").asInt else 0
+
+                put(uuid, PersistedPlayerState(cells, progress, lines, points))
             }
         }
     }
