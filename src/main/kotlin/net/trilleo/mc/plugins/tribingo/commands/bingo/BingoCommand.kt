@@ -27,7 +27,8 @@ import org.bukkit.entity.Player
 class BingoCommand : PluginCommand(
     name = "bingo",
     description = "Manage and view the Bingo game",
-    usage = "/tribingo bingo <board|start|stop|reset|refresh|size <3-6>|status>"
+    usage = "/tribingo bingo <board|start|stop|reset|refresh|size <3-6>|status>",
+    isMainCommand = true
 ) {
 
     override fun execute(sender: CommandSender, args: Array<out String>): Boolean {
