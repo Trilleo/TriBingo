@@ -390,6 +390,11 @@ object BingoManager {
      * Finds the player with the highest point total across all recorded
      * [BingoPlayerState]s and ends the game in their favour. If no player has
      * accumulated any points (or no states exist) the game ends without a winner.
+     *
+     * **Tie-breaking:** when multiple players share the highest score, the winner
+     * is whichever entry is returned first by [Map.values] iteration order (insertion
+     * order of the underlying `LinkedHashMap`). This is intentionally unspecified
+     * beyond that guarantee.
      */
     private fun onTimerExpired() {
         val game = currentGame ?: return
@@ -402,6 +407,9 @@ object BingoManager {
         }
 
         val winner = plugin.server.getPlayer(topState.uuid)
+        // OfflinePlayer.name is deprecated but needed here to resolve the display
+        // name of a player who was online during the game but disconnected before
+        // the timer expired.
         @Suppress("DEPRECATION")
         val winnerName = winner?.name
             ?: plugin.server.getOfflinePlayer(topState.uuid).name

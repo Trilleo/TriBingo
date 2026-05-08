@@ -145,15 +145,13 @@ object BingoActions {
     fun getStatus(): ActionResult {
         val game = BingoManager.currentGame
             ?: return ActionResult(true, "<gray>No Bingo game has been set up.")
-        val timerSeconds = BingoManager.getTimerSeconds()
-        val timerDisplay = formatSeconds(timerSeconds)
         val lines = listOf(
             "<gold>── Bingo Status ──",
             "<gray>Board size: <white>${game.board.size}×${game.board.size}",
             "<gray>State: <white>${game.state}",
             "<gray>Objectives loaded: <white>${game.board.cells.size}",
             "<gray>Active players: <white>${game.playerStates.size}",
-            "<gray>Timer: <white>$timerDisplay"
+            "<gray>Timer: <white>${formatSeconds(BingoManager.getTimerSeconds())}"
         )
         return ActionResult(true, lines.joinToString("\n"))
     }
