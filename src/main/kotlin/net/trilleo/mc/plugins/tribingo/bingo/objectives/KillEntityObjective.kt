@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
-import net.trilleo.mc.plugins.tribingo.bingo.BingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
@@ -65,9 +64,9 @@ class KillEntityObjective(
 
     override fun displayItem(player: Player, completed: Boolean): ItemStack {
         val material = if (completed) Material.LIME_CONCRETE else when (difficulty) {
-            Difficulty.EASY   -> Material.GREEN_STAINED_GLASS
+            Difficulty.EASY -> Material.GREEN_STAINED_GLASS
             Difficulty.MEDIUM -> Material.YELLOW_STAINED_GLASS
-            Difficulty.HARD   -> Material.RED_STAINED_GLASS
+            Difficulty.HARD -> Material.RED_STAINED_GLASS
             Difficulty.INSANE -> Material.PURPLE_STAINED_GLASS
         }
         val item = ItemStack(material)

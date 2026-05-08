@@ -2,7 +2,6 @@ package net.trilleo.mc.plugins.tribingo.commands.bingo
 
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
 import net.trilleo.mc.plugins.tribingo.enums.GameState
-import net.trilleo.mc.plugins.tribingo.registration.CommandRegistrar
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
 import net.trilleo.mc.plugins.tribingo.registration.PluginCommand
 import net.trilleo.mc.plugins.tribingo.utils.sendPrefixed
@@ -26,9 +25,9 @@ import org.bukkit.entity.Player
  * | `status`               | (none)                | Shows the current game status            |
  */
 class BingoCommand : PluginCommand(
-    name        = "bingo",
+    name = "bingo",
     description = "Manage and view the Bingo game",
-    usage       = "/tribingo bingo <board|start|stop|reset|refresh|size <3-6>|status>"
+    usage = "/tribingo bingo <board|start|stop|reset|refresh|size <3-6>|status>"
 ) {
 
     override fun execute(sender: CommandSender, args: Array<out String>): Boolean {
@@ -38,14 +37,16 @@ class BingoCommand : PluginCommand(
         }
 
         return when (args[0].lowercase()) {
-            "board"   -> handleBoard(sender)
-            "start"   -> handleStart(sender)
-            "stop"    -> handleStop(sender)
-            "reset"   -> handleReset(sender)
+            "board" -> handleBoard(sender)
+            "start" -> handleStart(sender)
+            "stop" -> handleStop(sender)
+            "reset" -> handleReset(sender)
             "refresh" -> handleRefresh(sender)
-            "size"    -> handleSize(sender, args.drop(1))
-            "status"  -> handleStatus(sender)
-            else      -> { showUsage(sender); true }
+            "size" -> handleSize(sender, args.drop(1))
+            "status" -> handleStatus(sender)
+            else -> {
+                showUsage(sender); true
+            }
         }
     }
 
@@ -128,7 +129,10 @@ class BingoCommand : PluginCommand(
             return true
         }
         if (game.state != GameState.INACTIVE) {
-            sendMsg(sender, "<red>The board can only be refreshed when the game is INACTIVE. Use /tb bingo reset first.")
+            sendMsg(
+                sender,
+                "<red>The board can only be refreshed when the game is INACTIVE. Use /tb bingo reset first."
+            )
             return true
         }
         runCatching { BingoManager.refreshBoard() }

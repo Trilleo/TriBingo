@@ -3,6 +3,7 @@ package net.trilleo.mc.plugins.tribingo.bingo.registry
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.trilleo.mc.plugins.tribingo.bingo.BingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.objectives.*
+import net.trilleo.mc.plugins.tribingo.bingo.registry.YamlObjectiveLoader.load
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration

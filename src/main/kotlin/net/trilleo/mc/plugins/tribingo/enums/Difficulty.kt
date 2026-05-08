@@ -27,9 +27,9 @@ enum class Difficulty {
      * for use in item lore or chat messages.
      */
     fun displayName(): Component = when (this) {
-        EASY   -> Component.text("Easy",   NamedTextColor.GREEN)
+        EASY -> Component.text("Easy", NamedTextColor.GREEN)
         MEDIUM -> Component.text("Medium", NamedTextColor.YELLOW)
-        HARD   -> Component.text("Hard",   NamedTextColor.RED)
+        HARD -> Component.text("Hard", NamedTextColor.RED)
         INSANE -> Component.text("Insane", NamedTextColor.DARK_RED)
     }
 }

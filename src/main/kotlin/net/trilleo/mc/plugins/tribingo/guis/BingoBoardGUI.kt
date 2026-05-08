@@ -36,10 +36,10 @@ import org.bukkit.inventory.Inventory
  * inventory is updated in-place without closing it.
  */
 class BingoBoardGUI : PluginGUI(
-    id       = "bingo_board",
-    title    = Component.text("✦ Bingo Board ✦").color(NamedTextColor.GOLD)
+    id = "bingo_board",
+    title = Component.text("✦ Bingo Board ✦").color(NamedTextColor.GOLD)
         .decoration(TextDecoration.BOLD, true),
-    rows     = 6,
+    rows = 6,
     fillMode = FillMode.DARK
 ) {
 
@@ -66,7 +66,7 @@ class BingoBoardGUI : PluginGUI(
         if (slot !in 0 until 54) return
 
         val n = game.board.size
-        val vertPad  = (6 - n) / 2
+        val vertPad = (6 - n) / 2
         val horizPad = (9 - n) / 2
 
         val row = slot / 9 - vertPad
@@ -130,7 +130,7 @@ class BingoBoardGUI : PluginGUI(
         val board = game.board
         val n = board.size
         val state = game.getOrCreateState(player.uniqueId)
-        val vertPad  = (6 - n) / 2
+        val vertPad = (6 - n) / 2
         val horizPad = (9 - n) / 2
 
         for (row in 0 until n) {

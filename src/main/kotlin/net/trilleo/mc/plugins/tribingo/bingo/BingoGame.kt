@@ -3,11 +3,10 @@ package net.trilleo.mc.plugins.tribingo.bingo
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.trilleo.mc.plugins.tribingo.enums.Difficulty
 import net.trilleo.mc.plugins.tribingo.enums.GameState
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.UUID
+import java.util.*
 
 /**
  * Central state machine for a single Bingo game session.
@@ -54,12 +53,16 @@ class BingoGame(
         state = GameState.ACTIVE
 
         val msg = Component.text()
-            .append(Component.text("⬛ BINGO STARTED! ", NamedTextColor.GOLD)
-                .decoration(TextDecoration.BOLD, true))
-            .append(Component.text(
-                "A ${board.size}×${board.size} game has begun! Open the board with ",
-                NamedTextColor.YELLOW
-            ))
+            .append(
+                Component.text("⬛ BINGO STARTED! ", NamedTextColor.GOLD)
+                    .decoration(TextDecoration.BOLD, true)
+            )
+            .append(
+                Component.text(
+                    "A ${board.size}×${board.size} game has begun! Open the board with ",
+                    NamedTextColor.YELLOW
+                )
+            )
             .append(Component.text("/tb bingo board", NamedTextColor.AQUA))
             .append(Component.text(".", NamedTextColor.YELLOW))
             .build()
@@ -82,10 +85,14 @@ class BingoGame(
 
         val msg = if (winner != null) {
             Component.text()
-                .append(Component.text("🏆 BINGO! ", NamedTextColor.GOLD)
-                    .decoration(TextDecoration.BOLD, true))
-                .append(Component.text(winner.name, NamedTextColor.YELLOW)
-                    .decoration(TextDecoration.BOLD, true))
+                .append(
+                    Component.text("🏆 BINGO! ", NamedTextColor.GOLD)
+                        .decoration(TextDecoration.BOLD, true)
+                )
+                .append(
+                    Component.text(winner.name, NamedTextColor.YELLOW)
+                        .decoration(TextDecoration.BOLD, true)
+                )
                 .append(Component.text(" has won the Bingo game!", NamedTextColor.GOLD))
                 .build()
         } else {

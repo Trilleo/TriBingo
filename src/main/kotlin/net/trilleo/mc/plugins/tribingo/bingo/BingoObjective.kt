@@ -79,9 +79,9 @@ abstract class BingoObjective(
      */
     open fun displayItem(player: Player, completed: Boolean): ItemStack {
         val material = if (completed) Material.LIME_CONCRETE else when (difficulty) {
-            Difficulty.EASY   -> Material.GREEN_STAINED_GLASS
+            Difficulty.EASY -> Material.GREEN_STAINED_GLASS
             Difficulty.MEDIUM -> Material.YELLOW_STAINED_GLASS
-            Difficulty.HARD   -> Material.RED_STAINED_GLASS
+            Difficulty.HARD -> Material.RED_STAINED_GLASS
             Difficulty.INSANE -> Material.PURPLE_STAINED_GLASS
         }
 

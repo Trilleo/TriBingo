@@ -2,7 +2,6 @@ package net.trilleo.mc.plugins.tribingo.bingo.objectives
 
 import net.kyori.adventure.text.Component
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
-import net.trilleo.mc.plugins.tribingo.bingo.BingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty

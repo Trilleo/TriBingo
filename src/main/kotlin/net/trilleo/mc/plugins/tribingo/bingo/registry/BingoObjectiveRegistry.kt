@@ -2,6 +2,8 @@ package net.trilleo.mc.plugins.tribingo.bingo.registry
 
 import net.trilleo.mc.plugins.tribingo.bingo.BingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective
+import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry.init
+import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry.register
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
 import org.bukkit.plugin.java.JavaPlugin
 

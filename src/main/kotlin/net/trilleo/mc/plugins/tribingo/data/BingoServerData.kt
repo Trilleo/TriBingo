@@ -3,8 +3,9 @@ package net.trilleo.mc.plugins.tribingo.data
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
+import net.trilleo.mc.plugins.tribingo.data.BingoServerData.Companion.KEY_PLAYER_STATES
 import net.trilleo.mc.plugins.tribingo.enums.GameState
-import java.util.UUID
+import java.util.*
 
 /**
  * Server-wide persistence for the active [net.trilleo.mc.plugins.tribingo.bingo.BingoGame].
@@ -30,9 +31,9 @@ import java.util.UUID
 class BingoServerData : ServerData() {
 
     companion object {
-        private const val KEY_BOARD_SIZE    = "bingo_board_size"
-        private const val KEY_GAME_STATE    = "bingo_game_state"
-        private const val KEY_BOARD_LAYOUT  = "bingo_board_layout"
+        private const val KEY_BOARD_SIZE = "bingo_board_size"
+        private const val KEY_GAME_STATE = "bingo_game_state"
+        private const val KEY_BOARD_LAYOUT = "bingo_board_layout"
         private const val KEY_PLAYER_STATES = "bingo_player_states"
     }
 
