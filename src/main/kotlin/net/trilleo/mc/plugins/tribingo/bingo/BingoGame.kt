@@ -152,7 +152,7 @@ class BingoGame(
         val cells = objectives.shuffled()
             .take(needed)
             .mapIndexed { i, obj -> BingoCell(i, obj) }
-        board = BingoBoard(BingoBoard.SIZE, cells)
+        board = BingoBoard(cells)
     }
 
     // ── Player state ─────────────────────────────────────────────────────

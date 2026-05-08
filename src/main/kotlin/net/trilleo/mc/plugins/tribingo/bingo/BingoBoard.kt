@@ -8,9 +8,10 @@ package net.trilleo.mc.plugins.tribingo.bingo
  *
  * ### Coordinate system
  * Cell `(row, col)` maps to `cells[row * SIZE + col]`.
+ *
+ * @param cells flat list of exactly [SIZE] × [SIZE] cells in row-major order
  */
 class BingoBoard(
-    val size: Int,
     val cells: List<BingoCell>
 ) {
 
@@ -19,10 +20,10 @@ class BingoBoard(
         const val SIZE = 5
     }
 
+    /** The side-length of this board, always equal to [SIZE]. */
+    val size: Int get() = SIZE
+
     init {
-        require(size == SIZE) {
-            "Board size must be $SIZE, got $size"
-        }
         require(cells.size == SIZE * SIZE) {
             "Expected ${SIZE * SIZE} cells for a ${SIZE}x${SIZE} board, got ${cells.size}"
         }

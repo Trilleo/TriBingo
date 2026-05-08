@@ -16,6 +16,7 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.bukkit.plugin.java.JavaPlugin
 
 /**
  * Chest-based Bingo board viewer for the fixed 5×5 board.
@@ -51,8 +52,10 @@ import org.bukkit.inventory.ItemStack
  * ### Live updates
  * Call [refreshFor] with the player whenever a cell is completed; the open
  * inventory is updated in-place without closing it.
+ *
+ * @param plugin the owning plugin instance, used to read point configuration
  */
-class BingoBoardGUI : PluginGUI(
+class BingoBoardGUI(private val plugin: JavaPlugin) : PluginGUI(
     id = "bingo_board",
     title = Component.text("✦ Bingo Board ✦").color(NamedTextColor.GOLD)
         .decoration(TextDecoration.BOLD, true),
@@ -126,7 +129,7 @@ class BingoBoardGUI : PluginGUI(
      * or a "no game" placeholder if there is no current game.
      */
     private fun populateBoard(player: Player, inventory: Inventory) {
-        val pluginConfig = (player.server.pluginManager.getPlugin("TriBingo") as? Main)?.pluginConfig
+        val pluginConfig = (plugin as? Main)?.pluginConfig
         val linePoints = pluginConfig?.linePoints ?: 3
         val diagPoints = pluginConfig?.diagonalPoints ?: 5
 

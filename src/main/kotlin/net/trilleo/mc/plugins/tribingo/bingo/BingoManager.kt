@@ -117,7 +117,7 @@ object BingoManager {
         val cells = objectives.shuffled()
             .take(needed)
             .mapIndexed { i, obj -> BingoCell(i, obj) }
-        val board = BingoBoard(BingoBoard.SIZE, cells)
+        val board = BingoBoard(cells)
         val game = BingoGame(board, plugin)
         currentGame = game
 
@@ -213,10 +213,14 @@ object BingoManager {
 
         state.markCompleted(cell.cellIndex)
 
+        // Extract config values once for use throughout this method
+        val config = (plugin as? Main)?.pluginConfig
+        val objPts = config?.objectivePoints ?: 1
+        val linePts = config?.linePoints ?: 3
+        val diagPts = config?.diagonalPoints ?: 5
+
         // Award objective points
-        val main = plugin as? Main
-        val config = main?.pluginConfig
-        state.points += config?.objectivePoints ?: 1
+        state.points += objPts
 
         // Award line-completion bonuses
         val row = cell.cellIndex / BingoBoard.SIZE
@@ -224,19 +228,19 @@ object BingoManager {
 
         if ("row_$row" !in state.completedLines && game.board.isRowComplete(state, row)) {
             state.completedLines.add("row_$row")
-            state.points += config?.linePoints ?: 3
+            state.points += linePts
         }
         if ("col_$col" !in state.completedLines && game.board.isColComplete(state, col)) {
             state.completedLines.add("col_$col")
-            state.points += config?.linePoints ?: 3
+            state.points += linePts
         }
         if (row == col && "diag_main" !in state.completedLines && game.board.isDiagMainComplete(state)) {
             state.completedLines.add("diag_main")
-            state.points += config?.diagonalPoints ?: 5
+            state.points += diagPts
         }
         if (row + col == BingoBoard.SIZE - 1 && "diag_anti" !in state.completedLines && game.board.isDiagAntiComplete(state)) {
             state.completedLines.add("diag_anti")
-            state.points += config?.diagonalPoints ?: 5
+            state.points += diagPts
         }
 
         // Announce completion
@@ -300,7 +304,7 @@ object BingoManager {
             cells += BingoCell(i, obj)
         }
 
-        val board = BingoBoard(BingoBoard.SIZE, cells)
+        val board = BingoBoard(cells)
         val gameState = runCatching { GameState.valueOf(data.gameStateName) }
             .getOrDefault(GameState.INACTIVE)
         val game = BingoGame(board, plugin, gameState)
