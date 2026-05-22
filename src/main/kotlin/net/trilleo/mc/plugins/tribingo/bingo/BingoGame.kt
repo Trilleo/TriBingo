@@ -3,6 +3,8 @@ package net.trilleo.mc.plugins.tribingo.bingo
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import net.trilleo.mc.plugins.tribingo.bingo.randomizer.BoardRandomizerRegistry
+import net.trilleo.mc.plugins.tribingo.enums.GameDifficulty
 import net.trilleo.mc.plugins.tribingo.enums.GameState
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
@@ -20,13 +22,15 @@ import java.util.*
  *
  * Create a game via [BingoManager.newGame]. Do not instantiate directly.
  *
- * @param board  the initial board layout (may be replaced by [refresh])
- * @param plugin the owning plugin (used for broadcasts and online-player lookups)
- * @param state  the initial [GameState]; defaults to [GameState.INACTIVE]
+ * @param board      the initial board layout (may be replaced by [refresh])
+ * @param plugin     the owning plugin (used for broadcasts and online-player lookups)
+ * @param difficulty the game difficulty controlling objective distribution on refresh
+ * @param state      the initial [GameState]; defaults to [GameState.INACTIVE]
  */
 class BingoGame(
     var board: BingoBoard,
     private val plugin: JavaPlugin,
+    var difficulty: GameDifficulty = GameDifficulty.MEDIUM,
     var state: GameState = GameState.INACTIVE
 ) {
 
@@ -138,6 +142,11 @@ class BingoGame(
      * Picks a new random selection of objectives from [objectives], rebuilds
      * the board, and resets all player state.
      *
+     * The selection and placement of objectives is controlled by the
+     * [BoardRandomizerRegistry] entry for this game's [difficulty]. If no
+     * randomizer is registered for the current difficulty, objectives are
+     * shuffled randomly (legacy behaviour).
+     *
      * The game must be in [GameState.INACTIVE] state. If you need to refresh
      * during an active game, call [reset] first.
      *
@@ -157,9 +166,15 @@ class BingoGame(
         }
 
         reset()
-        val cells = objectives.shuffled()
-            .take(needed)
-            .mapIndexed { i, obj -> BingoCell(i, obj) }
+
+        val randomizer = BoardRandomizerRegistry.get(difficulty)
+        val arranged = if (randomizer != null) {
+            randomizer.randomize(objectives)
+        } else {
+            objectives.shuffled().take(needed)
+        }
+
+        val cells = arranged.mapIndexed { i, obj -> BingoCell(i, obj) }
         board = BingoBoard(cells)
     }
 

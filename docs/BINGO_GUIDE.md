@@ -605,6 +605,56 @@ bingo:
 
 ---
 
+## Board Randomizer
+
+The board randomizer system controls how objectives are selected and placed on the board based on the
+game's difficulty. Each `GameDifficulty` (defined in `net.trilleo.mc.plugins.tribingo.enums.GameDifficulty`)
+maps to a `BoardRandomizer` implementation via the `BoardRandomizerRegistry`.
+
+### Game Difficulty vs Objective Difficulty
+
+- **`GameDifficulty`** (`EASY`, `MEDIUM`, `HARD`): Set per-game; determines which randomizer strategy is used.
+- **`Difficulty`** (`EASY`, `MEDIUM`, `HARD`, `INSANE`): Set per-objective; describes how challenging a single objective is.
+
+### Built-in Randomizers
+
+| Game Difficulty | Randomizer Class         | Distribution (approx.)                                | Constraints                                          |
+|:----------------|:-------------------------|:------------------------------------------------------|:-----------------------------------------------------|
+| `EASY`          | `EasyBoardRandomizer`    | 60% easy, 30% medium, 10% hard, 0% insane            | None                                                 |
+| `MEDIUM`        | `MediumBoardRandomizer`  | 30% easy, 40% medium, 25% hard, 5% insane (~1 cell)  | None                                                 |
+| `HARD`          | `HardBoardRandomizer`    | 10% easy, 25% medium, 45% hard, 20% insane (~5 cells)| Each diagonal guaranteed ≥1 insane objective         |
+
+All randomizers fall back gracefully when insufficient objectives of a target difficulty exist — they
+draw from adjacent difficulty pools rather than failing.
+
+### Adding a New Game Difficulty
+
+1. Add a new entry to the `GameDifficulty` enum.
+2. Create a class implementing `BoardRandomizer`.
+3. Register it in `BoardRandomizerRegistry`:
+   ```kotlin
+   BoardRandomizerRegistry.register(GameDifficulty.MY_DIFFICULTY, MyRandomizer())
+   ```
+
+### Changing Randomizer Logic
+
+To change the randomization behaviour for an existing difficulty, either:
+- Replace the registered randomizer: `BoardRandomizerRegistry.register(GameDifficulty.HARD, MyCustomHardRandomizer())`
+- Or modify the existing randomizer class directly.
+
+### Usage
+
+Players with `tribingo.bingo.manage` permission can specify difficulty when refreshing:
+```
+/bingo refresh easy
+/bingo refresh medium
+/bingo refresh hard
+```
+
+If no difficulty is specified, the current game's difficulty is preserved (defaults to `MEDIUM` for new games).
+
+---
+
 ## Commands
 
 Bingo commands are available as the standalone `/bingo` command, dispatched through `BingoCommand`.
@@ -617,7 +667,7 @@ Bingo commands are available as the standalone `/bingo` command, dispatched thro
 | `start`            | `tribingo.bingo.manage` | Any sender  | Starts the current game (must be `INACTIVE`); also starts the countdown               |
 | `stop`             | `tribingo.bingo.manage` | Any sender  | Ends the current game without a winner (must be `ACTIVE`); cancels the countdown      |
 | `reset`            | `tribingo.bingo.manage` | Any sender  | Resets all player progress; transitions game back to `INACTIVE`                       |
-| `refresh`          | `tribingo.bingo.manage` | Any sender  | Picks new random objectives for the current board (must be `INACTIVE`)                |
+| `refresh [difficulty]` | `tribingo.bingo.manage` | Any sender  | Picks new random objectives for the current board (must be `INACTIVE`). Optional difficulty: `easy`, `medium`, `hard` |
 | `time <h> <m> <s>` | `tribingo.bingo.manage` | Any sender  | Sets the countdown duration (hours, minutes, seconds); stored in server data          |
 | `status`           | *(none)*                | Any sender  | Shows board size, game state, number of objectives, active players, and timer setting |
 
