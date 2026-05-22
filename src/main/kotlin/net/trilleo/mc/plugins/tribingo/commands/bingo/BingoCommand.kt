@@ -1,5 +1,6 @@
 package net.trilleo.mc.plugins.tribingo.commands.bingo
 
+import net.trilleo.mc.plugins.tribingo.enums.GameDifficulty
 import net.trilleo.mc.plugins.tribingo.registration.PluginCommand
 import net.trilleo.mc.plugins.tribingo.utils.sendPrefixed
 import org.bukkit.command.CommandSender
@@ -16,7 +17,7 @@ import org.bukkit.entity.Player
  * | `start`                  | `tribingo.bingo.manage` | Starts the current game                |
  * | `stop`                   | `tribingo.bingo.manage` | Ends the current active game           |
  * | `reset`                  | `tribingo.bingo.manage` | Resets all player progress             |
- * | `refresh`                | `tribingo.bingo.manage` | Picks new objectives (INACTIVE only)   |
+ * | `refresh [difficulty]`   | `tribingo.bingo.manage` | Picks new objectives (INACTIVE only)   |
  * | `time <h> <m> <s>`       | `tribingo.bingo.manage` | Sets the countdown timer               |
  * | `status`                 | (none)                  | Shows the current game status          |
  *
@@ -26,7 +27,7 @@ import org.bukkit.entity.Player
 class BingoCommand : PluginCommand(
     name = "bingo",
     description = "Manage and view the Bingo game",
-    usage = "/bingo <board|start|stop|reset|refresh|time|status>",
+    usage = "/bingo <board|start|stop|reset|refresh [easy|medium|hard]|time|status>",
     isMainCommand = true
 ) {
 
@@ -41,7 +42,7 @@ class BingoCommand : PluginCommand(
             "start" -> handleManage(sender) { BingoActions.startGame() }
             "stop" -> handleManage(sender) { BingoActions.stopGame() }
             "reset" -> handleManage(sender) { BingoActions.resetGame() }
-            "refresh" -> handleManage(sender) { BingoActions.refreshBoard() }
+            "refresh" -> handleRefresh(sender, args)
             "time" -> handleTime(sender, args)
             "status" -> handleStatus(sender)
             else -> {
@@ -54,6 +55,10 @@ class BingoCommand : PluginCommand(
         if (args.size == 1) {
             val subs = listOf("board", "start", "stop", "reset", "refresh", "time", "status")
             return subs.filter { it.startsWith(args[0].lowercase()) }
+        }
+        if (args[0].lowercase() == "refresh" && args.size == 2) {
+            return GameDifficulty.entries.map { it.name.lowercase() }
+                .filter { it.startsWith(args[1].lowercase()) }
         }
         if (args[0].lowercase() == "time") {
             return when (args.size) {
@@ -87,6 +92,27 @@ class BingoCommand : PluginCommand(
             return true
         }
         val result = action()
+        sendMsg(sender, result.message)
+        return true
+    }
+
+    private fun handleRefresh(sender: CommandSender, args: Array<out String>): Boolean {
+        if (!sender.hasPermission("tribingo.bingo.manage")) {
+            sendMsg(sender, "<red>You don't have permission to use this sub-command.")
+            return true
+        }
+        val difficulty = if (args.size >= 2) {
+            val parsed = runCatching { GameDifficulty.valueOf(args[1].uppercase()) }.getOrNull()
+            if (parsed == null) {
+                val valid = GameDifficulty.entries.joinToString(", ") { it.name.lowercase() }
+                sendMsg(sender, "<red>Unknown difficulty '${args[1]}'. Valid options: $valid")
+                return true
+            }
+            parsed
+        } else {
+            null
+        }
+        val result = BingoActions.refreshBoard(difficulty)
         sendMsg(sender, result.message)
         return true
     }

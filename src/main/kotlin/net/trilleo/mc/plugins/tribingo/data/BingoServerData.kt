@@ -35,6 +35,7 @@ class BingoServerData : ServerData() {
     companion object {
         private const val KEY_BOARD_SIZE = "bingo_board_size"
         private const val KEY_GAME_STATE = "bingo_game_state"
+        private const val KEY_GAME_DIFFICULTY = "bingo_game_difficulty"
         private const val KEY_BOARD_LAYOUT = "bingo_board_layout"
         private const val KEY_PLAYER_STATES = "bingo_player_states"
         private const val KEY_TIMER_SECONDS = "bingo_timer_seconds"
@@ -83,6 +84,11 @@ class BingoServerData : ServerData() {
     var gameStateName: String
         get() = getString(KEY_GAME_STATE, GameState.INACTIVE.name)
         set(value) = set(KEY_GAME_STATE, value)
+
+    /** Serialised [net.trilleo.mc.plugins.tribingo.enums.GameDifficulty] name of the persisted game. */
+    var gameDifficultyName: String
+        get() = getString(KEY_GAME_DIFFICULTY, "MEDIUM")
+        set(value) = set(KEY_GAME_DIFFICULTY, value)
 
     /**
      * Ordered list of objective IDs matching the flat cell layout of the board.
@@ -209,6 +215,7 @@ class BingoServerData : ServerData() {
     fun clearGameData() {
         remove(KEY_BOARD_SIZE)
         remove(KEY_GAME_STATE)
+        remove(KEY_GAME_DIFFICULTY)
         remove(KEY_BOARD_LAYOUT)
         remove(KEY_PLAYER_STATES)
     }

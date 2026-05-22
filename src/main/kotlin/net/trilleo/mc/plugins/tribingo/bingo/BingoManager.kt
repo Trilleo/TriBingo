@@ -10,8 +10,10 @@ import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.remainingSeconds
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.resetGame
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.save
 import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry
+import net.trilleo.mc.plugins.tribingo.bingo.randomizer.BoardRandomizerRegistry
 import net.trilleo.mc.plugins.tribingo.data.BingoServerData
 import net.trilleo.mc.plugins.tribingo.data.ServerDataManager
+import net.trilleo.mc.plugins.tribingo.enums.GameDifficulty
 import net.trilleo.mc.plugins.tribingo.enums.GameState
 import net.trilleo.mc.plugins.tribingo.guis.BingoBoardGUI
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
@@ -128,6 +130,7 @@ object BingoManager {
 
         data.boardSize = game.board.size
         data.gameStateName = game.state.name
+        data.gameDifficultyName = game.difficulty.name
         data.boardLayout = game.board.cells.map { it.objective.id }
         data.savePlayerStates(game.playerStates)
     }
@@ -167,13 +170,14 @@ object BingoManager {
     // ── Game management ───────────────────────────────────────────────────
 
     /**
-     * Creates a new [BingoGame] with a randomly-selected set of objectives
-     * drawn from [BingoObjectiveRegistry], replacing any existing game.
+     * Creates a new [BingoGame] with objectives selected and placed according
+     * to the [BoardRandomizerRegistry] strategy for the given [gameDifficulty].
      *
+     * @param gameDifficulty the desired game difficulty (defaults to [GameDifficulty.MEDIUM])
      * @return the newly created game
      * @throws IllegalStateException if the registry doesn't have enough objectives
      */
-    fun newGame(): BingoGame {
+    fun newGame(gameDifficulty: GameDifficulty = GameDifficulty.MEDIUM): BingoGame {
         val objectives = BingoObjectiveRegistry.getAll()
         val needed = BingoBoard.SIZE * BingoBoard.SIZE
         check(objectives.size >= needed) {
@@ -181,14 +185,19 @@ object BingoManager {
                     "only ${objectives.size} are registered"
         }
 
-        val cells = objectives.shuffled()
-            .take(needed)
-            .mapIndexed { i, obj -> BingoCell(i, obj) }
+        val randomizer = BoardRandomizerRegistry.get(gameDifficulty)
+        val arranged = if (randomizer != null) {
+            randomizer.randomize(objectives)
+        } else {
+            objectives.shuffled().take(needed)
+        }
+
+        val cells = arranged.mapIndexed { i, obj -> BingoCell(i, obj) }
         val board = BingoBoard(cells)
-        val game = BingoGame(board, plugin)
+        val game = BingoGame(board, plugin, gameDifficulty)
         currentGame = game
 
-        plugin.logger.info("[BingoManager] Created new ${BingoBoard.SIZE}×${BingoBoard.SIZE} game")
+        plugin.logger.info("[BingoManager] Created new ${BingoBoard.SIZE}×${BingoBoard.SIZE} game (difficulty=${gameDifficulty})")
         return game
     }
 
@@ -489,7 +498,9 @@ object BingoManager {
             plugin.logger.warning(
                 "[BingoManager] Saved game was ACTIVE (server stopped mid-game); resetting to INACTIVE"
             )
-            val game = BingoGame(board, plugin, GameState.INACTIVE)
+            val savedDifficulty = runCatching { GameDifficulty.valueOf(data.gameDifficultyName) }
+                .getOrDefault(GameDifficulty.MEDIUM)
+            val game = BingoGame(board, plugin, savedDifficulty, GameState.INACTIVE)
             currentGame = game
             plugin.logger.info(
                 "[BingoManager] Rehydrated ${BingoBoard.SIZE}×${BingoBoard.SIZE} game (state=INACTIVE, reset from ACTIVE)"
@@ -497,7 +508,9 @@ object BingoManager {
             return true
         }
 
-        val game = BingoGame(board, plugin, savedState)
+        val savedDifficulty = runCatching { GameDifficulty.valueOf(data.gameDifficultyName) }
+            .getOrDefault(GameDifficulty.MEDIUM)
+        val game = BingoGame(board, plugin, savedDifficulty, savedState)
 
         data.loadPlayerStates().forEach { (uuid, saved) ->
             val ps = game.getOrCreateState(uuid)

@@ -2,6 +2,7 @@ package net.trilleo.mc.plugins.tribingo.commands.bingo
 
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
 import net.trilleo.mc.plugins.tribingo.commands.bingo.BingoActions.resetGame
+import net.trilleo.mc.plugins.tribingo.enums.GameDifficulty
 import net.trilleo.mc.plugins.tribingo.enums.GameState
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
 import org.bukkit.entity.Player
@@ -105,15 +106,19 @@ object BingoActions {
      * Picks a new random set of objectives and rebuilds the board.
      *
      * The game must be in [GameState.INACTIVE]; call [resetGame] first if needed.
+     * If a [gameDifficulty] is provided, the game's difficulty is updated before
+     * refreshing; otherwise the current difficulty is preserved.
      *
+     * @param gameDifficulty optional difficulty override for the game
      * @return [ActionResult] indicating success or the reason for failure
      */
-    fun refreshBoard(): ActionResult {
+    fun refreshBoard(gameDifficulty: GameDifficulty? = null): ActionResult {
         val game = BingoManager.currentGame
         if (game == null) {
-            val result = runCatching { BingoManager.newGame() }
+            val difficulty = gameDifficulty ?: GameDifficulty.MEDIUM
+            val result = runCatching { BingoManager.newGame(difficulty) }
             return if (result.isSuccess) {
-                ActionResult(true, "<green>New 5×5 board created.")
+                ActionResult(true, "<green>New 5×5 board created (difficulty: ${difficulty.name}).")
             } else {
                 ActionResult(
                     false,
@@ -127,9 +132,12 @@ object BingoActions {
                 "<red>The board can only be refreshed when the game is INACTIVE. Use /bingo reset first."
             )
         }
+        if (gameDifficulty != null) {
+            game.difficulty = gameDifficulty
+        }
         val result = runCatching { BingoManager.refreshBoard() }
         return if (result.isSuccess) {
-            ActionResult(true, "<green>Board objectives have been refreshed.")
+            ActionResult(true, "<green>Board objectives have been refreshed (difficulty: ${game.difficulty.name}).")
         } else {
             ActionResult(false, "<red>Refresh failed: ${result.exceptionOrNull()?.message ?: "unknown error"}")
         }
@@ -149,6 +157,7 @@ object BingoActions {
         val lines = listOf(
             "<gold>── Bingo Status ──",
             "<gray>Board size: <white>${game.board.size}×${game.board.size}",
+            "<gray>Difficulty: <white>${game.difficulty.name}",
             "<gray>State: <white>${game.state}",
             "<gray>Objectives loaded: <white>${game.board.cells.size}",
             "<gray>Active players: <white>${game.playerStates.size}",
