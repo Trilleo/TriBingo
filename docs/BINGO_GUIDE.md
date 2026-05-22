@@ -1,8 +1,8 @@
 # TriBingo - Bingo System Guide
 
-This guide documents every aspect of the Bingo system: its architecture, game lifecycle, objective model,
-persistence layer, configuration, commands, and GUI. It is intended for developers who want to understand,
-extend, or maintain the system.
+This guide documents every aspect of the Bingo system: its architecture, game lifecycle, objective model, persistence
+layer, configuration, commands, and GUI. It is intended for developers who want to understand, extend, or maintain the
+system.
 
 ---
 
@@ -250,8 +250,8 @@ Per-player mutable state for a single game session. Keyed by player `UUID`.
 
 **Package:** `net.trilleo.mc.plugins.tribingo.bingo`
 
-Abstract base class for every bingo objective. Extend this class when the objective does not rely on a
-Bukkit event (e.g. a snapshot check). For event-driven objectives, extend `EventBingoObjective` instead.
+Abstract base class for every bingo objective. Extend this class when the objective does not rely on a Bukkit event
+(e.g. a snapshot check). For event-driven objectives, extend `EventBingoObjective` instead.
 
 **Constructor parameters:**
 
@@ -286,8 +286,8 @@ Bukkit event (e.g. a snapshot check). For event-driven objectives, extend `Event
 
 **Package:** `net.trilleo.mc.plugins.tribingo.bingo`
 
-Abstract subclass of `BingoObjective` that also implements Bukkit's `Listener`. Use this for any objective
-that tracks a Bukkit event (entity deaths, block breaks, crafting, etc.).
+Abstract subclass of `BingoObjective` that also implements Bukkit's `Listener`. Use this for any objective that tracks a
+Bukkit event (entity deaths, block breaks, crafting, etc.).
 
 **Constructor parameters** (in addition to those inherited from `BingoObjective`):
 
@@ -295,8 +295,8 @@ that tracks a Bukkit event (entity deaths, block breaks, crafting, etc.).
 |:-------------|:-----------|:-------------------------------------------------|
 | `eventClass` | `Class<T>` | The Bukkit event class this objective listens to |
 
-`BingoObjectiveRegistry.register` automatically calls `registerEvents` for every `EventBingoObjective`, so
-no manual listener registration is needed.
+`BingoObjectiveRegistry.register` automatically calls `registerEvents` for every `EventBingoObjective`, so no manual
+listener registration is needed.
 
 **Abstract method:**
 
@@ -345,13 +345,12 @@ class MyObjective : EventBingoObjective<SomeBukkitEvent>(
 
 **Package:** `net.trilleo.mc.plugins.tribingo.bingo`
 
-Abstract subclass of `BingoObjective` that also implements Bukkit's `Listener`. Use this when an objective
-must listen to **more than one Bukkit event type** simultaneously (e.g. tracking which weapon last hit an
-entity on `EntityDamageByEntityEvent`, then detecting the kill on `EntityDeathEvent`).
+Abstract subclass of `BingoObjective` that also implements Bukkit's `Listener`. Use this when an objective must listen
+to **more than one Bukkit event type** simultaneously (e.g. tracking which weapon last hit an entity on
+`EntityDamageByEntityEvent`, then detecting the kill on `EntityDeathEvent`).
 
-Unlike `EventBingoObjective<T>`, this class has no generic parameter — add as many `@EventHandler`-annotated
-methods as needed. The registry registers every `MultiEventBingoObjective` as a Bukkit event listener
-automatically.
+Unlike `EventBingoObjective<T>`, this class has no generic parameter — add as many `@EventHandler`-annotated methods as
+needed. The registry registers every `MultiEventBingoObjective` as a Bukkit event listener automatically.
 
 ```kotlin
 @CustomObjective
@@ -374,16 +373,16 @@ class MyMultiEventObjective : MultiEventBingoObjective(
 
 **Package:** `net.trilleo.mc.plugins.tribingo.bingo`
 
-A helper base class for objectives that require a fixed sequence of named steps to be completed
-**in order**. Extends `BingoObjective` and implements `Listener`.
+A helper base class for objectives that require a fixed sequence of named steps to be completed **in order**. Extends
+`BingoObjective` and implements `Listener`.
 
-Declare the ordered step tokens in the `steps` constructor parameter. From within `@EventHandler` methods,
-call `advanceStep(state, step)` — the method records the step only if it is the next expected one and
-returns `true` when the final step is reached (signal to call `BingoManager.checkCompletion`). Call
+Declare the ordered step tokens in the `steps` constructor parameter. From within `@EventHandler` methods, call
+`advanceStep(state, step)` — the method records the step only if it is the next expected one and returns `true` when the
+final step is reached (signal to call `BingoManager.checkCompletion`). Call
 `hasStep(state, step)` to guard handlers that should only fire after a prior step is complete.
 
-`isCompletedBy` and `onReset` are already implemented by this class; do not override them unless you need
-additional behaviour.
+`isCompletedBy` and `onReset` are already implemented by this class; do not override them unless you need additional
+behaviour.
 
 | Method / Property                       | Description                                                                              |
 |:----------------------------------------|:-----------------------------------------------------------------------------------------|
@@ -440,20 +439,18 @@ In-memory registry of all available `BingoObjective` instances. Objectives are s
 
 **Package:** `net.trilleo.mc.plugins.tribingo.bingo.registry`
 
-Discovers and registers code objectives — concrete `BingoObjective` subclasses
-annotated with `@CustomObjective` — from one or more designated packages.
+Discovers and registers code objectives — concrete `BingoObjective` subclasses annotated with `@CustomObjective` — from
+one or more designated packages.
 
 | Method                                    | Description                                                                                  |
 |:------------------------------------------|:---------------------------------------------------------------------------------------------|
 | `load(plugin, registry, vararg packages)` | Scans the given packages, instantiates annotated classes, and registers them with `registry` |
 
 The default package scanned by `Main.onEnable` is
-`net.trilleo.mc.plugins.tribingo.bingo.custom`. For each class the loader
-tries a companion `BingoObjectiveFactory` first, then a no-arg constructor.
-Classes that satisfy neither are skipped with a warning.
+`net.trilleo.mc.plugins.tribingo.bingo.custom`. For each class the loader tries a companion `BingoObjectiveFactory`
+first, then a no-arg constructor. Classes that satisfy neither are skipped with a warning.
 
-See [Writing a Code Objective](#writing-a-code-objective) for full usage
-documentation and worked examples.
+See [Writing a Code Objective](#writing-a-code-objective) for full usage documentation and worked examples.
 
 ---
 
@@ -461,8 +458,8 @@ documentation and worked examples.
 
 **Package:** `net.trilleo.mc.plugins.tribingo.bingo.registry`
 
-Loads user-defined objectives from `bingo_objectives.yml` in the plugin's data folder and registers them
-with `BingoObjectiveRegistry`.
+Loads user-defined objectives from `bingo_objectives.yml` in the plugin's data folder and registers them with
+`BingoObjectiveRegistry`.
 
 | Method                               | Description                                                                                 |
 |:-------------------------------------|:--------------------------------------------------------------------------------------------|
@@ -487,8 +484,8 @@ YamlObjectiveLoader.registerTypeHandler("my_type") { entry ->
 
 ### bingo_objectives.yml Format
 
-Located at `<server>/plugins/TriBingo/bingo_objectives.yml`. The file is created from the bundled default
-on the first run and is **not** overwritten on subsequent starts.
+Located at `<server>/plugins/TriBingo/bingo_objectives.yml`. The file is created from the bundled default on the first
+run and is **not** overwritten on subsequent starts.
 
 **Top-level structure:**
 
@@ -578,9 +575,9 @@ Extends `ServerData` to persist the active game to `serverdata.json` via `Server
 }
 ```
 
-**Rehydration:** On `BingoManager.init`, the system reads `boardSize` and `boardLayout`, looks up each
-objective ID in the registry, reconstructs the `BingoBoard` and `BingoGame`, then loads player states.
-If any objective ID is missing from the registry, rehydration is aborted and a warning is logged.
+**Rehydration:** On `BingoManager.init`, the system reads `boardSize` and `boardLayout`, looks up each objective ID in
+the registry, reconstructs the `BingoBoard` and `BingoGame`, then loads player states. If any objective ID is missing
+from the registry, rehydration is aborted and a warning is logged.
 
 ---
 
@@ -607,25 +604,26 @@ bingo:
 
 ## Board Randomizer
 
-The board randomizer system controls how objectives are selected and placed on the board based on the
-game's difficulty. Each `GameDifficulty` (defined in `net.trilleo.mc.plugins.tribingo.enums.GameDifficulty`)
+The board randomizer system controls how objectives are selected and placed on the board based on the game's difficulty.
+Each `GameDifficulty` (defined in `net.trilleo.mc.plugins.tribingo.enums.GameDifficulty`)
 maps to a `BoardRandomizer` implementation via the `BoardRandomizerRegistry`.
 
 ### Game Difficulty vs Objective Difficulty
 
 - **`GameDifficulty`** (`EASY`, `MEDIUM`, `HARD`): Set per-game; determines which randomizer strategy is used.
-- **`Difficulty`** (`EASY`, `MEDIUM`, `HARD`, `INSANE`): Set per-objective; describes how challenging a single objective is.
+- **`Difficulty`** (`EASY`, `MEDIUM`, `HARD`, `INSANE`): Set per-objective; describes how challenging a single objective
+  is.
 
 ### Built-in Randomizers
 
-| Game Difficulty | Randomizer Class         | Distribution (approx.)                                | Constraints                                          |
-|:----------------|:-------------------------|:------------------------------------------------------|:-----------------------------------------------------|
-| `EASY`          | `EasyBoardRandomizer`    | 60% easy, 30% medium, 10% hard, 0% insane            | None                                                 |
-| `MEDIUM`        | `MediumBoardRandomizer`  | 30% easy, 40% medium, 25% hard, 5% insane (~1 cell)  | None                                                 |
-| `HARD`          | `HardBoardRandomizer`    | 10% easy, 25% medium, 45% hard, 20% insane (~5 cells)| Each diagonal guaranteed ≥1 insane objective         |
+| Game Difficulty | Randomizer Class        | Distribution (approx.)                                | Constraints                                  |
+|:----------------|:------------------------|:------------------------------------------------------|:---------------------------------------------|
+| `EASY`          | `EasyBoardRandomizer`   | 60% easy, 30% medium, 10% hard, 0% insane             | None                                         |
+| `MEDIUM`        | `MediumBoardRandomizer` | 30% easy, 40% medium, 25% hard, 5% insane (~1 cell)   | None                                         |
+| `HARD`          | `HardBoardRandomizer`   | 10% easy, 25% medium, 45% hard, 20% insane (~5 cells) | Each diagonal guaranteed ≥1 insane objective |
 
-All randomizers fall back gracefully when insufficient objectives of a target difficulty exist — they
-draw from adjacent difficulty pools rather than failing.
+All randomizers fall back gracefully when insufficient objectives of a target difficulty exist — they draw from adjacent
+difficulty pools rather than failing.
 
 ### Adding a New Game Difficulty
 
@@ -639,12 +637,14 @@ draw from adjacent difficulty pools rather than failing.
 ### Changing Randomizer Logic
 
 To change the randomization behaviour for an existing difficulty, either:
+
 - Replace the registered randomizer: `BoardRandomizerRegistry.register(GameDifficulty.HARD, MyCustomHardRandomizer())`
 - Or modify the existing randomizer class directly.
 
 ### Usage
 
 Players with `tribingo.bingo.manage` permission can specify difficulty when refreshing:
+
 ```
 /bingo refresh easy
 /bingo refresh medium
@@ -661,15 +661,15 @@ Bingo commands are available as the standalone `/bingo` command, dispatched thro
 
 ### `/bingo <sub-command>`
 
-| Sub-command        | Permission              | Who can use | Description                                                                           |
-|:-------------------|:------------------------|:------------|:--------------------------------------------------------------------------------------|
-| `board`            | *(none)*                | Players     | Opens the `BingoBoardGUI` for the sender                                              |
-| `start`            | `tribingo.bingo.manage` | Any sender  | Starts the current game (must be `INACTIVE`); also starts the countdown               |
-| `stop`             | `tribingo.bingo.manage` | Any sender  | Ends the current game without a winner (must be `ACTIVE`); cancels the countdown      |
-| `reset`            | `tribingo.bingo.manage` | Any sender  | Resets all player progress; transitions game back to `INACTIVE`                       |
+| Sub-command            | Permission              | Who can use | Description                                                                                                           |
+|:-----------------------|:------------------------|:------------|:----------------------------------------------------------------------------------------------------------------------|
+| `board`                | *(none)*                | Players     | Opens the `BingoBoardGUI` for the sender                                                                              |
+| `start`                | `tribingo.bingo.manage` | Any sender  | Starts the current game (must be `INACTIVE`); also starts the countdown                                               |
+| `stop`                 | `tribingo.bingo.manage` | Any sender  | Ends the current game without a winner (must be `ACTIVE`); cancels the countdown                                      |
+| `reset`                | `tribingo.bingo.manage` | Any sender  | Resets all player progress; transitions game back to `INACTIVE`                                                       |
 | `refresh [difficulty]` | `tribingo.bingo.manage` | Any sender  | Picks new random objectives for the current board (must be `INACTIVE`). Optional difficulty: `easy`, `medium`, `hard` |
-| `time <h> <m> <s>` | `tribingo.bingo.manage` | Any sender  | Sets the countdown duration (hours, minutes, seconds); stored in server data          |
-| `status`           | *(none)*                | Any sender  | Shows board size, game state, number of objectives, active players, and timer setting |
+| `time <h> <m> <s>`     | `tribingo.bingo.manage` | Any sender  | Sets the countdown duration (hours, minutes, seconds); stored in server data                                          |
+| `status`               | *(none)*                | Any sender  | Shows board size, game state, number of objectives, active players, and timer setting                                 |
 
 Tab-completion is supported: typing `/bingo ` shows all sub-commands; typing `/bingo time ` shows example values.
 
@@ -677,21 +677,21 @@ Tab-completion is supported: typing `/bingo ` shows all sub-commands; typing `/b
 
 ## Countdown
 
-When a game starts (via `/bingo start`), a server-wide countdown begins. The remaining time is sent to
-**every online player** as an action bar message once per second in the format `⏱ Bingo: MM:SS` (or
+When a game starts (via `/bingo start`), a server-wide countdown begins. The remaining time is sent to **every online
+player** as an action bar message once per second in the format `⏱ Bingo: MM:SS` (or
 `HH:MM:SS` when hours remain). Players who join mid-game will see the countdown on the next tick.
 
 ### Timer setting
 
-The countdown duration is stored in `serverdata.json` under the key `bingo_timer_seconds` and defaults to
-**3 600 seconds (1 hour)**. Change it with:
+The countdown duration is stored in `serverdata.json` under the key `bingo_timer_seconds` and defaults to **3 600
+seconds (1 hour)**. Change it with:
 
 ```
 /bingo time <hours> <minutes> <seconds>
 ```
 
-For example, `/bingo time 0 30 0` sets the timer to 30 minutes. The setting persists across server restarts
-and cannot be changed while a game is active.
+For example, `/bingo time 0 30 0` sets the timer to 30 minutes. The setting persists across server restarts and cannot
+be changed while a game is active.
 
 ### Timer expiry
 
@@ -701,13 +701,13 @@ When the countdown reaches zero, `BingoManager.onTimerExpired` is called:
 2. If multiple players have the same top score, the first one returned by the state map is used.
 3. If no player has accumulated any points, the game ends without a winner.
 
-The winner broadcast uses `BingoGame.end(winner, winnerPoints, winnerName)`. The `winnerName` fallback
-ensures the announcement works even when the top scorer is offline at the moment the timer expires.
+The winner broadcast uses `BingoGame.end(winner, winnerPoints, winnerName)`. The `winnerName` fallback ensures the
+announcement works even when the top scorer is offline at the moment the timer expires.
 
 ### Server stop during active game
 
-If the server is stopped while a game is `ACTIVE`, `BingoManager.save()` clears the game data rather than
-persisting the interrupted state. On the next server start, `BingoManager.init` creates a fresh `INACTIVE`
+If the server is stopped while a game is `ACTIVE`, `BingoManager.save()` clears the game data rather than persisting the
+interrupted state. On the next server start, `BingoManager.init` creates a fresh `INACTIVE`
 game instead of rehydrating the stale one.
 
 ---
@@ -721,8 +721,8 @@ Opened with `/bingo board` (players only) or via `GUIManager.open(player, "bingo
 
 ### Layout
 
-The board is centred within a 6-row (54-slot) double-chest inventory. All unoccupied slots are filled with
-dark glass panes.
+The board is centred within a 6-row (54-slot) double-chest inventory. All unoccupied slots are filled with dark glass
+panes.
 
 ```
 vertPad  = (6 - N) / 2    // rows above the board
@@ -742,8 +742,8 @@ Each cell is rendered by `BingoObjective.displayItem(player, completed)`:
 
 ### Interaction
 
-Clicking a cell sends the objective's name, description, and completion status to the player in chat.
-All inventory clicks are cancelled to prevent item theft.
+Clicking a cell sends the objective's name, description, and completion status to the player in chat. All inventory
+clicks are cancelled to prevent item theft.
 
 ### Live Updates
 
@@ -812,8 +812,8 @@ BingoManager.init(plugin)
 
 ### Step 3 — (Optional) Add a YAML type handler
 
-If you want server operators to configure multiple variants of your objective from `bingo_objectives.yml`,
-register a type handler **before** `YamlObjectiveLoader.load`:
+If you want server operators to configure multiple variants of your objective from `bingo_objectives.yml`, register a
+type handler **before** `YamlObjectiveLoader.load`:
 
 ```kotlin
 YamlObjectiveLoader.registerTypeHandler("sleep_in_bed") { entry ->
@@ -830,16 +830,13 @@ YamlObjectiveLoader.registerTypeHandler("sleep_in_bed") { entry ->
 
 ## Writing a Code Objective
 
-Code objectives are Kotlin classes that live inside the plugin JAR and are
-discovered automatically at startup. They behave identically to YAML-loaded
-objectives from the perspective of the board, the GUI, and the persistence
-layer — the only difference is that their completion logic is written in
-Kotlin rather than configured in `bingo_objectives.yml`.
+Code objectives are Kotlin classes that live inside the plugin JAR and are discovered automatically at startup. They
+behave identically to YAML-loaded objectives from the perspective of the board, the GUI, and the persistence layer — the
+only difference is that their completion logic is written in Kotlin rather than configured in `bingo_objectives.yml`.
 
 Use code objectives when you need behaviour that YAML types cannot express:
-tracking which weapon was used, enforcing an ordered sequence of actions,
-listening to multiple event types at once, or maintaining complex per-player
-state.
+tracking which weapon was used, enforcing an ordered sequence of actions, listening to multiple event types at once, or
+maintaining complex per-player state.
 
 ---
 
@@ -847,13 +844,13 @@ state.
 
 1. Choose the right base class (see the table in the next section).
 2. Annotate the class with `@CustomObjective`.
-3. Place the class in `net.trilleo.mc.plugins.tribingo.bingo.custom` (or any
-   additional package you pass to `CodeObjectiveLoader.load`).
+3. Place the class in `net.trilleo.mc.plugins.tribingo.bingo.custom` (or any additional package you pass to
+   `CodeObjectiveLoader.load`).
 4. Provide a no-arg constructor **or** a companion object that implements
    `BingoObjectiveFactory`.
 
-That's it — `CodeObjectiveLoader` registers the objective automatically,
-including Bukkit event listener registration if applicable.
+That's it — `CodeObjectiveLoader` registers the objective automatically, including Bukkit event listener registration if
+applicable.
 
 ---
 
@@ -867,8 +864,7 @@ including Bukkit event listener registration if applicable.
 | `SequentialBingoObjective` | Must be completed by performing a fixed sequence of named steps in the correct order.  |
 
 All event-driven classes (`EventBingoObjective`, `MultiEventBingoObjective`,
-`SequentialBingoObjective`) implement Bukkit's `Listener`. The registry
-registers them as event listeners automatically.
+`SequentialBingoObjective`) implement Bukkit's `Listener`. The registry registers them as event listeners automatically.
 
 ---
 
@@ -876,8 +872,7 @@ registers them as event listeners automatically.
 
 `@CustomObjective` (in `net.trilleo.mc.plugins.tribingo.bingo.annotation`)
 marks a concrete `BingoObjective` subclass for auto-discovery by
-`CodeObjectiveLoader`. Classes without this annotation are ignored even if
-they are in the scanned package.
+`CodeObjectiveLoader`. Classes without this annotation are ignored even if they are in the scanned package.
 
 ```kotlin
 import net.trilleo.mc.plugins.tribingo.bingo.annotation.CustomObjective
@@ -890,8 +885,7 @@ class MySleepObjective : EventBingoObjective<PlayerBedEnterEvent>(...) { ... }
 
 ### Construction Strategies
 
-`CodeObjectiveLoader` instantiates each annotated class using one of two
-strategies (companion factory is tried first):
+`CodeObjectiveLoader` instantiates each annotated class using one of two strategies (companion factory is tried first):
 
 #### 1 — No-arg constructor (recommended for simple objectives)
 
@@ -927,10 +921,8 @@ class SleepObjective : EventBingoObjective<PlayerBedEnterEvent>(
 
 #### 2 — Companion factory (`BingoObjectiveFactory`)
 
-Use a companion object implementing `BingoObjectiveFactory` when the
-objective needs construction-time parameters that cannot be hardcoded (e.g.
-a `Material` constant, a count from a config value, or a reference to
-another service):
+Use a companion object implementing `BingoObjectiveFactory` when the objective needs construction-time parameters that
+cannot be hardcoded (e.g. a `Material` constant, a count from a config value, or a reference to another service):
 
 ```kotlin
 @CustomObjective
@@ -958,8 +950,7 @@ Beyond the integer `progressData` map inherited from `BingoObjective`,
 
 #### `stringData` — arbitrary string values
 
-Keyed by a compound `"objectiveId:fieldName"` string. Use the typed accessors
-rather than accessing the map directly.
+Keyed by a compound `"objectiveId:fieldName"` string. Use the typed accessors rather than accessing the map directly.
 
 | Method                                   | Description                                   |
 |:-----------------------------------------|:----------------------------------------------|
@@ -969,8 +960,8 @@ rather than accessing the map directly.
 
 #### `stepData` — ordered sets of completed step tokens
 
-Keyed by `objectiveId`. Each set is a `LinkedHashSet` that preserves
-insertion order, making it suitable for sequential objectives.
+Keyed by `objectiveId`. Each set is a `LinkedHashSet` that preserves insertion order, making it suitable for sequential
+objectives.
 
 | Method                                      | Description                                                           |
 |:--------------------------------------------|:----------------------------------------------------------------------|
@@ -979,9 +970,8 @@ insertion order, making it suitable for sequential objectives.
 | `hasStep(objectiveId, step): Boolean`       | Returns `true` when the step has already been recorded                |
 | `clearSteps(objectiveId)`                   | Removes all steps for the objective (call from `onReset`)             |
 
-All three stores (`progressData`, `stringData`, `stepData`) are serialised
-to `serverdata.json` and rehydrated on server restart, so progress survives
-restarts.
+All three stores (`progressData`, `stringData`, `stepData`) are serialised to `serverdata.json` and rehydrated on server
+restart, so progress survives restarts.
 
 ---
 
@@ -989,9 +979,8 @@ restarts.
 
 #### Example 1 — Kill a zombie with a sword (`MultiEventBingoObjective`)
 
-This objective must track two events: a damage event (to record which weapon
-hit the zombie last) and a death event (to check whether that weapon was a
-sword).
+This objective must track two events: a damage event (to record which weapon hit the zombie last) and a death event (to
+check whether that weapon was a sword).
 
 ```kotlin
 package net.trilleo.mc.plugins.tribingo.bingo.custom
@@ -1176,8 +1165,8 @@ class CraftPlaceCraftObjective : SequentialBingoObjective(
 
 ### Displaying Progress (`buildProgressItem`)
 
-Override `displayItem` and call `buildProgressItem` to add custom lore lines
-without duplicating the standard difficulty/description/completion layout:
+Override `displayItem` and call `buildProgressItem` to add custom lore lines without duplicating the standard
+difficulty/description/completion layout:
 
 ```kotlin
 override fun displayItem(player: Player, completed: Boolean): ItemStack {
@@ -1206,9 +1195,8 @@ When `completed` is `true` the progress lines are omitted and `"✓ Completed"` 
 
 ### Scanning Additional Packages
 
-`CodeObjectiveLoader.load` accepts a `vararg packageNames` parameter. Specify
-additional packages in `Main.onEnable` if your objectives are spread across
-multiple locations:
+`CodeObjectiveLoader.load` accepts a `vararg packageNames` parameter. Specify additional packages in `Main.onEnable` if
+your objectives are spread across multiple locations:
 
 ```kotlin
 CodeObjectiveLoader.load(this, BingoObjectiveRegistry,

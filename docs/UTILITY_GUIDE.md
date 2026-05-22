@@ -17,11 +17,11 @@ reduce boilerplate and provide commonly needed functionality out of the box.
 
 ## ItemStack Builder DSL
 
-Building `ItemStack` instances with custom names, lore, enchantments, and flags normally requires verbose
-boilerplate. The `itemStack` DSL in `net.trilleo.mc.plugins.trihunt.utils` lets you create fully configured items in a
-single expression. All text is parsed through
-[MiniMessage](https://docs.advntr.dev/minimessage/index.html), so rich formatting tags like `<bold>`, `<red>`,
-and `<gradient>` work out of the box.
+Building `ItemStack` instances with custom names, lore, enchantments, and flags normally requires verbose boilerplate.
+The `itemStack` DSL in `net.trilleo.mc.plugins.trihunt.utils` lets you create fully configured items in a single
+expression. All text is parsed through
+[MiniMessage](https://docs.advntr.dev/minimessage/index.html), so rich formatting tags like `<bold>`, `<red>`, and
+`<gradient>` work out of the box.
 
 ### Before (vanilla API)
 
@@ -73,8 +73,7 @@ val item = itemStack(Material.DIAMOND_SWORD) {
 ### Escape Hatch Example
 
 For advanced use-cases not covered by the builder methods, the `meta` block gives you direct access to the
-`ItemMeta`. Any changes made inside `meta` are applied **after** all other builder properties, so they take
-precedence:
+`ItemMeta`. Any changes made inside `meta` are applied **after** all other builder properties, so they take precedence:
 
 ```kotlin
 import net.trilleo.mc.plugins.trihunt.utils.itemStack
@@ -95,8 +94,8 @@ val head = itemStack(Material.PLAYER_HEAD) {
 
 `CountdownUtil` runs a per-player countdown and displays the progress through a configurable
 `DisplayLocation` (see the [Developer Guide](DEVELOPER_GUIDE.md#displaylocation) for all values). It schedules a
-repeating sync task that ticks every second, shows an
-optional message on each tick, and fires an optional finish message and callback when the countdown reaches zero.
+repeating sync task that ticks every second, shows an optional message on each tick, and fires an optional finish
+message and callback when the countdown reaches zero.
 
 ### Usage
 
@@ -186,10 +185,9 @@ CountdownUtil().start(
 ## TeamUtil
 
 `TeamUtil` manages custom teams with persistent, server-wide state backed by
-[`ServerDataManager`](DEVELOPER_GUIDE.md#server-data). Each player may belong
-to **at most one team** at a time — calling `addPlayer` when a player is already
-in another team removes them from that team first. All changes are written into
-the server-data JSON immediately, so they are flushed to disk when
+[`ServerDataManager`](DEVELOPER_GUIDE.md#server-data). Each player may belong to **at most one team** at a time —
+calling `addPlayer` when a player is already in another team removes them from that team first. All changes are written
+into the server-data JSON immediately, so they are flushed to disk when
 `ServerDataManager.save()` is called in `JavaPlugin.onDisable`.
 
 ### Usage
@@ -253,8 +251,7 @@ All name lookups are **case-insensitive**. The stored key is always lowercase.
 
 ### Team Instance Methods
 
-Once you have a `Team` reference (from `getTeam` or `getPlayerTeam`), you can
-use these methods directly on it:
+Once you have a `Team` reference (from `getTeam` or `getPlayerTeam`), you can use these methods directly on it:
 
 | Method               | Return              | Description                                        |
 |:---------------------|:--------------------|:---------------------------------------------------|
@@ -268,9 +265,8 @@ use these methods directly on it:
 
 ### Cache
 
-`TeamUtil` loads team data lazily on the first access after plugin startup. If
-you modify the underlying `ServerData` JSON directly (outside of `TeamUtil`),
-call `TeamUtil.invalidateCache()` to force a fresh load on the next access.
+`TeamUtil` loads team data lazily on the first access after plugin startup. If you modify the underlying `ServerData`
+JSON directly (outside of `TeamUtil`), call `TeamUtil.invalidateCache()` to force a fresh load on the next access.
 
 ### Example (Game Setup)
 
@@ -301,10 +297,10 @@ fun endGame() {
 
 ## TagUtil
 
-`TagUtil` manages an arbitrary set of string tags for each player. Tag data is
-stored inside each player's individual [`PlayerDataManager`](DEVELOPER_GUIDE.md#player-data)
-file under the key `"tags"`, so tags are automatically loaded when the player
-joins and saved when they quit — no explicit setup is required.
+`TagUtil` manages an arbitrary set of string tags for each player. Tag data is stored inside each player's individual [
+`PlayerDataManager`](DEVELOPER_GUIDE.md#player-data)
+file under the key `"tags"`, so tags are automatically loaded when the player joins and saved when they quit — no
+explicit setup is required.
 
 ### Usage
 
@@ -341,8 +337,8 @@ Tags are **case-sensitive** — `"VIP"` and `"vip"` are treated as distinct valu
 
 ### Persistence
 
-Tags are written into the player's `PlayerData` JSON on every mutating call.
-They are flushed to disk when the player quits or when `PlayerDataManager.saveAll()`
+Tags are written into the player's `PlayerData` JSON on every mutating call. They are flushed to disk when the player
+quits or when `PlayerDataManager.saveAll()`
 is called during `JavaPlugin.onDisable`. No extra save call is needed.
 
 ### Example (Permission Gate)
@@ -364,11 +360,11 @@ fun onEnterVipArea(player: Player) {
 
 ## MessageUtil
 
-`MessageUtil` sends prefix-decorated messages to players. The prefix is
-read from `config.yml` under the `message-prefix` key and supports both plain text and
-[MiniMessage](https://docs.advntr.dev/minimessage/index.html) formatting. The plugin
-initialises `MessageUtil` automatically at startup and after every `/tribingo reload`,
-so no manual setup is required in your own commands or listeners.
+`MessageUtil` sends prefix-decorated messages to players. The prefix is read from `config.yml` under the
+`message-prefix` key and supports both plain text and
+[MiniMessage](https://docs.advntr.dev/minimessage/index.html) formatting. The plugin initialises `MessageUtil`
+automatically at startup and after every `/tribingo reload`, so no manual setup is required in your own commands or
+listeners.
 
 ### Configuration
 
@@ -434,10 +430,9 @@ class JoinListener : Listener {
 [PersistentDataContainer](https://jd.papermc.io/paper/1.21/org/bukkit/persistence/PersistentDataContainer.html)s
 attached to `Entity`, `Chunk`, and `ItemStack` instances.
 
-Both `Entity` and `Chunk` implement `PersistentDataHolder` directly, so a single
-set of methods covers both. `ItemStack` requires special handling because its PDC
-lives inside its `ItemMeta`; `PDCUtil` takes care of reading and writing the meta
-automatically.
+Both `Entity` and `Chunk` implement `PersistentDataHolder` directly, so a single set of methods covers both. `ItemStack`
+requires special handling because its PDC lives inside its `ItemMeta`; `PDCUtil` takes care of reading and writing the
+meta automatically.
 
 All `PDCUtil` operations for `ItemStack` that mutate data call `item.itemMeta = meta`
 immediately so the item is always consistent after the call.
@@ -516,8 +511,8 @@ PDCUtil.keys(item)
 ### Usage (ItemStack DSL)
 
 PDC entries can be set directly inside the `itemStack` builder block using the
-`pdc` method, without needing a separate `PDCUtil.set` call after the item is
-built. PDC entries are applied **before** the `meta` escape-hatch block, so the
+`pdc` method, without needing a separate `PDCUtil.set` call after the item is built. PDC entries are applied **before**
+the `meta` escape-hatch block, so the
 `meta` block can still override them if needed.
 
 ```kotlin
@@ -538,8 +533,7 @@ val item = itemStack(Material.DIAMOND_SWORD) {
 
 ### Example (Custom Item Identity)
 
-A common use-case is marking items with a unique identifier so you can
-distinguish plugin items from regular ones:
+A common use-case is marking items with a unique identifier so you can distinguish plugin items from regular ones:
 
 ```kotlin
 import net.trilleo.mc.plugins.trihunt.utils.PDCUtil
@@ -568,12 +562,11 @@ fun isSpecialSword(player: Player): Boolean {
 
 ## GameRuleUtil
 
-`GameRuleUtil` provides convenient helpers for reading, writing, and toggling
-Minecraft game rules on any [World](https://jd.papermc.io/paper/1.21/org/bukkit/World.html).
-All game rules — both `Boolean` rules (e.g. `KEEP_INVENTORY`, `DO_DAYLIGHT_CYCLE`) and
-`Int` rules (e.g. `RANDOM_TICK_SPEED`) — are supported through a single generic
-API. The [toggle] method is a specialisation for boolean rules that flips the
-current value without requiring the caller to check it first.
+`GameRuleUtil` provides convenient helpers for reading, writing, and toggling Minecraft game rules on
+any [World](https://jd.papermc.io/paper/1.21/org/bukkit/World.html). All game rules — both `Boolean` rules (e.g.
+`KEEP_INVENTORY`, `DO_DAYLIGHT_CYCLE`) and
+`Int` rules (e.g. `RANDOM_TICK_SPEED`) — are supported through a single generic API. The [toggle] method is a
+specialisation for boolean rules that flips the current value without requiring the caller to check it first.
 
 ### Usage
 
