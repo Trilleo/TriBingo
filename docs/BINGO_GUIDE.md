@@ -358,10 +358,14 @@ class MyMultiEventObjective : MultiEventBingoObjective(
     id = "my_multi", name = ..., description = ..., difficulty = ...
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun onFirstEvent(event: FirstEvent) { ... }
+    fun onFirstEvent(event: FirstEvent) {
+        ...
+    }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    fun onSecondEvent(event: SecondEvent) { ... }
+    fun onSecondEvent(event: SecondEvent) {
+        ...
+    }
 
     override fun isCompletedBy(player: Player, state: BingoPlayerState): Boolean = ...
 }
@@ -894,11 +898,11 @@ Hardcode all parameters in the class body:
 ```kotlin
 @CustomObjective
 class SleepObjective : EventBingoObjective<PlayerBedEnterEvent>(
-    id          = "sleep_in_bed",
-    name        = Component.text("Good Night"),
+    id = "sleep_in_bed",
+    name = Component.text("Good Night"),
     description = Component.text("Sleep in a bed."),
-    difficulty  = Difficulty.EASY,
-    eventClass  = PlayerBedEnterEvent::class.java
+    difficulty = Difficulty.EASY,
+    eventClass = PlayerBedEnterEvent::class.java
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBedEnter(event: PlayerBedEnterEvent) {
@@ -929,10 +933,10 @@ cannot be hardcoded (e.g. a `Material` constant, a count from a config value, or
 class KillWithDiamondSwordObjective(
     private val requiredMaterial: Material
 ) : MultiEventBingoObjective(
-    id          = "kill_zombie_diamond_sword",
-    name        = Component.text("Diamond Slayer"),
+    id = "kill_zombie_diamond_sword",
+    name = Component.text("Diamond Slayer"),
     description = Component.text("Kill a zombie with a diamond sword."),
-    difficulty  = Difficulty.MEDIUM
+    difficulty = Difficulty.MEDIUM
 ) {
     companion object : BingoObjectiveFactory {
         override fun create() = KillWithDiamondSwordObjective(Material.DIAMOND_SWORD)
@@ -1002,10 +1006,10 @@ import java.util.UUID
 
 @CustomObjective
 class KillZombieWithSwordObjective : MultiEventBingoObjective(
-    id          = "kill_zombie_with_sword",
-    name        = Component.text("Undead Swordsman"),
+    id = "kill_zombie_with_sword",
+    name = Component.text("Undead Swordsman"),
     description = Component.text("Kill a zombie using any sword."),
-    difficulty  = Difficulty.MEDIUM
+    difficulty = Difficulty.MEDIUM
 ) {
     // Tracks whether the last hit on a given entity was with a sword
     private val lastHitWithSword = mutableSetOf<UUID>()
@@ -1067,10 +1071,10 @@ import org.bukkit.event.entity.EntityPortalEnterEvent
 
 @CustomObjective
 class DeliverPigToNetherObjective : MultiEventBingoObjective(
-    id          = "deliver_pig_nether",
-    name        = Component.text("Pork Express"),
+    id = "deliver_pig_nether",
+    name = Component.text("Pork Express"),
     description = Component.text("Push a pig through a Nether portal."),
-    difficulty  = Difficulty.HARD
+    difficulty = Difficulty.HARD
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPortalEnter(event: EntityPortalEnterEvent) {
@@ -1124,11 +1128,11 @@ import org.bukkit.event.inventory.CraftItemEvent
 
 @CustomObjective
 class CraftPlaceCraftObjective : SequentialBingoObjective(
-    id          = "craft_place_craft",
-    name        = Component.text("Crafty Crafter"),
+    id = "craft_place_craft",
+    name = Component.text("Crafty Crafter"),
     description = Component.text("Craft a crafting table, place it, then craft something on it."),
-    difficulty  = Difficulty.MEDIUM,
-    steps       = listOf("crafted_table", "placed_table", "crafted_on_table")
+    difficulty = Difficulty.MEDIUM,
+    steps = listOf("crafted_table", "placed_table", "crafted_on_table")
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onCraft(event: CraftItemEvent) {
@@ -1199,9 +1203,11 @@ When `completed` is `true` the progress lines are omitted and `"✓ Completed"` 
 your objectives are spread across multiple locations:
 
 ```kotlin
-CodeObjectiveLoader.load(this, BingoObjectiveRegistry,
+CodeObjectiveLoader.load(
+    this, BingoObjectiveRegistry,
     "net.trilleo.mc.plugins.tribingo.bingo.custom",
-    "com.example.myplugin.objectives")
+    "com.example.myplugin.objectives"
+)
 ```
 
 ---

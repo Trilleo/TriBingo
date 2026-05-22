@@ -1,6 +1,7 @@
 package net.trilleo.mc.plugins.tribingo
 
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
+import net.trilleo.mc.plugins.tribingo.bingo.ObjectiveTestManager
 import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry
 import net.trilleo.mc.plugins.tribingo.bingo.registry.CodeObjectiveLoader
 import net.trilleo.mc.plugins.tribingo.bingo.registry.YamlObjectiveLoader
@@ -57,6 +58,7 @@ class Main : JavaPlugin() {
         )
         YamlObjectiveLoader.load(this, BingoObjectiveRegistry)
         BingoManager.init(this)
+        ObjectiveTestManager.init(this)
 
         logger.info("Plugin enabled!")
     }
@@ -64,6 +66,9 @@ class Main : JavaPlugin() {
     override fun onDisable() {
         // Cancel all scheduled tasks
         TaskRegistrar.unregisterAll()
+
+        // Shutdown test manager
+        ObjectiveTestManager.shutdown()
 
         // Remove all registered recipes
         RecipeRegistrar.unregisterAll()

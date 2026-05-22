@@ -5,7 +5,6 @@ import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
 import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
-import net.trilleo.mc.plugins.tribingo.enums.GameState
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -43,9 +42,8 @@ class FishItemObjective(
             event.state == PlayerFishEvent.State.CAUGHT_FISH
         }
         if (!validState) return
-        val game = BingoManager.currentGame ?: return
-        if (game.state != GameState.ACTIVE) return
-        onEvent(event, event.player, game.getOrCreateState(event.player.uniqueId))
+        val state = BingoManager.getActiveState(event.player, id) ?: return
+        onEvent(event, event.player, state)
     }
 
     override fun onEvent(event: PlayerFishEvent, player: Player, state: BingoPlayerState) {
