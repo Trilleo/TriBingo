@@ -23,6 +23,13 @@ import org.bukkit.entity.Player
  * | `test <objective_id>`    | `tribingo.bingo.manage` | Tests an objective's completion checker |
  * | `test stop`              | `tribingo.bingo.manage` | Stops the current test session         |
  *
+ * ### Test Session Rules
+ * - A player can only have **one** active test session at a time. Starting a
+ *   new test requires stopping the previous one first.
+ * - The bingo game cannot be started while there are active test sessions.
+ * - Tab completion for `/bingo test` shows only registered objective IDs when
+ *   the player has no active test, or only `stop` when a test is active.
+ *
  * All game-logic is delegated to [BingoActions] so the same operations can
  * be wired to GUI buttons without duplicating code.
  */
@@ -72,8 +79,12 @@ class BingoCommand : PluginCommand(
             }
         }
         if (args[0].lowercase() == "test" && args.size == 2) {
-            val completions = mutableListOf("stop")
-            completions.addAll(BingoActions.getObjectiveIds())
+            val player = sender as? Player
+            val completions = if (player != null && BingoActions.isPlayerTesting(player)) {
+                listOf("stop")
+            } else {
+                BingoActions.getObjectiveIds()
+            }
             return completions.filter { it.startsWith(args[1].lowercase()) }
         }
         return emptyList()
