@@ -1,6 +1,8 @@
 package net.trilleo.mc.plugins.tribingo.commands.bingo
 
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
+import net.trilleo.mc.plugins.tribingo.bingo.ObjectiveTestManager
+import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry
 import net.trilleo.mc.plugins.tribingo.enums.GameDifficulty
 import net.trilleo.mc.plugins.tribingo.enums.GameState
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
@@ -198,6 +200,52 @@ object BingoActions {
         } else {
             ActionResult(false, "<red>Failed to set timer: ${result.exceptionOrNull()?.message ?: "unknown error"}")
         }
+    }
+
+    // ── Test ──────────────────────────────────────────────────────────────
+
+    /**
+     * Starts a test session for [player] on the objective identified by
+     * [objectiveId].
+     *
+     * The test system monitors the objective's completion checker independently
+     * of the Bingo board. The player performs the required actions and receives
+     * real-time progress feedback via the action bar and a completion message
+     * when the objective's checker confirms success.
+     *
+     * @param player      the player starting the test
+     * @param objectiveId the [BingoObjective.id][net.trilleo.mc.plugins.tribingo.bingo.BingoObjective.id] to test
+     * @return [ActionResult] indicating success or the reason for failure
+     */
+    fun startTest(player: Player, objectiveId: String): ActionResult {
+        val started = ObjectiveTestManager.startTest(player, objectiveId)
+        return if (started) {
+            ActionResult(true, "<green>Test session started for <white>$objectiveId<green>.")
+        } else {
+            ActionResult(false, "<red>Unknown objective '$objectiveId'. Check /bingo test tab-completion for valid IDs.")
+        }
+    }
+
+    /**
+     * Stops the active test session for [player].
+     *
+     * @param player the player whose test session to stop
+     * @return [ActionResult] indicating success or the reason for failure
+     */
+    fun stopTest(player: Player): ActionResult {
+        val stopped = ObjectiveTestManager.stopTest(player)
+        return if (stopped) {
+            ActionResult(true, "<yellow>Test session stopped.")
+        } else {
+            ActionResult(false, "<red>You do not have an active test session.")
+        }
+    }
+
+    /**
+     * Returns all registered objective IDs for tab-completion of `/bingo test`.
+     */
+    fun getObjectiveIds(): List<String> {
+        return BingoObjectiveRegistry.getAll().map { it.id }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────

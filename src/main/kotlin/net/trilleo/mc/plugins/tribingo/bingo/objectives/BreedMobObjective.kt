@@ -5,7 +5,6 @@ import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
 import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
-import net.trilleo.mc.plugins.tribingo.enums.GameState
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -42,9 +41,8 @@ class BreedMobObjective(
             !event.entity.type.name.equals(entityTypeName, ignoreCase = true)
         ) return
         val player = event.breeder as? Player ?: return
-        val game = BingoManager.currentGame ?: return
-        if (game.state != GameState.ACTIVE) return
-        onEvent(event, player, game.getOrCreateState(player.uniqueId))
+        val state = BingoManager.getActiveState(player, id) ?: return
+        onEvent(event, player, state)
     }
 
     override fun onEvent(event: EntityBreedEvent, player: Player, state: BingoPlayerState) {

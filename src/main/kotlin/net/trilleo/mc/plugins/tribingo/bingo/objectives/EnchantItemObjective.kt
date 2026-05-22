@@ -5,7 +5,6 @@ import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
 import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
-import net.trilleo.mc.plugins.tribingo.enums.GameState
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -39,9 +38,8 @@ class EnchantItemObjective(
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onEnchant(event: EnchantItemEvent) {
         if (enchantment != null && enchantment !in event.enchantsToAdd) return
-        val game = BingoManager.currentGame ?: return
-        if (game.state != GameState.ACTIVE) return
-        onEvent(event, event.enchanter, game.getOrCreateState(event.enchanter.uniqueId))
+        val state = BingoManager.getActiveState(event.enchanter, id) ?: return
+        onEvent(event, event.enchanter, state)
     }
 
     override fun onEvent(event: EnchantItemEvent, player: Player, state: BingoPlayerState) {
