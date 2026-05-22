@@ -9,6 +9,7 @@ import net.trilleo.mc.plugins.tribingo.config.PluginConfig
 import net.trilleo.mc.plugins.tribingo.data.BingoServerData
 import net.trilleo.mc.plugins.tribingo.data.PlayerDataManager
 import net.trilleo.mc.plugins.tribingo.data.ServerDataManager
+import net.trilleo.mc.plugins.tribingo.managers.TeamManager
 import net.trilleo.mc.plugins.tribingo.registration.*
 import net.trilleo.mc.plugins.tribingo.utils.MessageUtil
 import org.bukkit.plugin.java.JavaPlugin
@@ -48,6 +49,9 @@ class Main : JavaPlugin() {
         GUIManager.registerAll(this)
         logger.info("Registering tasks...")
         TaskRegistrar.registerAll(this)
+
+        // Initialize teams
+        TeamManager.initializeTeam()
 
         // Initialise Bingo system
         logger.info("Initialising Bingo system...")
