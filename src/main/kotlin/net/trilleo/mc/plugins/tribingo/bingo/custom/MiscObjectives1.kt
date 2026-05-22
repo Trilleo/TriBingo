@@ -8,14 +8,17 @@ import net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.MultiEventBingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.annotation.CustomObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
-import net.trilleo.mc.plugins.tribingo.enums.GameState
 import org.bukkit.Material
-import org.bukkit.entity.*
+import org.bukkit.entity.Ageable
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.*
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.player.*
+import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.bukkit.event.player.PlayerItemConsumeEvent
+import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
 
 private const val COPPER_STATUE_VARIANTS_REQUIRED = 4
@@ -32,9 +35,9 @@ private fun isCopperArmorPiece(material: Material?, suffix: String): Boolean =
 
 private fun hasFullCopperArmor(player: Player): Boolean =
     isCopperArmorPiece(player.inventory.helmet?.type, "_HELMET") &&
-        isCopperArmorPiece(player.inventory.chestplate?.type, "_CHESTPLATE") &&
-        isCopperArmorPiece(player.inventory.leggings?.type, "_LEGGINGS") &&
-        isCopperArmorPiece(player.inventory.boots?.type, "_BOOTS")
+            isCopperArmorPiece(player.inventory.chestplate?.type, "_CHESTPLATE") &&
+            isCopperArmorPiece(player.inventory.leggings?.type, "_LEGGINGS") &&
+            isCopperArmorPiece(player.inventory.boots?.type, "_BOOTS")
 
 private fun hasProjectedFullCopperArmor(player: Player, event: InventoryClickEvent): Boolean {
     var helmet = player.inventory.helmet?.type
@@ -65,9 +68,9 @@ private fun hasProjectedFullCopperArmor(player: Player, event: InventoryClickEve
     }
 
     return isCopperArmorPiece(helmet, "_HELMET") &&
-        isCopperArmorPiece(chestplate, "_CHESTPLATE") &&
-        isCopperArmorPiece(leggings, "_LEGGINGS") &&
-        isCopperArmorPiece(boots, "_BOOTS")
+            isCopperArmorPiece(chestplate, "_CHESTPLATE") &&
+            isCopperArmorPiece(leggings, "_LEGGINGS") &&
+            isCopperArmorPiece(boots, "_BOOTS")
 }
 
 private fun heldItemFor(event: PlayerInteractEntityEvent): ItemStack =

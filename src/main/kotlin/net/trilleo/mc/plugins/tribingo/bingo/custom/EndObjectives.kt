@@ -9,22 +9,14 @@ import net.trilleo.mc.plugins.tribingo.bingo.MultiEventBingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.annotation.CustomObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
 import org.bukkit.Material
-import org.bukkit.entity.EnderCrystal
-import org.bukkit.entity.Endermite
-import org.bukkit.entity.EntityType
-import org.bukkit.entity.Player
-import org.bukkit.entity.Trident
+import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.event.entity.EntityPickupItemEvent
-import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.entity.*
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 private const val MY_BAG_IS_HEAVY_REQUIRED = 3

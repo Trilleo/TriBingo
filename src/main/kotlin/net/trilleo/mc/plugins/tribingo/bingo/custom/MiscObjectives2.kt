@@ -57,7 +57,11 @@ private fun nameTagText(item: ItemStack): String? {
     }?.trim()
 }
 
-private fun isWithinGeneratedStructure(location: org.bukkit.Location, structure: Structure, padding: Double = 0.0): Boolean {
+private fun isWithinGeneratedStructure(
+    location: org.bukkit.Location,
+    structure: Structure,
+    padding: Double = 0.0
+): Boolean {
     val x = location.x
     val y = location.y
     val z = location.z
@@ -67,15 +71,15 @@ private fun isWithinGeneratedStructure(location: org.bukkit.Location, structure:
         } else {
             val box = generated.boundingBox
             x >= box.minX - padding && x <= box.maxX + padding &&
-                y >= box.minY - padding && y <= box.maxY + padding &&
-                z >= box.minZ - padding && z <= box.maxZ + padding
+                    y >= box.minY - padding && y <= box.maxY + padding &&
+                    z >= box.minZ - padding && z <= box.maxZ + padding
         }
     }
 }
 
 private fun isUnderground(player: Player): Boolean =
     player.world.environment == World.Environment.NETHER ||
-        player.location.blockY <= player.world.seaLevel
+            player.location.blockY <= player.world.seaLevel
 
 private fun hasNearbyBoneBlock(player: Player): Boolean {
     if (!isUnderground(player)) return false
@@ -381,8 +385,13 @@ class DeadMenTellNoTalesObjective : MultiEventBingoObjective(
         if (!event.hasChangedBlock()) return
         val player = event.player
         val state = BingoManager.getActiveState(player, id) ?: return
-        val inShipwreck = isWithinGeneratedStructure(player.location, Structure.SHIPWRECK, STRUCTURE_DETECTION_PADDING) ||
-            isWithinGeneratedStructure(player.location, Structure.SHIPWRECK_BEACHED, STRUCTURE_DETECTION_PADDING)
+        val inShipwreck =
+            isWithinGeneratedStructure(player.location, Structure.SHIPWRECK, STRUCTURE_DETECTION_PADDING) ||
+                    isWithinGeneratedStructure(
+                        player.location,
+                        Structure.SHIPWRECK_BEACHED,
+                        STRUCTURE_DETECTION_PADDING
+                    )
         if (!inShipwreck) return
 
         state.setString(id, "done", "true")

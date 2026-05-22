@@ -71,8 +71,8 @@ private fun misc4IsWithinGeneratedStructure(location: Location, structure: Struc
         } else {
             val box = generated.boundingBox
             x >= box.minX - padding && x <= box.maxX + padding &&
-                y >= box.minY - padding && y <= box.maxY + padding &&
-                z >= box.minZ - padding && z <= box.maxZ + padding
+                    y >= box.minY - padding && y <= box.maxY + padding &&
+                    z >= box.minZ - padding && z <= box.maxZ + padding
         }
     }
 }
@@ -117,6 +117,7 @@ private fun misc4GreenThumbBlockPlaceStep(material: Material): String? = when (m
     Material.SUGAR_CANE,
     Material.BAMBOO,
     Material.CHORUS_FLOWER -> material.name
+
     else -> null
 }
 
@@ -144,12 +145,14 @@ private fun misc4GreenThumbInteractStep(event: PlayerInteractEvent): String? {
                 else -> null
             }
         } else null
+
         Material.COCOA_BEANS -> if (
             clickedBlock.type.name.contains("JUNGLE") &&
             (clickedBlock.type.name.endsWith("_LOG") || clickedBlock.type.name.endsWith("_WOOD"))
         ) {
             Material.COCOA.name
         } else null
+
         else -> null
     }
 }
@@ -163,9 +166,9 @@ private fun misc4IsChainArmor(material: Material?): Boolean = material in setOf(
 
 private fun misc4HasAnyChainArmor(player: Player): Boolean =
     misc4IsChainArmor(player.inventory.helmet?.type) ||
-        misc4IsChainArmor(player.inventory.chestplate?.type) ||
-        misc4IsChainArmor(player.inventory.leggings?.type) ||
-        misc4IsChainArmor(player.inventory.boots?.type)
+            misc4IsChainArmor(player.inventory.chestplate?.type) ||
+            misc4IsChainArmor(player.inventory.leggings?.type) ||
+            misc4IsChainArmor(player.inventory.boots?.type)
 
 private fun misc4WillEquipChainArmor(player: Player, event: InventoryClickEvent): Boolean {
     if (misc4HasAnyChainArmor(player)) return true
@@ -198,7 +201,7 @@ private fun misc4WillEquipChainArmor(player: Player, event: InventoryClickEvent)
     }
 
     return misc4IsChainArmor(helmet) || misc4IsChainArmor(chestplate) ||
-        misc4IsChainArmor(leggings) || misc4IsChainArmor(boots)
+            misc4IsChainArmor(leggings) || misc4IsChainArmor(boots)
 }
 
 @CustomObjective

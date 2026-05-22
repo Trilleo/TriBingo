@@ -11,12 +11,15 @@ import net.trilleo.mc.plugins.tribingo.enums.Difficulty
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.*
+import org.bukkit.entity.Axolotl
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Horse
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.inventory.BrewEvent
@@ -86,7 +89,12 @@ private fun misc5MaterialStep(item: ItemStack?, requiredSteps: Set<String>): Str
     return materialName.takeIf { it in requiredSteps }
 }
 
-private fun misc5TrackInventorySteps(player: Player, state: BingoPlayerState, objectiveId: String, requiredSteps: Set<String>) {
+private fun misc5TrackInventorySteps(
+    player: Player,
+    state: BingoPlayerState,
+    objectiveId: String,
+    requiredSteps: Set<String>
+) {
     player.inventory.contents
         .mapNotNull { misc5MaterialStep(it, requiredSteps) }
         .forEach { state.addStep(objectiveId, it) }

@@ -8,20 +8,12 @@ import net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.MultiEventBingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.annotation.CustomObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
-import org.bukkit.Bukkit
-import org.bukkit.Color
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.Raid
+import org.bukkit.*
 import org.bukkit.block.Biome
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.event.entity.PlayerLeashEntityEvent
-import org.bukkit.event.entity.PotionSplashEvent
+import org.bukkit.event.entity.*
 import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerMoveEvent
@@ -32,7 +24,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.inventory.meta.PotionMeta
 import org.bukkit.potion.PotionType
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 private const val TEARS_OF_ISAAC_REQUIRED = 5
@@ -456,10 +448,10 @@ class ZeusWrathObjective : MultiEventBingoObjective(
             directLightning != null -> trackedStrikes[directLightning.uniqueId]
             else -> trackedStrikes.values.firstOrNull {
                 now - it.timestamp <= ZEUS_STRIKE_WINDOW_MILLIS &&
-                    it.worldName == event.entity.world.name &&
-                    (event.entity.location.x - it.x) * (event.entity.location.x - it.x) +
-                    (event.entity.location.y - it.y) * (event.entity.location.y - it.y) +
-                    (event.entity.location.z - it.z) * (event.entity.location.z - it.z) <= ZEUS_STRIKE_RADIUS * ZEUS_STRIKE_RADIUS
+                        it.worldName == event.entity.world.name &&
+                        (event.entity.location.x - it.x) * (event.entity.location.x - it.x) +
+                        (event.entity.location.y - it.y) * (event.entity.location.y - it.y) +
+                        (event.entity.location.z - it.z) * (event.entity.location.z - it.z) <= ZEUS_STRIKE_RADIUS * ZEUS_STRIKE_RADIUS
             }
         } ?: return
 
@@ -492,7 +484,7 @@ class WorldWarObjective : MultiEventBingoObjective(
         val victim = event.entity.type
         val illagerVsPiglin =
             (isIllager(attacker) && (victim == EntityType.PIGLIN || victim == EntityType.PIGLIN_BRUTE)) ||
-                (isIllager(victim) && (attacker == EntityType.PIGLIN || attacker == EntityType.PIGLIN_BRUTE))
+                    (isIllager(victim) && (attacker == EntityType.PIGLIN || attacker == EntityType.PIGLIN_BRUTE))
         if (!illagerVsPiglin) return
 
         val player = findNearestActivePlayer(event.entity.location, id, WORLD_WAR_PLAYER_RADIUS) ?: return
