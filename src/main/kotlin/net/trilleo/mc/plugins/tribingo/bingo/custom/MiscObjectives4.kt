@@ -100,7 +100,7 @@ private fun misc4IsLikelyDesertTempleTrap(player: Player, event: EntityDamageEve
     }
 
     val biome = location.block.biome
-    val sandyBiome = biome == Biome.DESERT || biome.name.contains("BADLANDS")
+    val sandyBiome = biome == Biome.DESERT || biome.key.key.contains("badlands", ignoreCase = true)
     if (!sandyBiome) return false
 
     val tntCausedExplosion = event.damageSource.causingEntity is TNTPrimed
