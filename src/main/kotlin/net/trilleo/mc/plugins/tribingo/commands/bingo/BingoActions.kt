@@ -1,7 +1,6 @@
 package net.trilleo.mc.plugins.tribingo.commands.bingo
 
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
-import net.trilleo.mc.plugins.tribingo.commands.bingo.BingoActions.resetGame
 import net.trilleo.mc.plugins.tribingo.enums.GameDifficulty
 import net.trilleo.mc.plugins.tribingo.enums.GameState
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager

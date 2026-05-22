@@ -1,7 +1,5 @@
 package net.trilleo.mc.plugins.tribingo.registration
 
-import net.trilleo.mc.plugins.tribingo.registration.RecipeRegistrar.registerAll
-import net.trilleo.mc.plugins.tribingo.registration.RecipeRegistrar.unregisterAll
 import org.bukkit.Bukkit
 import org.bukkit.Keyed
 import org.bukkit.NamespacedKey

@@ -3,7 +3,6 @@ package net.trilleo.mc.plugins.tribingo.bingo.registry
 import net.trilleo.mc.plugins.tribingo.bingo.BingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.BingoObjectiveFactory
 import net.trilleo.mc.plugins.tribingo.bingo.annotation.CustomObjective
-import net.trilleo.mc.plugins.tribingo.bingo.registry.CodeObjectiveLoader.load
 import net.trilleo.mc.plugins.tribingo.registration.PackageScanner
 import org.bukkit.plugin.java.JavaPlugin
 

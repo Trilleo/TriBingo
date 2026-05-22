@@ -3,14 +3,11 @@ package net.trilleo.mc.plugins.tribingo.bingo
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.trilleo.mc.plugins.tribingo.Main
-import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.init
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.onTimerExpired
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.plugin
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.remainingSeconds
-import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.resetGame
-import net.trilleo.mc.plugins.tribingo.bingo.BingoManager.save
-import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry
 import net.trilleo.mc.plugins.tribingo.bingo.randomizer.BoardRandomizerRegistry
+import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry
 import net.trilleo.mc.plugins.tribingo.data.BingoServerData
 import net.trilleo.mc.plugins.tribingo.data.ServerDataManager
 import net.trilleo.mc.plugins.tribingo.enums.GameDifficulty
