@@ -200,6 +200,48 @@ object BingoActions {
         }
     }
 
+    // ── Test ──────────────────────────────────────────────────────────────
+
+    /**
+     * Manually marks a cell as completed for [player], triggering all normal
+     * completion logic (points, line bonuses, announcements, win checks).
+     *
+     * This is intended for testing and debugging. The game must be [GameState.ACTIVE].
+     *
+     * @param player    the player to award the completion to
+     * @param cellIndex zero-based cell index on the board (0–24 for a 5×5 board)
+     * @return [ActionResult] indicating success or the reason for failure
+     */
+    fun testComplete(player: Player, cellIndex: Int): ActionResult {
+        val game = BingoManager.currentGame
+            ?: return ActionResult(false, "<red>No game exists. Create one first with /bingo refresh.")
+        if (game.state != GameState.ACTIVE) {
+            return ActionResult(false, "<red>The game must be ACTIVE to test completions. Use /bingo start first.")
+        }
+        val totalCells = game.board.cells.size
+        if (cellIndex < 0 || cellIndex >= totalCells) {
+            return ActionResult(false, "<red>Cell index must be between 0 and ${totalCells - 1}.")
+        }
+        val cell = game.board.cells[cellIndex]
+        val state = game.getOrCreateState(player.uniqueId)
+        if (state.isCompleted(cellIndex)) {
+            return ActionResult(false, "<yellow>Cell $cellIndex is already completed.")
+        }
+        BingoManager.checkCompletion(player, cell.objective)
+        return ActionResult(true, "<green>Marked cell $cellIndex (${cell.objective.id}) as completed.")
+    }
+
+    /**
+     * Returns a list of cell index strings for tab-completion of `/bingo test`.
+     *
+     * If a game exists, returns `"0"` through `"N-1"` where N is the number of
+     * cells on the board; otherwise returns an empty list.
+     */
+    fun getCurrentGameCells(): List<String> {
+        val game = BingoManager.currentGame ?: return emptyList()
+        return (0 until game.board.cells.size).map { it.toString() }
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────
 
     /**

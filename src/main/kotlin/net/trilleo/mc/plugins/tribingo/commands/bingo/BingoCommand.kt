@@ -20,6 +20,7 @@ import org.bukkit.entity.Player
  * | `refresh [difficulty]`   | `tribingo.bingo.manage` | Picks new objectives (INACTIVE only)   |
  * | `time <h> <m> <s>`       | `tribingo.bingo.manage` | Sets the countdown timer               |
  * | `status`                 | (none)                  | Shows the current game status          |
+ * | `test <cell>`            | `tribingo.bingo.manage` | Marks a cell as complete for testing   |
  *
  * All game-logic is delegated to [BingoActions] so the same operations can
  * be wired to GUI buttons without duplicating code.
@@ -27,7 +28,7 @@ import org.bukkit.entity.Player
 class BingoCommand : PluginCommand(
     name = "bingo",
     description = "Manage and view the Bingo game",
-    usage = "/bingo <board|start|stop|reset|refresh [easy|medium|hard]|time|status>",
+    usage = "/bingo <board|start|stop|reset|refresh [easy|medium|hard]|time|status|test <cell>>",
     isMainCommand = true
 ) {
 
@@ -45,6 +46,7 @@ class BingoCommand : PluginCommand(
             "refresh" -> handleRefresh(sender, args)
             "time" -> handleTime(sender, args)
             "status" -> handleStatus(sender)
+            "test" -> handleTest(sender, args)
             else -> {
                 showUsage(sender); true
             }
@@ -53,7 +55,7 @@ class BingoCommand : PluginCommand(
 
     override fun tabComplete(sender: CommandSender, args: Array<out String>): List<String> {
         if (args.size == 1) {
-            val subs = listOf("board", "start", "stop", "reset", "refresh", "time", "status")
+            val subs = listOf("board", "start", "stop", "reset", "refresh", "time", "status", "test")
             return subs.filter { it.startsWith(args[0].lowercase()) }
         }
         if (args[0].lowercase() == "refresh" && args.size == 2) {
@@ -67,6 +69,10 @@ class BingoCommand : PluginCommand(
                 4 -> listOf("0", "30").filter { it.startsWith(args[3]) }
                 else -> emptyList()
             }
+        }
+        if (args[0].lowercase() == "test" && args.size == 2) {
+            val game = BingoActions.getCurrentGameCells()
+            return game.filter { it.startsWith(args[1]) }
         }
         return emptyList()
     }
@@ -141,6 +147,29 @@ class BingoCommand : PluginCommand(
     private fun handleStatus(sender: CommandSender): Boolean {
         val result = BingoActions.getStatus()
         result.message.split("\n").forEach { line -> sendMsg(sender, line) }
+        return true
+    }
+
+    private fun handleTest(sender: CommandSender, args: Array<out String>): Boolean {
+        if (!sender.hasPermission("tribingo.bingo.manage")) {
+            sendMsg(sender, "<red>You don't have permission to use this sub-command.")
+            return true
+        }
+        val player = sender as? Player ?: run {
+            sender.sendMessage("Only players can use /bingo test.")
+            return true
+        }
+        if (args.size < 2) {
+            sendMsg(sender, "<gray>Usage: /bingo test <cell index (0-24)>")
+            return true
+        }
+        val cellIndex = args[1].toIntOrNull()
+        if (cellIndex == null) {
+            sendMsg(sender, "<red>Cell index must be an integer.")
+            return true
+        }
+        val result = BingoActions.testComplete(player, cellIndex)
+        sendMsg(sender, result.message)
         return true
     }
 
