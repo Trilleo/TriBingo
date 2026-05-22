@@ -1,6 +1,5 @@
 package net.trilleo.mc.plugins.tribingo.registration
 
-import net.trilleo.mc.plugins.tribingo.registration.PermissionRegistrar.registerAll
 import org.bukkit.permissions.Permission
 import org.bukkit.permissions.PermissionDefault
 import org.bukkit.plugin.java.JavaPlugin
