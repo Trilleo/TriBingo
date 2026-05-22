@@ -73,16 +73,19 @@ object ObjectiveTestManager {
      * Starts a test session for [player] on the objective identified by
      * [objectiveId].
      *
-     * If the player already has an active session, it is stopped first.
+     * A player can only have one active test session at a time. If the player
+     * already has an active session, the request is rejected — the previous
+     * session must be stopped first with `/bingo test stop`.
      *
      * @param player      the player starting the test
      * @param objectiveId the [BingoObjective.id] to test
      * @return `true` if the session was started successfully; `false` if the
-     *         objective ID is not registered
+     *         objective ID is not registered or the player already has an
+     *         active test session
      */
     fun startTest(player: Player, objectiveId: String): Boolean {
+        if (isTesting(player)) return false
         val objective = BingoObjectiveRegistry.get(objectiveId) ?: return false
-        stopTest(player)
         val state = BingoPlayerState(player.uniqueId)
         sessions[player.uniqueId] = TestSession(objective, state)
         return true
@@ -106,6 +109,11 @@ object ObjectiveTestManager {
      * Returns `true` if [player] has an active test session.
      */
     fun isTesting(player: Player): Boolean = player.uniqueId in sessions
+
+    /**
+     * Returns `true` if there are any active test sessions across all players.
+     */
+    fun hasActiveSessions(): Boolean = sessions.isNotEmpty()
 
     /**
      * Returns the active [TestSession] for [player], or `null` if not testing.

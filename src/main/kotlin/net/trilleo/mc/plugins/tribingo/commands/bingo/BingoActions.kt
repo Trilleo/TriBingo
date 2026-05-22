@@ -69,6 +69,12 @@ object BingoActions {
                 "<red>The game cannot be started from state ${game.state}. Use /bingo reset first."
             )
         }
+        if (ObjectiveTestManager.hasActiveSessions()) {
+            return ActionResult(
+                false,
+                "<red>Cannot start the game while there are active test sessions. Stop all tests first."
+            )
+        }
         BingoManager.startGame()
         return ActionResult(true, "<green>Bingo game started!")
     }
@@ -218,6 +224,12 @@ object BingoActions {
      * @return [ActionResult] indicating success or the reason for failure
      */
     fun startTest(player: Player, objectiveId: String): ActionResult {
+        if (ObjectiveTestManager.isTesting(player)) {
+            return ActionResult(
+                false,
+                "<red>You already have an active test session. Stop it first with <white>/bingo test stop<red>."
+            )
+        }
         val started = ObjectiveTestManager.startTest(player, objectiveId)
         return if (started) {
             ActionResult(true, "<green>Test session started for <white>$objectiveId<green>.")
@@ -249,6 +261,13 @@ object BingoActions {
      */
     fun getObjectiveIds(): List<String> {
         return BingoObjectiveRegistry.getAll().map { it.id }
+    }
+
+    /**
+     * Returns `true` if [player] currently has an active test session.
+     */
+    fun isPlayerTesting(player: Player): Boolean {
+        return ObjectiveTestManager.isTesting(player)
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────
