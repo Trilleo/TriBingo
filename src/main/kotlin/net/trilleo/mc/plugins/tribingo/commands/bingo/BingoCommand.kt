@@ -173,6 +173,10 @@ class BingoCommand : PluginCommand(
         }
         val result = BingoActions.startTest(player, args[1])
         sendMsg(sender, result.message)
+        if (result.success) {
+            sendMsg(sender, "<gray>Perform the objective actions now. Progress will show on your action bar.")
+            sendMsg(sender, "<gray>Run <white>/bingo test stop<gray> to end the test.")
+        }
         return true
     }
 

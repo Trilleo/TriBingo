@@ -85,9 +85,6 @@ object ObjectiveTestManager {
         stopTest(player)
         val state = BingoPlayerState(player.uniqueId)
         sessions[player.uniqueId] = TestSession(objective, state)
-        player.sendPrefixed("<green>Test started for objective: <white>$objectiveId")
-        player.sendPrefixed("<gray>Perform the objective actions now. Progress will show on your action bar.")
-        player.sendPrefixed("<gray>Run <white>/bingo test stop<gray> to end the test.")
         return true
     }
 
@@ -100,7 +97,6 @@ object ObjectiveTestManager {
      */
     fun stopTest(player: Player): Boolean {
         val session = sessions.remove(player.uniqueId) ?: return false
-        player.sendPrefixed("<yellow>Test stopped for objective: <white>${session.objective.id}")
         // Clear the action bar
         player.sendActionBar(Component.empty())
         return true
