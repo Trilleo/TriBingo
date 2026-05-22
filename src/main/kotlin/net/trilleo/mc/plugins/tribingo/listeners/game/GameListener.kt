@@ -1,4 +1,4 @@
-package net.trilleo.mc.plugins.tribingo.listeners
+package net.trilleo.mc.plugins.tribingo.listeners.game
 
 import net.trilleo.mc.plugins.tribingo.managers.ItemManager
 import org.bukkit.event.EventHandler
