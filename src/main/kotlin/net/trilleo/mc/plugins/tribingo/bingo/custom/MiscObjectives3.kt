@@ -13,16 +13,17 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Raid
+import org.bukkit.block.Biome
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.PlayerLeashEntityEvent
 import org.bukkit.event.entity.PotionSplashEvent
 import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
-import org.bukkit.event.player.PlayerLeashEntityEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.raid.RaidTriggerEvent
 import org.bukkit.event.weather.LightningStrikeEvent
@@ -79,7 +80,7 @@ private fun findNearestActivePlayer(location: Location, objectiveId: String, rad
         .firstOrNull { BingoManager.getActiveState(it, objectiveId) != null }
 
 private fun raidKey(raid: Raid): String {
-    val center = raid.center
+    val center = raid.location
     return listOf(center.world?.name ?: "world", center.blockX, center.blockY, center.blockZ).joinToString(":")
 }
 
@@ -104,7 +105,7 @@ class SilentHillObjective : MultiEventBingoObjective(
         if (!event.hasChangedBlock()) return
         val player = event.player
         val state = BingoManager.getActiveState(player, id) ?: return
-        if (player.location.block.biome.name != "PALE_GARDEN") return
+        if (player.location.block.biome != Biome.PALE_GARDEN) return
         state.setString(id, "done", "true")
         BingoManager.checkCompletion(player, this)
     }
@@ -221,8 +222,18 @@ class GodfatherObjective : MultiEventBingoObjective(
         val state = BingoManager.getActiveState(player, id) ?: return
         activeRaids.entries.removeIf { it.value.playerId == player.uniqueId }
 
-        val villagers = event.raid.villagers.map { it.uniqueId }.toMutableSet()
-        activeRaids[raidKey(event.raid)] = RaidContext(player.uniqueId, event.raid.center, villagers)
+        val raidCenter = event.raid.location
+        val raidWorld = raidCenter.world ?: return
+        val villagers = raidWorld.getNearbyEntities(
+            raidCenter,
+            GODFATHER_RAID_RADIUS,
+            GODFATHER_RAID_RADIUS,
+            GODFATHER_RAID_RADIUS
+        ).asSequence()
+            .filterIsInstance<Villager>()
+            .map { it.uniqueId }
+            .toMutableSet()
+        activeRaids[raidKey(event.raid)] = RaidContext(player.uniqueId, raidCenter, villagers)
         state.setString(id, "in_raid", "true")
         state.removeString(id, "failed")
         state.removeString(id, "done")
