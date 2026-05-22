@@ -20,7 +20,8 @@ import org.bukkit.entity.Player
  * | `refresh [difficulty]`   | `tribingo.bingo.manage` | Picks new objectives (INACTIVE only)   |
  * | `time <h> <m> <s>`       | `tribingo.bingo.manage` | Sets the countdown timer               |
  * | `status`                 | (none)                  | Shows the current game status          |
- * | `test <cell>`            | `tribingo.bingo.manage` | Marks a cell as complete for testing   |
+ * | `test <objective_id>`    | `tribingo.bingo.manage` | Tests an objective's completion checker |
+ * | `test stop`              | `tribingo.bingo.manage` | Stops the current test session         |
  *
  * All game-logic is delegated to [BingoActions] so the same operations can
  * be wired to GUI buttons without duplicating code.
@@ -28,7 +29,7 @@ import org.bukkit.entity.Player
 class BingoCommand : PluginCommand(
     name = "bingo",
     description = "Manage and view the Bingo game",
-    usage = "/bingo <board|start|stop|reset|refresh [easy|medium|hard]|time|status|test <cell>>",
+    usage = "/bingo <board|start|stop|reset|refresh [easy|medium|hard]|time|status|test <objective_id|stop>>",
     isMainCommand = true
 ) {
 
@@ -71,8 +72,9 @@ class BingoCommand : PluginCommand(
             }
         }
         if (args[0].lowercase() == "test" && args.size == 2) {
-            val game = BingoActions.getCurrentGameCells()
-            return game.filter { it.startsWith(args[1]) }
+            val completions = mutableListOf("stop")
+            completions.addAll(BingoActions.getObjectiveIds())
+            return completions.filter { it.startsWith(args[1].lowercase()) }
         }
         return emptyList()
     }
@@ -160,15 +162,16 @@ class BingoCommand : PluginCommand(
             return true
         }
         if (args.size < 2) {
-            sendMsg(sender, "<gray>Usage: /bingo test <cell index (0-24)>")
+            sendMsg(sender, "<gray>Usage: /bingo test <objective_id|stop>")
+            sendMsg(sender, "<gray>Starts a test session to verify an objective's completion checker.")
             return true
         }
-        val cellIndex = args[1].toIntOrNull()
-        if (cellIndex == null) {
-            sendMsg(sender, "<red>Cell index must be an integer.")
+        if (args[1].lowercase() == "stop") {
+            val result = BingoActions.stopTest(player)
+            sendMsg(sender, result.message)
             return true
         }
-        val result = BingoActions.testComplete(player, cellIndex)
+        val result = BingoActions.startTest(player, args[1])
         sendMsg(sender, result.message)
         return true
     }

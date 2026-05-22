@@ -137,6 +137,37 @@ object BingoManager {
     /** Returns `true` while a game is in [GameState.ACTIVE] state. */
     fun isGameActive(): Boolean = currentGame?.state == GameState.ACTIVE
 
+    // ── Objective test support ────────────────────────────────────────────
+
+    /**
+     * Returns a [BingoPlayerState] for the given player and objective if
+     * either:
+     * 1. A game is ACTIVE (returns the game's player state), **or**
+     * 2. The player is testing that specific objective via [ObjectiveTestManager]
+     *    (returns the isolated test state).
+     *
+     * Returns `null` if neither condition is met, meaning the objective's event
+     * handler should skip processing.
+     *
+     * This is the preferred entry-point for objective event handlers:
+     * ```kotlin
+     * val state = BingoManager.getActiveState(player, id) ?: return
+     * ```
+     *
+     * @param player      the player who triggered the event
+     * @param objectiveId the [BingoObjective.id] being processed
+     * @return a [BingoPlayerState] to track progress against, or `null`
+     */
+    fun getActiveState(player: Player, objectiveId: String): BingoPlayerState? {
+        // Check active game first
+        val game = currentGame
+        if (game != null && game.state == GameState.ACTIVE) {
+            return game.getOrCreateState(player.uniqueId)
+        }
+        // Fall back to test session
+        return ObjectiveTestManager.getTestState(player.uniqueId, objectiveId)
+    }
+
     // ── Timer configuration ───────────────────────────────────────────────
 
     /**
@@ -271,21 +302,29 @@ object BingoManager {
      * Called by event objectives when a triggering event has been processed.
      *
      * This method:
-     * 1. Verifies the game is active and the corresponding cell has not yet
+     * 1. Checks if the player is in a test session for this objective; if so,
+     *    delegates to [ObjectiveTestManager.onTestCompleted] and returns.
+     * 2. Verifies the game is active and the corresponding cell has not yet
      *    been completed for [player].
-     * 2. Marks the cell as complete in the player's [BingoPlayerState].
-     * 3. Awards objective points (A) and any newly-earned line/diagonal bonuses
+     * 3. Marks the cell as complete in the player's [BingoPlayerState].
+     * 4. Awards objective points (A) and any newly-earned line/diagonal bonuses
      *    (B for rows/columns, C for diagonals) to the player's point total.
-     * 4. Optionally broadcasts a completion announcement (see
+     * 5. Optionally broadcasts a completion announcement (see
      *    [net.trilleo.mc.plugins.tribingo.config.PluginConfig.announceCompletions]).
-     * 5. Refreshes the player's open board GUI if any.
-     * 6. Ends the game (and cancels the countdown) when the player has completed
+     * 6. Refreshes the player's open board GUI if any.
+     * 7. Ends the game (and cancels the countdown) when the player has completed
      *    every cell on the board.
      *
      * @param player    the player who completed the objective
      * @param objective the objective that was completed
      */
     fun checkCompletion(player: Player, objective: BingoObjective) {
+        // Handle test session completions (independent of board/game)
+        if (ObjectiveTestManager.getTestState(player.uniqueId, objective.id) != null) {
+            ObjectiveTestManager.onTestCompleted(player, objective)
+            return
+        }
+
         val game = currentGame ?: return
         if (game.state != GameState.ACTIVE) return
 

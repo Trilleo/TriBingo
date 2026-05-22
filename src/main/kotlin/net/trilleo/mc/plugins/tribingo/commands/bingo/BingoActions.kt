@@ -1,6 +1,8 @@
 package net.trilleo.mc.plugins.tribingo.commands.bingo
 
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
+import net.trilleo.mc.plugins.tribingo.bingo.ObjectiveTestManager
+import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry
 import net.trilleo.mc.plugins.tribingo.enums.GameDifficulty
 import net.trilleo.mc.plugins.tribingo.enums.GameState
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
@@ -203,43 +205,47 @@ object BingoActions {
     // ── Test ──────────────────────────────────────────────────────────────
 
     /**
-     * Manually marks a cell as completed for [player], triggering all normal
-     * completion logic (points, line bonuses, announcements, win checks).
+     * Starts a test session for [player] on the objective identified by
+     * [objectiveId].
      *
-     * This is intended for testing and debugging. The game must be [GameState.ACTIVE].
+     * The test system monitors the objective's completion checker independently
+     * of the Bingo board. The player performs the required actions and receives
+     * real-time progress feedback via the action bar and a completion message
+     * when the objective's checker confirms success.
      *
-     * @param player    the player to award the completion to
-     * @param cellIndex zero-based cell index on the board (0–24 for a 5×5 board)
+     * @param player      the player starting the test
+     * @param objectiveId the [BingoObjective.id][net.trilleo.mc.plugins.tribingo.bingo.BingoObjective.id] to test
      * @return [ActionResult] indicating success or the reason for failure
      */
-    fun testComplete(player: Player, cellIndex: Int): ActionResult {
-        val game = BingoManager.currentGame
-            ?: return ActionResult(false, "<red>No game exists. Create one first with /bingo refresh.")
-        if (game.state != GameState.ACTIVE) {
-            return ActionResult(false, "<red>The game must be ACTIVE to test completions. Use /bingo start first.")
+    fun startTest(player: Player, objectiveId: String): ActionResult {
+        val started = ObjectiveTestManager.startTest(player, objectiveId)
+        return if (started) {
+            ActionResult(true, "<green>Test session started for <white>$objectiveId<green>.")
+        } else {
+            ActionResult(false, "<red>Unknown objective '$objectiveId'. Check /bingo test tab-completion for valid IDs.")
         }
-        val totalCells = game.board.cells.size
-        if (cellIndex < 0 || cellIndex >= totalCells) {
-            return ActionResult(false, "<red>Cell index must be between 0 and ${totalCells - 1}.")
-        }
-        val cell = game.board.cells[cellIndex]
-        val state = game.getOrCreateState(player.uniqueId)
-        if (state.isCompleted(cellIndex)) {
-            return ActionResult(false, "<yellow>Cell $cellIndex is already completed.")
-        }
-        BingoManager.checkCompletion(player, cell.objective)
-        return ActionResult(true, "<green>Marked cell $cellIndex (${cell.objective.id}) as completed.")
     }
 
     /**
-     * Returns a list of cell index strings for tab-completion of `/bingo test`.
+     * Stops the active test session for [player].
      *
-     * If a game exists, returns `"0"` through `"N-1"` where N is the number of
-     * cells on the board; otherwise returns an empty list.
+     * @param player the player whose test session to stop
+     * @return [ActionResult] indicating success or the reason for failure
      */
-    fun getCurrentGameCells(): List<String> {
-        val game = BingoManager.currentGame ?: return emptyList()
-        return (0 until game.board.cells.size).map { it.toString() }
+    fun stopTest(player: Player): ActionResult {
+        val stopped = ObjectiveTestManager.stopTest(player)
+        return if (stopped) {
+            ActionResult(true, "<yellow>Test session stopped.")
+        } else {
+            ActionResult(false, "<red>You do not have an active test session.")
+        }
+    }
+
+    /**
+     * Returns all registered objective IDs for tab-completion of `/bingo test`.
+     */
+    fun getObjectiveIds(): List<String> {
+        return BingoObjectiveRegistry.getAll().map { it.id }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────

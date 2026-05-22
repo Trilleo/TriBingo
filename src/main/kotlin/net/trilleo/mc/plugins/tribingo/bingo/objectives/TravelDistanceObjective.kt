@@ -36,12 +36,13 @@ class TravelDistanceObjective(
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onMove(event: PlayerMoveEvent) {
         if (!event.hasChangedBlock()) return
-        val game = BingoManager.currentGame ?: return
-        if (game.state != GameState.ACTIVE) return
-        val state = game.getOrCreateState(event.player.uniqueId)
-        // Skip further processing once the cell is already completed
-        val cell = game.board.cells.find { it.objective.id == id }
-        if (cell != null && state.isCompleted(cell.cellIndex)) return
+        val state = BingoManager.getActiveState(event.player, id) ?: return
+        // Skip further processing once already completed in the game
+        val game = BingoManager.currentGame
+        if (game != null && game.state == GameState.ACTIVE) {
+            val cell = game.board.cells.find { it.objective.id == id }
+            if (cell != null && state.isCompleted(cell.cellIndex)) return
+        }
         onEvent(event, event.player, state)
     }
 
