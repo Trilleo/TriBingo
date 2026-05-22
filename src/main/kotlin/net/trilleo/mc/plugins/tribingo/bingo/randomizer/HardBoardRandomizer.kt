@@ -114,15 +114,7 @@ class HardBoardRandomizer : BoardRandomizer {
             }
         }
 
-        // Safety: fill any remaining nulls (shouldn't happen with correct counts)
-        for (i in board.indices) {
-            if (board[i] == null && shuffledNonInsane.isNotEmpty()) {
-                board[i] = shuffledNonInsane.removeFirst()
-            }
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        return board.toList() as List<BingoObjective>
+        return board.requireNoNulls().toList()
     }
 
     private fun take(pool: MutableList<BingoObjective>, count: Int): List<BingoObjective> {

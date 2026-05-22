@@ -21,7 +21,7 @@ enum class GameDifficulty {
     HARD;
 
     /**
-     * Returns a coloured [Component] representation of this game difficulty
+     * Returns a colored [Component] representation of this game difficulty
      * suitable for use in chat messages or GUIs.
      */
     fun displayName(): Component = when (this) {
