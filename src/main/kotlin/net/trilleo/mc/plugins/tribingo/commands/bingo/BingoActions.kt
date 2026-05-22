@@ -222,7 +222,10 @@ object BingoActions {
         return if (started) {
             ActionResult(true, "<green>Test session started for <white>$objectiveId<green>.")
         } else {
-            ActionResult(false, "<red>Unknown objective '$objectiveId'. Check /bingo test tab-completion for valid IDs.")
+            ActionResult(
+                false,
+                "<red>Unknown objective '$objectiveId'. Check /bingo test tab-completion for valid IDs."
+            )
         }
     }
 
