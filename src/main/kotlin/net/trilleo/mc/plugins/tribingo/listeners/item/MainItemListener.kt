@@ -1,5 +1,6 @@
 package net.trilleo.mc.plugins.tribingo.listeners.item
 
+import net.trilleo.mc.plugins.tribingo.data.BingoServerData
 import net.trilleo.mc.plugins.tribingo.data.ServerDataManager
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
 import net.trilleo.mc.plugins.tribingo.utils.PDCEntryUtil
@@ -28,7 +29,7 @@ class MainItemListener(private val plugin: JavaPlugin) : Listener {
                 event.isCancelled = true
                 val serverData = ServerDataManager.get()
 
-                if (serverData.getString("bingo_game_state", "INACTIVE") == "INACTIVE") {
+                if (BingoServerData().gameStateName == "INACTIVE") {
                     GUIManager.open(player, "main")
                 } else {
                     GUIManager.open(player, "bingo_board")
