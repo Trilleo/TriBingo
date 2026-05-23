@@ -1,6 +1,8 @@
 package net.trilleo.mc.plugins.tribingo.commands.bingo
 
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes.player
 import net.trilleo.mc.plugins.tribingo.enums.GameDifficulty
+import net.trilleo.mc.plugins.tribingo.registration.GUIManager
 import net.trilleo.mc.plugins.tribingo.registration.PluginCommand
 import net.trilleo.mc.plugins.tribingo.utils.sendPrefixed
 import org.bukkit.command.CommandSender
@@ -42,6 +44,10 @@ class BingoCommand : PluginCommand(
 
     override fun execute(sender: CommandSender, args: Array<out String>): Boolean {
         if (args.isEmpty()) {
+            if (sender is Player) {
+                GUIManager.open(sender, "main")
+                return true
+            }
             showUsage(sender)
             return true
         }
