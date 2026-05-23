@@ -27,7 +27,6 @@ class MainItemListener(private val plugin: JavaPlugin) : Listener {
                 ) == PDCEntryUtil.PDCValue().mainItemIdentifier
             ) {
                 event.isCancelled = true
-                val serverData = ServerDataManager.get()
 
                 if (BingoServerData().gameStateName == "INACTIVE") {
                     GUIManager.open(player, "main")
