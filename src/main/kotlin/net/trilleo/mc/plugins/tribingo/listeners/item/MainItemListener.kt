@@ -1,7 +1,5 @@
 package net.trilleo.mc.plugins.tribingo.listeners.item
 
-import net.trilleo.mc.plugins.tribingo.data.BingoServerData
-import net.trilleo.mc.plugins.tribingo.data.ServerDataManager
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
 import net.trilleo.mc.plugins.tribingo.utils.PDCEntryUtil
 import net.trilleo.mc.plugins.tribingo.utils.PDCUtil
