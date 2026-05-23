@@ -17,9 +17,9 @@ import java.util.*
  * Listens for sign input to set the Bingo timer duration.
  *
  * When a player requests timer input via the Settings GUI, a sign is placed
- * at the player's location. The player edits the sign with the format
- * `HH:MM:SS` or `MM:SS` on the first line. Upon completing the sign edit,
- * the timer is updated and the sign is removed.
+ * temporarily at a safe location above the player. The player edits the sign
+ * with the format `HH:MM:SS` or `MM:SS` on the first line. Upon completing
+ * the sign edit, the timer is updated and the original block is restored.
  *
  * ### Format
  * - Line 1: `HH:MM:SS` or `MM:SS` (e.g. `01:30:00` for 1.5 hours, `45:00` for 45 minutes)
@@ -28,14 +28,17 @@ class SignInputListener(private val plugin: JavaPlugin) : Listener {
 
     companion object {
         private val pendingInput = mutableSetOf<UUID>()
+        private val originalBlocks = mutableMapOf<UUID, Pair<org.bukkit.Location, Material>>()
 
         /**
          * Marks [player] as awaiting sign input for timer configuration.
-         * A sign is placed at the player's feet for editing.
+         * A sign is placed temporarily for editing.
          */
         fun requestInput(player: Player) {
             pendingInput.add(player.uniqueId)
-            val location = player.location.clone()
+            val location = player.location.clone().add(0.0, 2.0, 0.0)
+            // Store original block state so we can restore it
+            originalBlocks[player.uniqueId] = Pair(location.clone(), location.block.type)
             location.block.type = Material.OAK_SIGN
             player.sendPrefixed("<gray>Edit the sign with the timer in format <white>HH:MM:SS<gray> or <white>MM:SS<gray>.")
             player.openSign(location.block.state as org.bukkit.block.Sign)
@@ -54,9 +57,14 @@ class SignInputListener(private val plugin: JavaPlugin) : Listener {
 
         pendingInput.remove(player.uniqueId)
 
-        // Remove the temporary sign
+        // Restore the original block
+        val original = originalBlocks.remove(player.uniqueId)
         Bukkit.getScheduler().runTaskLater(plugin, Runnable {
-            event.block.type = Material.AIR
+            if (original != null) {
+                original.first.block.type = original.second
+            } else {
+                event.block.type = Material.AIR
+            }
         }, 1L)
 
         val line = event.line(0)?.let {
@@ -107,5 +115,9 @@ class SignInputListener(private val plugin: JavaPlugin) : Listener {
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
         pendingInput.remove(event.player.uniqueId)
+        val original = originalBlocks.remove(event.player.uniqueId)
+        if (original != null) {
+            original.first.block.type = original.second
+        }
     }
 }

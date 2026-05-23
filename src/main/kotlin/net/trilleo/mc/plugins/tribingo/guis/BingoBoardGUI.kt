@@ -3,6 +3,7 @@ package net.trilleo.mc.plugins.tribingo.guis
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.trilleo.mc.plugins.tribingo.Main
 import net.trilleo.mc.plugins.tribingo.bingo.BingoBoard
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
@@ -18,6 +19,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
 
 /**
  * Chest-based Bingo board viewer for the fixed 5×5 board.
@@ -222,7 +224,7 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
      */
     private fun populateSpectatorBoard(
         board: BingoBoard,
-        playerStates: Map<java.util.UUID, BingoPlayerState>,
+        playerStates: Map<UUID, BingoPlayerState>,
         inventory: Inventory,
         linePoints: Int,
         diagPoints: Int
@@ -238,7 +240,7 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
                 val material = if (completedCount > 0) Material.LIME_STAINED_GLASS_PANE
                 else Material.RED_STAINED_GLASS_PANE
                 inventory.setItem(slot, itemStack(material) {
-                    name("<white>${net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(cell.objective.name)}")
+                    name("<white>${PlainTextComponentSerializer.plainText().serialize(cell.objective.name)}")
                     lore(
                         "<gray>Completed by: <white>$completedCount<gray>/$totalPlayers players"
                     )
