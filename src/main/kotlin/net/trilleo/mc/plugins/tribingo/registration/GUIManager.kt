@@ -1,7 +1,9 @@
 package net.trilleo.mc.plugins.tribingo.registration
 
+import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
 import net.trilleo.mc.plugins.tribingo.enums.FillMode
 import net.trilleo.mc.plugins.tribingo.utils.itemStack
+import net.trilleo.mc.plugins.tribingo.utils.sendPrefixed
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -64,6 +66,11 @@ object GUIManager : Listener {
      * @return `true` if the GUI was found and opened, `false` otherwise
      */
     fun open(player: Player, id: String): Boolean {
+        if (id == "team-select" && BingoManager.isGameActive()) {
+            player.sendPrefixed("<red>You cannot open team selection while a game is active.")
+            return false
+        }
+
         val gui = guis[id] ?: return false
         val inventory = Bukkit.createInventory(null, gui.rows * 9, gui.title)
         fillInventory(gui, inventory)
