@@ -1,5 +1,6 @@
 package net.trilleo.mc.plugins.tribingo.managers
 
+import net.trilleo.mc.plugins.tribingo.data.BingoServerData
 import net.trilleo.mc.plugins.tribingo.data.ServerDataManager
 import net.trilleo.mc.plugins.tribingo.items.MainItem
 import net.trilleo.mc.plugins.tribingo.utils.PDCEntryUtil
@@ -29,7 +30,7 @@ class ItemManager(private val plugin: JavaPlugin) {
 
         ItemManager(plugin).clearPluginItems(player)
 
-        if (serverData.getString("bingo_game_state") == "INACTIVE") {
+        if (BingoServerData().gameStateName == "INACTIVE") {
             val mainItem = MainItem(plugin).create()
 
             if (player.inventory.getItem(8) == null) {
