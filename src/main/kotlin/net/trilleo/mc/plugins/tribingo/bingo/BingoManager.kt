@@ -14,6 +14,8 @@ import net.trilleo.mc.plugins.tribingo.enums.GameDifficulty
 import net.trilleo.mc.plugins.tribingo.enums.GameState
 import net.trilleo.mc.plugins.tribingo.guis.BingoBoardGUI
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
+import net.trilleo.mc.plugins.tribingo.utils.TeamUtil
+import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
@@ -159,9 +161,10 @@ object BingoManager {
      * @return a [BingoPlayerState] to track progress against, or `null`
      */
     fun getActiveState(player: Player, objectiveId: String): BingoPlayerState? {
-        // Check active game first
+        // Check active game first — only players on the "player" team can track objectives
         val game = currentGame
         if (game != null && game.state == GameState.ACTIVE) {
+            if (!TeamUtil.isInTeam(player, "player")) return null
             return game.getOrCreateState(player.uniqueId)
         }
         // Fall back to test session
@@ -254,6 +257,7 @@ object BingoManager {
             return
         }
         game.start()
+        applyTeamGameModes()
         remainingSeconds = getTimerSeconds()
         startCountdown()
     }
@@ -268,6 +272,7 @@ object BingoManager {
         if (game.state != GameState.ACTIVE) return
         cancelCountdown()
         game.end(null)
+        restoreGameModes()
     }
 
     /**
@@ -327,6 +332,7 @@ object BingoManager {
 
         val game = currentGame ?: return
         if (game.state != GameState.ACTIVE) return
+        if (!TeamUtil.isInTeam(player, "player")) return
 
         val state = game.getOrCreateState(player.uniqueId)
         val cell = game.board.cells.find { it.objective.id == objective.id } ?: return
@@ -386,6 +392,34 @@ object BingoManager {
         if (game.board.isBoardFull(state)) {
             cancelCountdown()
             game.end(player, state.points)
+            restoreGameModes()
+        }
+    }
+
+    // ── Team Game Mode Management ──────────────────────────────────────────
+
+    /**
+     * Applies game modes based on team membership when a game starts.
+     *
+     * Players on the "player" team are set to [GameMode.SURVIVAL].
+     * Players on the "spectator" team are set to [GameMode.SPECTATOR].
+     */
+    fun applyTeamGameModes() {
+        plugin.server.onlinePlayers.forEach { player ->
+            if (TeamUtil.isInTeam(player, "player")) {
+                player.gameMode = GameMode.SURVIVAL
+            } else if (TeamUtil.isInTeam(player, "spectator")) {
+                player.gameMode = GameMode.SPECTATOR
+            }
+        }
+    }
+
+    /**
+     * Restores all online players to [GameMode.SURVIVAL] when a game ends.
+     */
+    fun restoreGameModes() {
+        plugin.server.onlinePlayers.forEach { player ->
+            player.gameMode = GameMode.SURVIVAL
         }
     }
 
@@ -450,6 +484,7 @@ object BingoManager {
         val topState = game.playerStates.values.maxByOrNull { it.points }
         if (topState == null || topState.points == 0) {
             game.end(null)
+            restoreGameModes()
             return
         }
 
@@ -462,6 +497,7 @@ object BingoManager {
             ?: plugin.server.getOfflinePlayer(topState.uuid).name
             ?: "Unknown"
         game.end(winner, topState.points, winnerName)
+        restoreGameModes()
     }
 
     /**

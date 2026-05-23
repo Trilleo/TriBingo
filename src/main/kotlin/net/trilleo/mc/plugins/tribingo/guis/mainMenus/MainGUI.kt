@@ -5,11 +5,13 @@ import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import net.trilleo.mc.plugins.tribingo.commands.bingo.BingoActions
 import net.trilleo.mc.plugins.tribingo.enums.FillMode
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
 import net.trilleo.mc.plugins.tribingo.registration.PluginGUI
 import net.trilleo.mc.plugins.tribingo.utils.TeamUtil
 import net.trilleo.mc.plugins.tribingo.utils.itemStack
+import net.trilleo.mc.plugins.tribingo.utils.sendPrefixed
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
@@ -131,7 +133,12 @@ class MainGUI(private val plugin: JavaPlugin) : PluginGUI(
         }
         if (event.slot == slotIndex.getValue("startButtonSlot")) {
             player.closeInventory()
-            TODO()
+            if (!player.hasPermission("tribingo.bingo.manage")) {
+                player.sendPrefixed("<red>You don't have permission to start the game.")
+                return
+            }
+            val result = BingoActions.startGame()
+            player.sendPrefixed(result.message)
         }
     }
 }
