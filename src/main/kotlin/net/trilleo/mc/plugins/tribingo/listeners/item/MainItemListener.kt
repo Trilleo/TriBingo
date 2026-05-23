@@ -4,7 +4,6 @@ import net.trilleo.mc.plugins.tribingo.data.ServerDataManager
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
 import net.trilleo.mc.plugins.tribingo.utils.PDCEntryUtil
 import net.trilleo.mc.plugins.tribingo.utils.PDCUtil
-import net.trilleo.mc.plugins.tribingo.utils.sendPrefixed
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action

@@ -87,6 +87,7 @@ class SignInputListener(private val plugin: JavaPlugin) : Listener {
                 }
                 BingoActions.setTimer(0, minutes, seconds)
             }
+
             3 -> {
                 val hours = parts[0].toIntOrNull()
                 val minutes = parts[1].toIntOrNull()
@@ -97,6 +98,7 @@ class SignInputListener(private val plugin: JavaPlugin) : Listener {
                 }
                 BingoActions.setTimer(hours, minutes, seconds)
             }
+
             else -> {
                 player.sendPrefixed("<red>Invalid format. Use <white>MM:SS<red> or <white>HH:MM:SS<red>.")
                 return

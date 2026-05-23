@@ -254,7 +254,10 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
             val completedCount = playerStates.values.count { state ->
                 board.isRowComplete(state, row)
             }
-            inventory.setItem(row * 9 + 1, spectatorIndicatorPane("Row ${row + 1}", linePoints, completedCount, totalPlayers))
+            inventory.setItem(
+                row * 9 + 1,
+                spectatorIndicatorPane("Row ${row + 1}", linePoints, completedCount, totalPlayers)
+            )
         }
 
         // Column indicators
@@ -262,7 +265,10 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
             val completedCount = playerStates.values.count { state ->
                 board.isColComplete(state, col)
             }
-            inventory.setItem(47 + col, spectatorIndicatorPane("Column ${col + 1}", linePoints, completedCount, totalPlayers))
+            inventory.setItem(
+                47 + col,
+                spectatorIndicatorPane("Column ${col + 1}", linePoints, completedCount, totalPlayers)
+            )
         }
 
         // Main diagonal indicator
