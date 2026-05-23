@@ -3,12 +3,14 @@ package net.trilleo.mc.plugins.tribingo.guis
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.trilleo.mc.plugins.tribingo.Main
 import net.trilleo.mc.plugins.tribingo.bingo.BingoBoard
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
 import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.enums.FillMode
 import net.trilleo.mc.plugins.tribingo.registration.PluginGUI
+import net.trilleo.mc.plugins.tribingo.utils.TeamUtil
 import net.trilleo.mc.plugins.tribingo.utils.itemStack
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -17,6 +19,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
 
 /**
  * Chest-based Bingo board viewer for the fixed 5×5 board.
@@ -94,21 +97,30 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
         if (boardRow !in 0 until BingoBoard.SIZE || boardCol !in 0 until BingoBoard.SIZE) return
 
         val cell = game.board.getCell(boardRow, boardCol)
-        val state = game.getOrCreateState(player.uniqueId)
-        val completed = state.isCompleted(cell.cellIndex)
 
         val header = Component.text("── ", NamedTextColor.DARK_GRAY)
             .append(cell.objective.name)
             .append(Component.text(" ──", NamedTextColor.DARK_GRAY))
-        val statusLine = if (completed) {
-            Component.text("  ✓ Completed!", NamedTextColor.GREEN)
-        } else {
-            Component.text("  ○ Not yet completed", NamedTextColor.RED)
-        }
 
         player.sendMessage(header)
         player.sendMessage(cell.objective.description.color(NamedTextColor.GRAY))
-        player.sendMessage(statusLine)
+
+        if (TeamUtil.isInTeam(player, "spectator")) {
+            val completedCount = game.playerStates.values.count { it.isCompleted(cell.cellIndex) }
+            val total = game.playerStates.size
+            player.sendMessage(
+                Component.text("  ○ Completed by $completedCount/$total players", NamedTextColor.YELLOW)
+            )
+        } else {
+            val state = game.getOrCreateState(player.uniqueId)
+            val completed = state.isCompleted(cell.cellIndex)
+            val statusLine = if (completed) {
+                Component.text("  ✓ Completed!", NamedTextColor.GREEN)
+            } else {
+                Component.text("  ○ Not yet completed", NamedTextColor.RED)
+            }
+            player.sendMessage(statusLine)
+        }
     }
 
     // ── Public API ────────────────────────────────────────────────────────
@@ -130,6 +142,9 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
     /**
      * Populates [inventory] with board cells and indicator panes for [player],
      * or a "no game" placeholder if there is no current game.
+     *
+     * Spectators see a combined overview showing how many players have completed
+     * each cell across all player-team participants.
      */
     private fun populateBoard(player: Player, inventory: Inventory) {
         val linePoints = pluginConfig?.linePoints ?: 3
@@ -154,8 +169,28 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
         }
 
         val board = game.board
-        val state = game.getOrCreateState(player.uniqueId)
+        val isSpectator = TeamUtil.isInTeam(player, "spectator")
 
+        if (isSpectator) {
+            populateSpectatorBoard(board, game.playerStates, inventory, linePoints, diagPoints)
+        } else {
+            val state = game.getOrCreateState(player.uniqueId)
+            populatePlayerBoard(player, board, state, inventory, linePoints, diagPoints)
+        }
+    }
+
+    /**
+     * Populates the board for a player on the "player" team, showing their own
+     * progress and completion status.
+     */
+    private fun populatePlayerBoard(
+        player: Player,
+        board: BingoBoard,
+        state: BingoPlayerState,
+        inventory: Inventory,
+        linePoints: Int,
+        diagPoints: Int
+    ) {
         // Board cells: inventory rows 0-4, inventory cols 2-6
         for (boardRow in 0 until BingoBoard.SIZE) {
             for (boardCol in 0 until BingoBoard.SIZE) {
@@ -181,6 +216,86 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
 
         // Anti-diagonal indicator: inventory row 5, col 7 (slot 52)
         inventory.setItem(52, diagPane(main = false, state, board, diagPoints))
+    }
+
+    /**
+     * Populates the board for a spectator, showing a combined overview of all
+     * players' progress. Each cell shows how many players have completed it.
+     */
+    private fun populateSpectatorBoard(
+        board: BingoBoard,
+        playerStates: Map<UUID, BingoPlayerState>,
+        inventory: Inventory,
+        linePoints: Int,
+        diagPoints: Int
+    ) {
+        val totalPlayers = playerStates.size
+
+        // Board cells: show completion count per cell
+        for (boardRow in 0 until BingoBoard.SIZE) {
+            for (boardCol in 0 until BingoBoard.SIZE) {
+                val cell = board.getCell(boardRow, boardCol)
+                val completedCount = playerStates.values.count { it.isCompleted(cell.cellIndex) }
+                val slot = boardRow * 9 + (boardCol + 2)
+                val material = if (completedCount > 0) Material.LIME_STAINED_GLASS_PANE
+                else Material.RED_STAINED_GLASS_PANE
+                inventory.setItem(slot, itemStack(material) {
+                    name("<white>${PlainTextComponentSerializer.plainText().serialize(cell.objective.name)}")
+                    lore(
+                        "<gray>Completed by: <white>$completedCount<gray>/$totalPlayers players"
+                    )
+                    if (completedCount > 0) amount(completedCount.coerceIn(1, 64))
+                })
+            }
+        }
+
+        // Row indicators: show how many players have completed the full row
+        for (row in 0 until BingoBoard.SIZE) {
+            val completedCount = playerStates.values.count { state ->
+                board.isRowComplete(state, row)
+            }
+            inventory.setItem(row * 9 + 1, spectatorIndicatorPane("Row ${row + 1}", linePoints, completedCount, totalPlayers))
+        }
+
+        // Column indicators
+        for (col in 0 until BingoBoard.SIZE) {
+            val completedCount = playerStates.values.count { state ->
+                board.isColComplete(state, col)
+            }
+            inventory.setItem(47 + col, spectatorIndicatorPane("Column ${col + 1}", linePoints, completedCount, totalPlayers))
+        }
+
+        // Main diagonal indicator
+        val mainDiagCount = playerStates.values.count { state -> board.isDiagMainComplete(state) }
+        inventory.setItem(46, spectatorIndicatorPane("Main Diagonal ↘", diagPoints, mainDiagCount, totalPlayers))
+
+        // Anti-diagonal indicator
+        val antiDiagCount = playerStates.values.count { state -> board.isDiagAntiComplete(state) }
+        inventory.setItem(52, spectatorIndicatorPane("Anti Diagonal ↗", diagPoints, antiDiagCount, totalPlayers))
+    }
+
+    /**
+     * Builds an indicator pane for spectator view showing how many players
+     * completed a line.
+     */
+    private fun spectatorIndicatorPane(
+        label: String,
+        bonusPoints: Int,
+        completedCount: Int,
+        totalPlayers: Int
+    ): ItemStack {
+        val material = if (completedCount > 0) Material.GREEN_STAINED_GLASS_PANE
+        else Material.BLACK_STAINED_GLASS_PANE
+        val nameColor = if (completedCount > 0) "<green>" else "<gray>"
+        val suffix = if (bonusPoints == 1) "" else "s"
+        return itemStack(material) {
+            name("$nameColor$label")
+            lore(
+                "<gray>Bonus: <gold>+$bonusPoints pt$suffix",
+                "",
+                "<gray>Completed by: <white>$completedCount<gray>/$totalPlayers players"
+            )
+        }
     }
 
     // ── Indicator pane builders ───────────────────────────────────────────
