@@ -6,7 +6,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.trilleo.mc.plugins.tribingo.enums.FillMode
-import net.trilleo.mc.plugins.tribingo.managers.GameManager
 import net.trilleo.mc.plugins.tribingo.registration.GUIManager
 import net.trilleo.mc.plugins.tribingo.registration.PluginGUI
 import net.trilleo.mc.plugins.tribingo.utils.TeamUtil
@@ -20,7 +19,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.UUID
+import java.util.*
 
 class MainGUI(private val plugin: JavaPlugin) : PluginGUI(
     id = "main",
@@ -33,6 +32,7 @@ class MainGUI(private val plugin: JavaPlugin) : PluginGUI(
         "creditsButtonSlot" to 15,
         "settingsButtonSlot" to 11,
         "teamSelectButtonSlot" to 31,
+        "bingoBoardButtonSlot" to 45,
         "closeButtonSlot" to 49
     )
 
@@ -87,11 +87,21 @@ class MainGUI(private val plugin: JavaPlugin) : PluginGUI(
             )
             flag(ItemFlag.HIDE_ATTRIBUTES)
         }
+        val bingoBoardButton = itemStack(Material.FILLED_MAP) {
+            name("<bold><gold>✦ Bingo Board ✦")
+            lore(
+                " ",
+                "<dark_gray>=====================",
+                "<gray>View the Bingo board",
+                "<dark_gray>====================="
+            )
+        }
 
         inventory.setItem(slotIndex.getValue("startButtonSlot"), startButton)
         inventory.setItem(slotIndex.getValue("creditsButtonSlot"), creditsButton)
         inventory.setItem(slotIndex.getValue("settingsButtonSlot"), settingsButton)
         inventory.setItem(slotIndex.getValue("teamSelectButtonSlot"), teamSelectButton)
+        inventory.setItem(slotIndex.getValue("bingoBoardButtonSlot"), bingoBoardButton)
         inventory.setItem(slotIndex.getValue("closeButtonSlot"), closeButton)
     }
 
@@ -115,6 +125,9 @@ class MainGUI(private val plugin: JavaPlugin) : PluginGUI(
         }
         if (event.slot == slotIndex.getValue("teamSelectButtonSlot")) {
             GUIManager.open(player, "team-select")
+        }
+        if (event.slot == slotIndex.getValue("bingoBoardButtonSlot")) {
+            GUIManager.open(player, "bingo_board")
         }
         if (event.slot == slotIndex.getValue("startButtonSlot")) {
             player.closeInventory()
