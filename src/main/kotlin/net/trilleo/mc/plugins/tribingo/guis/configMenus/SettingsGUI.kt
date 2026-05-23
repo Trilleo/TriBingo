@@ -42,6 +42,7 @@ class SettingsGUI : PluginGUI(
         "stopSlot" to 32,
         "resetSlot" to 34,
         "refreshSlot" to 16,
+        "gameRuleButtonSlot" to 53,
         "backButtonSlot" to 48,
         "closeButtonSlot" to 49
     )
@@ -60,6 +61,7 @@ class SettingsGUI : PluginGUI(
         }
 
         when (event.slot) {
+            slotIndex.getValue("gameRuleButtonSlot") -> GUIManager.open(player, "gamerule")
             slotIndex.getValue("closeButtonSlot") -> player.closeInventory()
             slotIndex.getValue("backButtonSlot") -> GUIManager.open(player, "main")
             slotIndex.getValue("difficultySlot") -> handleDifficulty(player, event.inventory)
@@ -315,6 +317,14 @@ class SettingsGUI : PluginGUI(
             }
         }
 
+        val gameRuleButton = itemStack(Material.GRASS_BLOCK) {
+            name("<bold><yellow>GameRule Modifier")
+            lore(
+                "   ",
+                "<gray>Change Minecraft game rules"
+            )
+        }
+
         val backButton = itemStack(Material.ARROW) {
             name("<bold><gray>Back")
         }
@@ -329,6 +339,7 @@ class SettingsGUI : PluginGUI(
         inventory.setItem(slotIndex.getValue("stopSlot"), stopItem)
         inventory.setItem(slotIndex.getValue("resetSlot"), resetItem)
         inventory.setItem(slotIndex.getValue("refreshSlot"), refreshItem)
+        inventory.setItem(slotIndex.getValue("gameRuleButtonSlot"), gameRuleButton)
         inventory.setItem(slotIndex.getValue("backButtonSlot"), backButton)
         inventory.setItem(slotIndex.getValue("closeButtonSlot"), closeButton)
     }
