@@ -35,13 +35,13 @@ class SettingsGUI : PluginGUI(
     fillMode = FillMode.LIGHT
 ) {
     val slotIndex: Map<String, Int> = mapOf(
-        "difficultySlot" to 11,
-        "timerSlot" to 13,
-        "statusSlot" to 15,
-        "startSlot" to 29,
-        "stopSlot" to 31,
-        "resetSlot" to 33,
-        "refreshSlot" to 40,
+        "difficultySlot" to 12,
+        "timerSlot" to 14,
+        "statusSlot" to 19,
+        "startSlot" to 30,
+        "stopSlot" to 32,
+        "resetSlot" to 34,
+        "refreshSlot" to 16,
         "backButtonSlot" to 48,
         "closeButtonSlot" to 49
     )
@@ -153,18 +153,18 @@ class SettingsGUI : PluginGUI(
             if (hasPermission) {
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     "<gray>Current: <white>${difficulty.name}",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     "   ",
                     "<yellow>Click to cycle"
                 )
             } else {
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     "<gray>Current: <white>${difficulty.name}",
-                    "<dark_gray>====================="
+                    "<dark_gray>========================="
                 )
             }
         }
@@ -175,18 +175,18 @@ class SettingsGUI : PluginGUI(
             if (hasPermission) {
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     "<gray>Current: <white>${formatSeconds(timerSeconds)}",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     "   ",
                     "<yellow>Click to set via sign"
                 )
             } else {
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     "<gray>Current: <white>${formatSeconds(timerSeconds)}",
-                    "<dark_gray>====================="
+                    "<dark_gray>========================="
                 )
             }
         }
@@ -201,12 +201,12 @@ class SettingsGUI : PluginGUI(
             name("<bold><white>Status")
             lore(
                 " ",
-                "<dark_gray>=====================",
+                "<dark_gray>=========================",
                 "<gray>State: <white>${state.name}",
                 "<gray>Difficulty: <white>${difficulty.name}",
                 "<gray>Timer: <white>${formatSeconds(timerSeconds)}",
                 "<gray>Players: <white>${game?.playerStates?.size ?: 0}",
-                "<dark_gray>====================="
+                "<dark_gray>========================="
             )
         }
 
@@ -216,9 +216,9 @@ class SettingsGUI : PluginGUI(
                 name("<bold><green>Start Game")
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     "<gray>Start the Bingo game",
-                    "<dark_gray>====================="
+                    "<dark_gray>========================="
                 )
                 enchant(Enchantment.KNOCKBACK, 1)
                 flag(ItemFlag.HIDE_ENCHANTS)
@@ -228,10 +228,10 @@ class SettingsGUI : PluginGUI(
                 name("<bold><green>Start Game")
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     if (!hasPermission) "<red>No permission"
                     else "<red>Not available in state: $state",
-                    "<dark_gray>====================="
+                    "<dark_gray>========================="
                 )
             }
         }
@@ -242,9 +242,9 @@ class SettingsGUI : PluginGUI(
                 name("<bold><red>Stop Game")
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     "<gray>Stop the current game",
-                    "<dark_gray>====================="
+                    "<dark_gray>========================="
                 )
                 enchant(Enchantment.KNOCKBACK, 1)
                 flag(ItemFlag.HIDE_ENCHANTS)
@@ -254,10 +254,10 @@ class SettingsGUI : PluginGUI(
                 name("<bold><red>Stop Game")
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     if (!hasPermission) "<red>No permission"
                     else "<red>No active game to stop",
-                    "<dark_gray>====================="
+                    "<dark_gray>========================="
                 )
             }
         }
@@ -268,9 +268,9 @@ class SettingsGUI : PluginGUI(
                 name("<bold><yellow>Reset Game")
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     "<gray>Reset all player progress",
-                    "<dark_gray>====================="
+                    "<dark_gray>========================="
                 )
                 enchant(Enchantment.KNOCKBACK, 1)
                 flag(ItemFlag.HIDE_ENCHANTS)
@@ -280,11 +280,11 @@ class SettingsGUI : PluginGUI(
                 name("<bold><yellow>Reset Game")
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     if (!hasPermission) "<red>No permission"
                     else if (game == null) "<red>No game exists"
                     else "<red>Cannot reset during active game",
-                    "<dark_gray>====================="
+                    "<dark_gray>========================="
                 )
             }
         }
@@ -295,9 +295,9 @@ class SettingsGUI : PluginGUI(
                 name("<bold><aqua>Refresh Board")
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     "<gray>Pick new random objectives",
-                    "<dark_gray>====================="
+                    "<dark_gray>========================="
                 )
                 enchant(Enchantment.KNOCKBACK, 1)
                 flag(ItemFlag.HIDE_ENCHANTS)
@@ -307,10 +307,10 @@ class SettingsGUI : PluginGUI(
                 name("<bold><aqua>Refresh Board")
                 lore(
                     " ",
-                    "<dark_gray>=====================",
+                    "<dark_gray>=========================",
                     if (!hasPermission) "<red>No permission"
                     else "<red>Game must be INACTIVE to refresh",
-                    "<dark_gray>====================="
+                    "<dark_gray>========================="
                 )
             }
         }
