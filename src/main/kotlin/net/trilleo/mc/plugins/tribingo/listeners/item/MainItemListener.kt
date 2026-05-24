@@ -17,15 +17,17 @@ class MainItemListener(private val plugin: JavaPlugin) : Listener {
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val player = event.player
         val item = event.item
-        if (event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK) {
-            if (item != null && PDCUtil.get(
-                    item,
-                    PDCEntryUtil.PDCKey(plugin).itemIdentifierKey,
-                    PersistentDataType.STRING
-                ) == PDCEntryUtil.PDCValue().mainItemIdentifier
-            ) {
-                event.isCancelled = true
+        if (item != null && PDCUtil.get(
+                item,
+                PDCEntryUtil.PDCKey(plugin).itemIdentifierKey,
+                PersistentDataType.STRING
+            ) == PDCEntryUtil.PDCValue().mainItemIdentifier
+        ) {
+            event.isCancelled = true
+            if (event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK) {
                 GUIManager.open(player, "main")
+            } else if (event.action == Action.LEFT_CLICK_AIR || event.action == Action.LEFT_CLICK_BLOCK) {
+                GUIManager.open(player, "bingo_board")
             }
         }
     }

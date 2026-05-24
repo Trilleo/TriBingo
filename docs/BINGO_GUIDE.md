@@ -736,6 +736,13 @@ slot(row, col) = (vertPad + row) * 9 + (horizPad + col)
 
 For example, a 5×5 board (`vertPad = 0`, `horizPad = 2`) occupies slots 2–6, 11–15, 20–24, 29–33, 38–42.
 
+Indicator panes use the remaining U-shape around the board:
+
+- Row indicators: slots `1, 10, 19, 28, 37`
+- Column indicators: slots `47-51`
+- Anti diagonal (`↗`): slot `46` (bottom-left indicator)
+- Main diagonal (`↘`): slot `52` (bottom-right indicator)
+
 ### Cell Appearance
 
 Each cell is rendered by `BingoObjective.displayItem(player, completed)`:
