@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.trilleo.mc.plugins.tribingo.Main
 import net.trilleo.mc.plugins.tribingo.bingo.BingoBoard
+import net.trilleo.mc.plugins.tribingo.bingo.BingoGame
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
 import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.enums.FillMode
@@ -39,10 +40,11 @@ import java.util.*
  * ```
  * - **BG** – black glass pane filler
  * - **R0–R4** – row indicator panes (col 1, rows 0–4)
- * - **B[r][c]** – board cell at board row r, col c (inventory cols 2–6)
+ * - **B[r, c]** – board cell at board row r, col c (inventory cols 2–6)
  * - **C0–C4** – column indicator panes (row 5, cols 2–6)
  * - **D↗** – anti-diagonal indicator (row 5, col 1)
  * - **D↘** – main diagonal indicator (row 5, col 7)
+ * - **P** – points leaderboard button (row 5, col 8)
  *
  * Indicator panes are **black** when the corresponding line is incomplete and
  * turn **green** when the player has completed it.  The lore shows the bonus
@@ -86,10 +88,16 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
     override fun onClick(event: InventoryClickEvent) {
         event.isCancelled = true
         val player = event.whoClicked as? Player ?: return
-        val game = BingoManager.currentGame ?: return
 
         val slot = event.rawSlot
         if (slot !in 0 until 54) return
+
+        if (slot == 53) {
+            showPointsLeaderboard(player, BingoManager.currentGame)
+            return
+        }
+
+        val game = BingoManager.currentGame ?: return
 
         // Board occupies inventory rows 0-4, inventory cols 2-6
         val boardRow = slot / 9
@@ -154,6 +162,7 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
         for (i in 0 until 54) inventory.setItem(i, filler.clone())
 
         val game = BingoManager.currentGame
+        inventory.setItem(53, pointsButton(game))
         if (game == null) {
             inventory.setItem(
                 22,
@@ -382,6 +391,64 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
             )
         }
     }
+
+    private fun pointsButton(game: BingoGame?): ItemStack {
+        val trackedPlayers = game?.playerStates?.size ?: 0
+        return itemStack(Material.OAK_SIGN) {
+            name(if (game == null) "<bold><red>Leaderboard" else "<bold><gold>Leaderboard")
+            val loreLines = if (game == null) {
+                arrayOf(
+                    "<gray>No bingo game is currently running.",
+                    "<gray>Start a game to view the leaderboard."
+                )
+            } else {
+                arrayOf(
+                    "<gray>Click to view all tracked players",
+                    "<gray>sorted from <gold>highest<gray> to <gold>lowest<gray>.",
+                    "",
+                    "<gray>Players tracked: <white>$trackedPlayers"
+                )
+            }
+            lore(*loreLines)
+        }
+    }
+
+    private fun showPointsLeaderboard(player: Player, game: BingoGame?) {
+        if (game == null) {
+            player.sendMessage(Component.text("No bingo game is currently running.", NamedTextColor.RED))
+            return
+        }
+
+        val entries = game.playerStates.entries
+            .map { (uuid, state) -> resolvePlayerName(player, uuid) to state.points }
+            .sortedWith(compareByDescending<Pair<String, Int>> { it.second }.thenBy { it.first.lowercase() })
+
+        player.sendMessage(
+            Component.text("── Bingo Points Leaderboard ──", NamedTextColor.GOLD)
+                .decoration(TextDecoration.BOLD, true)
+        )
+
+        if (entries.isEmpty()) {
+            player.sendMessage(Component.text("No player points have been tracked yet.", NamedTextColor.GRAY))
+            return
+        }
+
+        entries.forEachIndexed { index, (name, points) ->
+            player.sendMessage(
+                Component.text()
+                    .append(Component.text("${index + 1}. ", NamedTextColor.DARK_GRAY))
+                    .append(Component.text(name, NamedTextColor.YELLOW))
+                    .append(Component.text(" - ", NamedTextColor.GRAY))
+                    .append(Component.text(points.toString(), NamedTextColor.GREEN))
+                    .append(Component.text(" point${if (points == 1) "" else "s"}", NamedTextColor.GRAY))
+                    .build()
+            )
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun resolvePlayerName(player: Player, uuid: UUID): String =
+        player.server.getOfflinePlayer(uuid).name ?: uuid.toString().take(8)
 
     private fun blackGlass(): ItemStack = itemStack(Material.BLACK_STAINED_GLASS_PANE) {
         name(" ")
