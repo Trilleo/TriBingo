@@ -10,9 +10,12 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class MainItem(private val plugin: JavaPlugin) : PluginItem("main-item") {
     override fun buildItem(amount: Int): ItemStack = itemStack(Material.NETHER_STAR) {
-        name("<gold><bold>TriBingo Menu")
+        name("<gold><bold>TriBingo Navigator")
         lore(
-            "<gray>[Right Click] to open"
+            " ",
+            "<gray>[Right Click] to open the main menu",
+            " ",
+            "<gray>[Left Click] to open the bingo board"
         )
         pdc(
             PDCEntryUtil.PDCKey(plugin).itemIdentifierKey,
