@@ -44,6 +44,7 @@ import java.util.*
  * - **C0–C4** – column indicator panes (row 5, cols 2–6)
  * - **D↗** – anti-diagonal indicator (row 5, col 1)
  * - **D↘** – main diagonal indicator (row 5, col 7)
+ * - **Y** – viewer points item (row 5, col 0)
  * - **P** – points leaderboard button (row 5, col 8)
  *
  * Indicator panes are **black** when the corresponding line is incomplete and
@@ -162,6 +163,7 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
         for (i in 0 until 54) inventory.setItem(i, filler.clone())
 
         val game = BingoManager.currentGame
+        inventory.setItem(45, viewerPointsItem(player, game))
         inventory.setItem(53, pointsButton(game))
         if (game == null) {
             inventory.setItem(
@@ -407,6 +409,23 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
                     "<gray>sorted from <gold>highest<gray> to <gold>lowest<gray>.",
                     "",
                     "<gray>Players tracked: <white>$trackedPlayers"
+                )
+            }
+            lore(*loreLines)
+        }
+    }
+
+    private fun viewerPointsItem(player: Player, game: BingoGame?): ItemStack {
+        val points = game?.playerStates?.get(player.uniqueId)?.points ?: 0
+        val hasGame = game != null
+        return itemStack(Material.EMERALD) {
+            name(if (hasGame) "<bold><green>Your Points" else "<bold><gray>Your Points")
+            val loreLines = if (hasGame) {
+                arrayOf("<gray>Your current Bingo points are <gold>$points<gray>.")
+            } else {
+                arrayOf(
+                    "<gray>No bingo game is currently running.",
+                    "<gray>Your current Bingo points are <gold>$points<gray>."
                 )
             }
             lore(*loreLines)
