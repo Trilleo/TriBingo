@@ -35,14 +35,14 @@ import java.util.*
  * Row 2: [BG] [R2] [B20] [B21] [B22] [B23] [B24] [BG] [BG]
  * Row 3: [BG] [R3] [B30] [B31] [B32] [B33] [B34] [BG] [BG]
  * Row 4: [BG] [R4] [B40] [B41] [B42] [B43] [B44] [BG] [BG]
- * Row 5: [BG] [D↘] [C0]  [C1]  [C2]  [C3]  [C4] [D↗] [BG]
+ * Row 5: [BG] [D↗] [C0]  [C1]  [C2]  [C3]  [C4] [D↘] [BG]
  * ```
  * - **BG** – black glass pane filler
  * - **R0–R4** – row indicator panes (col 1, rows 0–4)
  * - **B[r][c]** – board cell at board row r, col c (inventory cols 2–6)
  * - **C0–C4** – column indicator panes (row 5, cols 2–6)
- * - **D↘** – main diagonal indicator (row 5, col 1)
- * - **D↗** – anti-diagonal indicator (row 5, col 7)
+ * - **D↗** – anti-diagonal indicator (row 5, col 1)
+ * - **D↘** – main diagonal indicator (row 5, col 7)
  *
  * Indicator panes are **black** when the corresponding line is incomplete and
  * turn **green** when the player has completed it.  The lore shows the bonus
@@ -211,11 +211,11 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
             inventory.setItem(47 + col, colPane(col, state, board, linePoints))
         }
 
-        // Main diagonal indicator: inventory row 5, col 1 (slot 46)
-        inventory.setItem(46, diagPane(main = true, state, board, diagPoints))
+        // Anti-diagonal indicator: inventory row 5, col 1 (slot 46)
+        inventory.setItem(46, diagPane(main = false, state, board, diagPoints))
 
-        // Anti-diagonal indicator: inventory row 5, col 7 (slot 52)
-        inventory.setItem(52, diagPane(main = false, state, board, diagPoints))
+        // Main diagonal indicator: inventory row 5, col 7 (slot 52)
+        inventory.setItem(52, diagPane(main = true, state, board, diagPoints))
     }
 
     /**
@@ -271,13 +271,13 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
             )
         }
 
-        // Main diagonal indicator
-        val mainDiagCount = playerStates.values.count { state -> board.isDiagMainComplete(state) }
-        inventory.setItem(46, spectatorIndicatorPane("Main Diagonal ↘", diagPoints, mainDiagCount, totalPlayers))
-
         // Anti-diagonal indicator
         val antiDiagCount = playerStates.values.count { state -> board.isDiagAntiComplete(state) }
-        inventory.setItem(52, spectatorIndicatorPane("Anti Diagonal ↗", diagPoints, antiDiagCount, totalPlayers))
+        inventory.setItem(46, spectatorIndicatorPane("Anti Diagonal ↗", diagPoints, antiDiagCount, totalPlayers))
+
+        // Main diagonal indicator
+        val mainDiagCount = playerStates.values.count { state -> board.isDiagMainComplete(state) }
+        inventory.setItem(52, spectatorIndicatorPane("Main Diagonal ↘", diagPoints, mainDiagCount, totalPlayers))
     }
 
     /**
