@@ -4,7 +4,7 @@ package net.trilleo.mc.plugins.tribingo.registration
  * Base class for all plugin tasks.
  *
  * Extend this class and place the subclass anywhere inside the
- * `net.trilleo.mc.plugins.trihunt.tasks` package (or any subpackage) to
+ * `net.trilleo.mc.plugins.tribingo.tasks` package (or any subpackage) to
  * have it automatically discovered, instantiated, and scheduled at startup.
  *
  * The class must have either:
@@ -14,7 +14,7 @@ package net.trilleo.mc.plugins.tribingo.registration
  *
  * Example (repeating sync task – runs every 5 minutes after a 1-minute delay):
  * ```kotlin
- * package net.trilleo.mc.plugins.trihunt.tasks
+ * package net.trilleo.mc.plugins.tribingo.tasks
  *
  * class BroadcastTask : PluginTask(
  *     delay = 1200L,
@@ -28,7 +28,7 @@ package net.trilleo.mc.plugins.tribingo.registration
  *
  * Example (one-shot async task – runs once after a 5-second delay):
  * ```kotlin
- * package net.trilleo.mc.plugins.trihunt.tasks
+ * package net.trilleo.mc.plugins.tribingo.tasks
  *
  * class CleanupTask : PluginTask(
  *     delay = 100L,

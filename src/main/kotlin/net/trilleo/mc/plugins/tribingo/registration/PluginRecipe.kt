@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin
  * Base class for all plugin recipes.
  *
  * Extend this class and place the subclass anywhere inside the
- * `net.trilleo.mc.plugins.trihunt.recipes` package (or any subpackage) to have it
+ * `net.trilleo.mc.plugins.tribingo.recipes` package (or any subpackage) to have it
  * automatically discovered and registered at startup by [RecipeRegistrar].
  *
  * All Minecraft crafting containers are supported depending on the
@@ -35,10 +35,10 @@ import org.bukkit.plugin.java.JavaPlugin
  *
  * Example (shaped crafting recipe using both vanilla and custom ingredients):
  * ```kotlin
- * package net.trilleo.mc.plugins.trihunt.recipes
+ * package net.trilleo.mc.plugins.tribingo.recipes
  *
- * import net.trilleo.mc.plugins.trihunt.items.ExampleItem
- * import net.trilleo.mc.plugins.trihunt.registration.PluginRecipe
+ * import net.trilleo.mc.plugins.tribingo.items.ExampleItem
+ * import net.trilleo.mc.plugins.tribingo.registration.PluginRecipe
  * import org.bukkit.Material
  * import org.bukkit.NamespacedKey
  * import org.bukkit.inventory.Recipe

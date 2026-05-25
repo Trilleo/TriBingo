@@ -9,7 +9,7 @@ import org.bukkit.persistence.PersistentDataType
  * Base class for all custom plugin items.
  *
  * Extend this class (or declare a Kotlin `object`) and place it anywhere inside
- * the `net.trilleo.mc.plugins.trihunt.items` package (or a subpackage). The item is
+ * the `net.trilleo.mc.plugins.tribingo.items` package (or a subpackage). The item is
  * automatically discovered by [ItemRegistrar] at startup.
  *
  * Every stack produced by [create] has the item's [id] embedded in its
@@ -21,10 +21,10 @@ import org.bukkit.persistence.PersistentDataType
  * referenced directly in recipe files:
  *
  * ```kotlin
- * package net.trilleo.mc.plugins.trihunt.items
+ * package net.trilleo.mc.plugins.tribingo.items
  *
- * import net.trilleo.mc.plugins.trihunt.registration.PluginItem
- * import net.trilleo.mc.plugins.trihunt.utils.itemStack
+ * import net.trilleo.mc.plugins.tribingo.registration.PluginItem
+ * import net.trilleo.mc.plugins.tribingo.utils.itemStack
  * import org.bukkit.Material
  * import org.bukkit.inventory.ItemStack
  *

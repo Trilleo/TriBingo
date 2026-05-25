@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender
  * Base class for all plugin commands.
  *
  * Extend this class and place the subclass anywhere inside the
- * `net.trilleo.mc.plugins.trihunt.commands` package (or any subpackage) to
+ * `net.trilleo.mc.plugins.tribingo.commands` package (or any subpackage) to
  * have it automatically discovered and registered at startup.
  *
  * By default every command is registered as a **sub-command** of `/tribingo`
@@ -21,7 +21,7 @@ import org.bukkit.command.CommandSender
  *
  * Example (sub-command – registered as `/tribingo start`):
  * ```kotlin
- * package net.trilleo.mc.plugins.trihunt.commands.game
+ * package net.trilleo.mc.plugins.tribingo.commands.game
  *
  * class StartCommand : PluginCommand(
  *     name = "start",
@@ -38,7 +38,7 @@ import org.bukkit.command.CommandSender
  *
  * Example (main command – registered as `/globaltool`):
  * ```kotlin
- * package net.trilleo.mc.plugins.trihunt.commands
+ * package net.trilleo.mc.plugins.tribingo.commands
  *
  * class GlobalToolCommand : PluginCommand(
  *     name = "globaltool",
