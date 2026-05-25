@@ -78,7 +78,9 @@ open class SecretBingoObjective(
             .append(difficulty.displayName().decoration(TextDecoration.ITALIC, false))
 
         // Secret tag
-        lore += Component.text("⚡ Secret", NamedTextColor.LIGHT_PURPLE)
+        lore += Component.empty()
+
+        lore += Component.text("⚡ Secret Objective", NamedTextColor.LIGHT_PURPLE)
             .decoration(TextDecoration.ITALIC, false)
 
         lore += Component.empty()
