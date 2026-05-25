@@ -14,7 +14,7 @@ import org.bukkit.entity.Player
  * ### Usage
  *
  * ```kotlin
- * import net.trilleo.mc.plugins.trihunt.utils.sendPrefixed
+ * import net.trilleo.mc.plugins.tribingo.utils.sendPrefixed
  *
  * // Plain text or MiniMessage string
  * player.sendPrefixed("Hello!")

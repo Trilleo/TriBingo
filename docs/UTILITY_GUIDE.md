@@ -1,6 +1,6 @@
 # TriBingo - Utility Guide
 
-This guide covers the utility helpers provided in `net.trilleo.mc.plugins.trihunt.utils`. Each utility is designed to
+This guide covers the utility helpers provided in `net.trilleo.mc.plugins.tribingo.utils`. Each utility is designed to
 reduce boilerplate and provide commonly needed functionality out of the box.
 
 | Utility         | Description                                                        |
@@ -18,7 +18,7 @@ reduce boilerplate and provide commonly needed functionality out of the box.
 ## ItemStack Builder DSL
 
 Building `ItemStack` instances with custom names, lore, enchantments, and flags normally requires verbose boilerplate.
-The `itemStack` DSL in `net.trilleo.mc.plugins.trihunt.utils` lets you create fully configured items in a single
+The `itemStack` DSL in `net.trilleo.mc.plugins.tribingo.utils` lets you create fully configured items in a single
 expression. All text is parsed through
 [MiniMessage](https://docs.advntr.dev/minimessage/index.html), so rich formatting tags like `<bold>`, `<red>`, and
 `<gradient>` work out of the box.
@@ -44,7 +44,7 @@ item.itemMeta = meta
 ### After (using the DSL)
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.itemStack
+import net.trilleo.mc.plugins.tribingo.utils.itemStack
 
 val item = itemStack(Material.DIAMOND_SWORD) {
     name("<bold><gradient:gold:yellow>Excalibur</gradient></bold>")
@@ -76,7 +76,7 @@ For advanced use-cases not covered by the builder methods, the `meta` block give
 `ItemMeta`. Any changes made inside `meta` are applied **after** all other builder properties, so they take precedence:
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.itemStack
+import net.trilleo.mc.plugins.tribingo.utils.itemStack
 
 val head = itemStack(Material.PLAYER_HEAD) {
     name("<yellow>Custom Head")
@@ -100,8 +100,8 @@ message and callback when the countdown reaches zero.
 ### Usage
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.CountdownUtil
-import net.trilleo.mc.plugins.trihunt.enums.DisplayLocation
+import net.trilleo.mc.plugins.tribingo.utils.CountdownUtil
+import net.trilleo.mc.plugins.tribingo.enums.DisplayLocation
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 
@@ -147,8 +147,8 @@ Either or both placeholders may be omitted from the message string.
 ### Example (Chat Countdown)
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.CountdownUtil
-import net.trilleo.mc.plugins.trihunt.enums.DisplayLocation
+import net.trilleo.mc.plugins.tribingo.utils.CountdownUtil
+import net.trilleo.mc.plugins.tribingo.enums.DisplayLocation
 
 CountdownUtil().start(
     plugin = plugin,
@@ -164,8 +164,8 @@ CountdownUtil().start(
 ### Example (Boss Bar Countdown)
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.CountdownUtil
-import net.trilleo.mc.plugins.trihunt.enums.DisplayLocation
+import net.trilleo.mc.plugins.tribingo.utils.CountdownUtil
+import net.trilleo.mc.plugins.tribingo.enums.DisplayLocation
 import net.kyori.adventure.bossbar.BossBar
 
 CountdownUtil().start(
@@ -193,7 +193,7 @@ into the server-data JSON immediately, so they are flushed to disk when
 ### Usage
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.TeamUtil
+import net.trilleo.mc.plugins.tribingo.utils.TeamUtil
 
 // Create a team (returns false if the name is already taken)
 TeamUtil.createTeam("red", "<red>Red Team")
@@ -271,7 +271,7 @@ JSON directly (outside of `TeamUtil`), call `TeamUtil.invalidateCache()` to forc
 ### Example (Game Setup)
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.TeamUtil
+import net.trilleo.mc.plugins.tribingo.utils.TeamUtil
 import org.bukkit.entity.Player
 
 fun setupGame(players: List<Player>) {
@@ -305,7 +305,7 @@ explicit setup is required.
 ### Usage
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.TagUtil
+import net.trilleo.mc.plugins.tribingo.utils.TagUtil
 
 // Add a tag (returns false if the player already has it)
 TagUtil.addTag(player, "vip")
@@ -344,7 +344,7 @@ is called during `JavaPlugin.onDisable`. No extra save call is needed.
 ### Example (Permission Gate)
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.TagUtil
+import net.trilleo.mc.plugins.tribingo.utils.TagUtil
 import org.bukkit.entity.Player
 
 fun onEnterVipArea(player: Player) {
@@ -381,7 +381,7 @@ message-prefix: "<gray>[<gold>TriBingo<gray>]"
 ### Usage
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.sendPrefixed
+import net.trilleo.mc.plugins.tribingo.utils.sendPrefixed
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 
@@ -409,7 +409,7 @@ player.sendPrefixed(Component.text("Hello!", NamedTextColor.GREEN))
 ### Example (Listener)
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.sendPrefixed
+import net.trilleo.mc.plugins.tribingo.utils.sendPrefixed
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -440,7 +440,7 @@ immediately so the item is always consistent after the call.
 ### Usage (Entity / Chunk)
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.PDCUtil
+import net.trilleo.mc.plugins.tribingo.utils.PDCUtil
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataType
 
@@ -475,7 +475,7 @@ PDCUtil.keys(chunk)
 ### Usage (ItemStack)
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.PDCUtil
+import net.trilleo.mc.plugins.tribingo.utils.PDCUtil
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataType
 
@@ -516,7 +516,7 @@ the `meta` escape-hatch block, so the
 `meta` block can still override them if needed.
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.itemStack
+import net.trilleo.mc.plugins.tribingo.utils.itemStack
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataType
@@ -536,8 +536,8 @@ val item = itemStack(Material.DIAMOND_SWORD) {
 A common use-case is marking items with a unique identifier so you can distinguish plugin items from regular ones:
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.PDCUtil
-import net.trilleo.mc.plugins.trihunt.utils.itemStack
+import net.trilleo.mc.plugins.tribingo.utils.PDCUtil
+import net.trilleo.mc.plugins.tribingo.utils.itemStack
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
@@ -571,7 +571,7 @@ specialisation for boolean rules that flips the current value without requiring 
 ### Usage
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.GameRuleUtil
+import net.trilleo.mc.plugins.tribingo.utils.GameRuleUtil
 import org.bukkit.GameRule
 
 // Read a rule
@@ -597,7 +597,7 @@ val newValue: Boolean? = GameRuleUtil.toggle(world, GameRule.DO_DAYLIGHT_CYCLE)
 ### Example (Cycle Day and Weather)
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.GameRuleUtil
+import net.trilleo.mc.plugins.tribingo.utils.GameRuleUtil
 import org.bukkit.GameRule
 
 // Pause the day/night cycle and weather during a mini-game
@@ -616,7 +616,7 @@ fun unfreezeWorld(world: org.bukkit.World) {
 ### Example (Toggle)
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.utils.GameRuleUtil
+import net.trilleo.mc.plugins.tribingo.utils.GameRuleUtil
 import org.bukkit.GameRule
 
 // Toggle keep-inventory on command

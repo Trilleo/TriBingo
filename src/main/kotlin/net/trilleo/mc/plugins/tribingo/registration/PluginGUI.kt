@@ -11,7 +11,7 @@ import org.bukkit.inventory.Inventory
  * Base class for all plugin GUIs (chest-based inventory menus).
  *
  * Extend this class and place the subclass anywhere inside the
- * `net.trilleo.mc.plugins.trihunt.guis` package (or any subpackage) to
+ * `net.trilleo.mc.plugins.tribingo.guis` package (or any subpackage) to
  * have it automatically discovered and registered at startup.
  *
  * The class must have either:
@@ -21,7 +21,7 @@ import org.bukkit.inventory.Inventory
  *
  * Example:
  * ```kotlin
- * package net.trilleo.mc.plugins.trihunt.guis
+ * package net.trilleo.mc.plugins.tribingo.guis
  *
  * import org.bukkit.Material
  * import org.bukkit.inventory.ItemStack

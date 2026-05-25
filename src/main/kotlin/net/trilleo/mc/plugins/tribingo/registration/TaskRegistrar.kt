@@ -24,7 +24,7 @@ import org.bukkit.scheduler.BukkitTask
  */
 object TaskRegistrar {
 
-    private const val TASKS_PACKAGE = "net.trilleo.mc.plugins.trihunt.tasks"
+    private const val TASKS_PACKAGE = "net.trilleo.mc.plugins.tribingo.tasks"
 
     /** Every [BukkitTask] that has been scheduled by this registrar. */
     private val scheduledTasks = mutableListOf<BukkitTask>()

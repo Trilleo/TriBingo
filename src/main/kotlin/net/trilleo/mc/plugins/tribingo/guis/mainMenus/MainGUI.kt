@@ -25,7 +25,7 @@ import java.util.*
 
 class MainGUI(private val plugin: JavaPlugin) : PluginGUI(
     id = "main",
-    title = Component.text("TriHunt Main UI").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD),
+    title = Component.text("TriBingo Main UI").color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD),
     rows = 6,
     fillMode = FillMode.LIGHT
 ) {

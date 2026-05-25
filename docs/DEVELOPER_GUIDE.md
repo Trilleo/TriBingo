@@ -14,16 +14,16 @@ anything up.
 
 | System          | Base Class / Interface                | Package                                        |
 |:----------------|:--------------------------------------|:-----------------------------------------------|
-| Commands        | `PluginCommand`                       | `net.trilleo.mc.plugins.trihunt.commands`      |
+| Commands        | `PluginCommand`                       | `net.trilleo.mc.plugins.tribingo.commands`      |
 | Permissions     | *(derived from commands)*             | *(automatic — no package needed)*              |
-| Listeners       | `Listener`                            | `net.trilleo.mc.plugins.trihunt.listeners`     |
-| GUIs            | `PluginGUI`                           | `net.trilleo.mc.plugins.trihunt.guis`          |
-| Tasks           | `PluginTask`                          | `net.trilleo.mc.plugins.trihunt.tasks`         |
-| Custom Items    | `PluginItem`                          | `net.trilleo.mc.plugins.trihunt.items`         |
-| Recipes         | `PluginRecipe`                        | `net.trilleo.mc.plugins.trihunt.recipes`       |
-| Configuration   | `PluginConfig`                        | `net.trilleo.mc.plugins.trihunt.config`        |
-| Player Data     | `PlayerData`                          | `net.trilleo.mc.plugins.trihunt.data`          |
-| Server Data     | `ServerData`                          | `net.trilleo.mc.plugins.trihunt.data`          |
+| Listeners       | `Listener`                            | `net.trilleo.mc.plugins.tribingo.listeners`     |
+| GUIs            | `PluginGUI`                           | `net.trilleo.mc.plugins.tribingo.guis`          |
+| Tasks           | `PluginTask`                          | `net.trilleo.mc.plugins.tribingo.tasks`         |
+| Custom Items    | `PluginItem`                          | `net.trilleo.mc.plugins.tribingo.items`         |
+| Recipes         | `PluginRecipe`                        | `net.trilleo.mc.plugins.tribingo.recipes`       |
+| Configuration   | `PluginConfig`                        | `net.trilleo.mc.plugins.tribingo.config`        |
+| Player Data     | `PlayerData`                          | `net.trilleo.mc.plugins.tribingo.data`          |
+| Server Data     | `ServerData`                          | `net.trilleo.mc.plugins.tribingo.data`          |
 | Code Objectives | `BingoObjective` + `@CustomObjective` | `net.trilleo.mc.plugins.tribingo.bingo.custom` |
 
 Subpackages are also scanned, so you can freely organize classes into folders like `commands/game/`,
@@ -105,9 +105,9 @@ system handles the rest.
 This command is registered as `/tribingo ping` (the default behavior):
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.commands
+package net.trilleo.mc.plugins.tribingo.commands
 
-import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
+import net.trilleo.mc.plugins.tribingo.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -133,9 +133,9 @@ class PingCommand : PluginCommand(
 This command is registered as `/tribingo team`:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.commands.game
+package net.trilleo.mc.plugins.tribingo.commands.game
 
-import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
+import net.trilleo.mc.plugins.tribingo.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -170,9 +170,9 @@ class TeamCommand : PluginCommand(
 This command is registered as `/tribingo reload`:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.commands
+package net.trilleo.mc.plugins.tribingo.commands
 
-import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
+import net.trilleo.mc.plugins.tribingo.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -199,9 +199,9 @@ class ReloadCommand(private val plugin: JavaPlugin) : PluginCommand(
 Set `isMainCommand = true` to register a standalone top-level command. This command is registered as `/globaltool`:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.commands
+package net.trilleo.mc.plugins.tribingo.commands
 
-import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
+import net.trilleo.mc.plugins.tribingo.registration.PluginCommand
 import org.bukkit.command.CommandSender
 
 class GlobalToolCommand : PluginCommand(
@@ -231,7 +231,7 @@ Annotate each event handler method with `@EventHandler`. The method must accept 
 ### Example
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.listeners
+package net.trilleo.mc.plugins.tribingo.listeners
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -251,7 +251,7 @@ class JoinListener : Listener {
 ### Example with Subpackage and Plugin Instance
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.listeners.player
+package net.trilleo.mc.plugins.tribingo.listeners.player
 
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -304,7 +304,7 @@ or a subpackage.
 Use `GUIManager.open(player, id)` to open a registered GUI for a player:
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.registration.GUIManager
+import net.trilleo.mc.plugins.tribingo.registration.GUIManager
 
 // Returns true if the GUI was found and opened, false otherwise
 GUIManager.open(player, "settings")
@@ -313,10 +313,10 @@ GUIManager.open(player, "settings")
 ### Example
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.guis
+package net.trilleo.mc.plugins.tribingo.guis
 
-import net.trilleo.mc.plugins.trihunt.enums.FillMode
-import net.trilleo.mc.plugins.trihunt.registration.PluginGUI
+import net.trilleo.mc.plugins.tribingo.enums.FillMode
+import net.trilleo.mc.plugins.tribingo.registration.PluginGUI
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -353,10 +353,10 @@ class SettingsGUI : PluginGUI(
 A common pattern is opening a GUI when a player runs a command. This command is registered as `/tribingo settings`:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.commands
+package net.trilleo.mc.plugins.tribingo.commands
 
-import net.trilleo.mc.plugins.trihunt.registration.GUIManager
-import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
+import net.trilleo.mc.plugins.tribingo.registration.GUIManager
+import net.trilleo.mc.plugins.tribingo.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -433,9 +433,9 @@ The last row of the inventory contains:
 ### Example (LIST mode)
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.guis
+package net.trilleo.mc.plugins.tribingo.guis
 
-import net.trilleo.mc.plugins.trihunt.registration.PagedPluginGUI
+import net.trilleo.mc.plugins.tribingo.registration.PagedPluginGUI
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -471,10 +471,10 @@ key is the **zero-based page index**; the inner map key is the **zero-based cont
 `contentSlots - 1`).
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.guis
+package net.trilleo.mc.plugins.tribingo.guis
 
-import net.trilleo.mc.plugins.trihunt.enums.PagedGUIMode
-import net.trilleo.mc.plugins.trihunt.registration.PagedPluginGUI
+import net.trilleo.mc.plugins.tribingo.enums.PagedGUIMode
+import net.trilleo.mc.plugins.tribingo.registration.PagedPluginGUI
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -505,10 +505,10 @@ class StagesGUI : PagedPluginGUI(
 Paged GUIs are opened the same way as regular GUIs, using `GUIManager.open(player, id)`:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.commands
+package net.trilleo.mc.plugins.tribingo.commands
 
-import net.trilleo.mc.plugins.trihunt.registration.GUIManager
-import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
+import net.trilleo.mc.plugins.tribingo.registration.GUIManager
+import net.trilleo.mc.plugins.tribingo.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -566,9 +566,9 @@ The combination of `period` and `async` determines which Bukkit scheduler method
 This task broadcasts a message to all players every 5 minutes:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.tasks
+package net.trilleo.mc.plugins.tribingo.tasks
 
-import net.trilleo.mc.plugins.trihunt.registration.PluginTask
+import net.trilleo.mc.plugins.tribingo.registration.PluginTask
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -591,9 +591,9 @@ class BroadcastTask : PluginTask(
 This task runs once 5 seconds after the plugin enables, off the main thread:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.tasks
+package net.trilleo.mc.plugins.tribingo.tasks
 
-import net.trilleo.mc.plugins.trihunt.registration.PluginTask
+import net.trilleo.mc.plugins.tribingo.registration.PluginTask
 
 class CleanupTask : PluginTask(
     delay = 100L,
@@ -610,9 +610,9 @@ class CleanupTask : PluginTask(
 When you need access to the plugin, declare a `JavaPlugin` constructor parameter:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.tasks
+package net.trilleo.mc.plugins.tribingo.tasks
 
-import net.trilleo.mc.plugins.trihunt.registration.PluginTask
+import net.trilleo.mc.plugins.tribingo.registration.PluginTask
 import org.bukkit.plugin.java.JavaPlugin
 
 class MetricsTask(private val plugin: JavaPlugin) : PluginTask(
@@ -664,10 +664,10 @@ constructor is needed.
 ### Example (Kotlin Object)
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.items
+package net.trilleo.mc.plugins.tribingo.items
 
-import net.trilleo.mc.plugins.trihunt.registration.PluginItem
-import net.trilleo.mc.plugins.trihunt.utils.itemStack
+import net.trilleo.mc.plugins.tribingo.registration.PluginItem
+import net.trilleo.mc.plugins.tribingo.utils.itemStack
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
@@ -693,10 +693,10 @@ When you need access to the plugin (e.g. for a `NamespacedKey` beyond the built-
 constructor parameter:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.items
+package net.trilleo.mc.plugins.tribingo.items
 
-import net.trilleo.mc.plugins.trihunt.registration.PluginItem
-import net.trilleo.mc.plugins.trihunt.utils.itemStack
+import net.trilleo.mc.plugins.tribingo.registration.PluginItem
+import net.trilleo.mc.plugins.tribingo.utils.itemStack
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
@@ -718,7 +718,7 @@ class TrackedItem(private val plugin: JavaPlugin) : PluginItem("tracked_item") {
 Use `matches` in a listener to detect when a player is holding or using a specific custom item:
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.items.ExcaliburItem
+import net.trilleo.mc.plugins.tribingo.items.ExcaliburItem
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
@@ -742,7 +742,7 @@ class ExcaliburListener : Listener {
 When you only have the item ID as a string (e.g. from config), use `ItemRegistrar.get`:
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.registration.ItemRegistrar
+import net.trilleo.mc.plugins.tribingo.registration.ItemRegistrar
 
 val item = ItemRegistrar.get("excalibur") ?: return
 player.inventory.addItem(item.create())
@@ -795,10 +795,10 @@ Recipe classes follow the same constructor rules as commands and tasks:
 ### Example (Shaped Crafting Recipe — Custom Item Result)
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.recipes
+package net.trilleo.mc.plugins.tribingo.recipes
 
-import net.trilleo.mc.plugins.trihunt.items.ExcaliburItem
-import net.trilleo.mc.plugins.trihunt.registration.PluginRecipe
+import net.trilleo.mc.plugins.tribingo.items.ExcaliburItem
+import net.trilleo.mc.plugins.tribingo.registration.PluginRecipe
 import org.bukkit.Material
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapedRecipe
@@ -824,10 +824,10 @@ class ExcaliburRecipe : PluginRecipe("excalibur_recipe") {
 Use `customChoice(item)` to require a plugin custom item as an ingredient:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.recipes
+package net.trilleo.mc.plugins.tribingo.recipes
 
-import net.trilleo.mc.plugins.trihunt.items.ExcaliburItem
-import net.trilleo.mc.plugins.trihunt.registration.PluginRecipe
+import net.trilleo.mc.plugins.tribingo.items.ExcaliburItem
+import net.trilleo.mc.plugins.tribingo.registration.PluginRecipe
 import org.bukkit.Material
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.ShapelessRecipe
@@ -847,9 +847,9 @@ class ExcaliburRepairRecipe : PluginRecipe("excalibur_repair") {
 ### Example (Furnace Recipe)
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.recipes
+package net.trilleo.mc.plugins.tribingo.recipes
 
-import net.trilleo.mc.plugins.trihunt.registration.PluginRecipe
+import net.trilleo.mc.plugins.tribingo.registration.PluginRecipe
 import org.bukkit.Material
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
@@ -873,10 +873,10 @@ class IronNuggetRecipe : PluginRecipe("iron_nugget_smelt") {
 ### Example (Smithing Table Recipe)
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.recipes
+package net.trilleo.mc.plugins.tribingo.recipes
 
-import net.trilleo.mc.plugins.trihunt.items.ExcaliburItem
-import net.trilleo.mc.plugins.trihunt.registration.PluginRecipe
+import net.trilleo.mc.plugins.tribingo.items.ExcaliburItem
+import net.trilleo.mc.plugins.tribingo.registration.PluginRecipe
 import org.bukkit.Material
 import org.bukkit.inventory.Recipe
 import org.bukkit.inventory.SmithingTransformRecipe
@@ -1420,13 +1420,13 @@ player.sendPlayerListHeaderAndFooter(Component.empty(), Component.empty())
 
 ## Utilities
 
-The `utils` package (`net.trilleo.mc.plugins.trihunt.utils`) contains helper classes and functions that reduce
+The `utils` package (`net.trilleo.mc.plugins.tribingo.utils`) contains helper classes and functions that reduce
 boilerplate across the plugin. See the [Utility Guide](UTILITY_GUIDE.md) for full documentation on the
 `itemStack` DSL builder and `CountdownUtil`.
 
 ### Enums
 
-Plugin-wide enums live in `net.trilleo.mc.plugins.trihunt.enums`.
+Plugin-wide enums live in `net.trilleo.mc.plugins.tribingo.enums`.
 
 #### DisplayLocation
 
@@ -1460,7 +1460,7 @@ Plugin-wide enums live in `net.trilleo.mc.plugins.trihunt.enums`.
 ## Configuration
 
 TriBingo provides a typed configuration wrapper — `PluginConfig` — around the standard Bukkit `config.yml`. It lives in
-the `net.trilleo.mc.plugins.trihunt.config` package and is created automatically when the plugin starts.
+the `net.trilleo.mc.plugins.tribingo.config` package and is created automatically when the plugin starts.
 
 ### How It Works
 
@@ -1526,10 +1526,10 @@ The built-in `/tribingo reload` command already calls this method.
 Cast the injected `JavaPlugin` to `Main` to reach `pluginConfig`:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.commands
+package net.trilleo.mc.plugins.tribingo.commands
 
-import net.trilleo.mc.plugins.trihunt.Main
-import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
+import net.trilleo.mc.plugins.tribingo.Main
+import net.trilleo.mc.plugins.tribingo.registration.PluginCommand
 import org.bukkit.command.CommandSender
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -1552,9 +1552,9 @@ class PrefixCommand(private val plugin: JavaPlugin) : PluginCommand(
 The same pattern works for listeners — accept a `JavaPlugin` constructor parameter and cast to `Main`:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.listeners
+package net.trilleo.mc.plugins.tribingo.listeners
 
-import net.trilleo.mc.plugins.trihunt.Main
+import net.trilleo.mc.plugins.tribingo.Main
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -1588,7 +1588,7 @@ The manager is already initialised in `Main.onEnable` and requires no further se
 Retrieve a player's data container from anywhere with a `Player` reference:
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.data.PlayerDataManager
+import net.trilleo.mc.plugins.tribingo.data.PlayerDataManager
 
 val data = PlayerDataManager.get(player)
 val kills = data.getInt("kills")
@@ -1613,7 +1613,7 @@ data.set("kills", kills + 1)
 Extend `PlayerData` to add strongly-typed Kotlin properties:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.data
+package net.trilleo.mc.plugins.tribingo.data
 
 import java.util.UUID
 
@@ -1648,9 +1648,9 @@ data.kills++
 ### Example Listener
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.listeners
+package net.trilleo.mc.plugins.tribingo.listeners
 
-import net.trilleo.mc.plugins.trihunt.data.PlayerDataManager
+import net.trilleo.mc.plugins.tribingo.data.PlayerDataManager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
@@ -1682,7 +1682,7 @@ The manager is already initialised in `Main.onEnable` and requires no further se
 Retrieve the server data container from anywhere:
 
 ```kotlin
-import net.trilleo.mc.plugins.trihunt.data.ServerDataManager
+import net.trilleo.mc.plugins.tribingo.data.ServerDataManager
 
 val data = ServerDataManager.get()
 val events = data.getInt("eventCount")
@@ -1709,7 +1709,7 @@ data.set("eventCount", events + 1)
 Extend `ServerData` to add strongly-typed Kotlin properties:
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.data
+package net.trilleo.mc.plugins.tribingo.data
 
 class MyServerData : ServerData() {
     var totalKills: Int
@@ -1741,10 +1741,10 @@ data.totalKills++
 ### Example Command
 
 ```kotlin
-package net.trilleo.mc.plugins.trihunt.commands
+package net.trilleo.mc.plugins.tribingo.commands
 
-import net.trilleo.mc.plugins.trihunt.data.ServerDataManager
-import net.trilleo.mc.plugins.trihunt.registration.PluginCommand
+import net.trilleo.mc.plugins.tribingo.data.ServerDataManager
+import net.trilleo.mc.plugins.tribingo.registration.PluginCommand
 import org.bukkit.command.CommandSender
 
 class StatsCommand : PluginCommand(

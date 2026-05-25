@@ -19,7 +19,7 @@ import java.util.*
  * multiple pages with **Previous** and **Next** navigation buttons.
  *
  * Extend this class and place the subclass anywhere inside the
- * `net.trilleo.mc.plugins.trihunt.guis` package (or any subpackage) to
+ * `net.trilleo.mc.plugins.tribingo.guis` package (or any subpackage) to
  * have it automatically discovered and registered at startup.
  *
  * The bottom row of the inventory is reserved for navigation controls.
@@ -39,7 +39,7 @@ import java.util.*
  *
  * Example (LIST mode):
  * ```kotlin
- * package net.trilleo.mc.plugins.trihunt.guis
+ * package net.trilleo.mc.plugins.tribingo.guis
  *
  * import org.bukkit.Material
  * import org.bukkit.inventory.ItemStack
@@ -63,9 +63,9 @@ import java.util.*
  *
  * Example (SET mode):
  * ```kotlin
- * package net.trilleo.mc.plugins.trihunt.guis
+ * package net.trilleo.mc.plugins.tribingo.guis
  *
- * import net.trilleo.mc.plugins.trihunt.enums.PagedGUIMode
+ * import net.trilleo.mc.plugins.tribingo.enums.PagedGUIMode
  * import org.bukkit.Material
  * import org.bukkit.inventory.ItemStack
  *

@@ -85,7 +85,7 @@ net.trilleo.mc.plugins.tribingo
 │   ├── CommandRegistrar.kt        # Scans .commands.** for PluginCommand subclasses
 │   ├── ListenerRegistrar.kt       # Scans .listeners.** for Listener impls
 │   ├── GUIManager.kt             # Scans .guis.** for PluginGUI subclasses; routes click/close
-│   ├── TaskRegistrar.kt           # Scans net.trilleo.mc.plugins.trihunt.tasks for PluginTask
+│   ├── TaskRegistrar.kt           # Scans net.trilleo.mc.plugins.tribingo.tasks for PluginTask
 │   ├── ItemRegistrar.kt           # Custom item registration
 │   ├── RecipeRegistrar.kt         # Custom recipe registration
 │   ├── PermissionRegistrar.kt     # Auto-creates Permission nodes from commands
@@ -110,7 +110,7 @@ net.trilleo.mc.plugins.tribingo
 - **Commands**: `src/main/kotlin/net/trilleo/mc/plugins/tribingo/commands/**`. Default is a `/tribingo <subcommand>` entry; set `isMainCommand = true` for a standalone command. Category is derived from the subpackage name (e.g. `commands.bingo` → "Bingo", `commands.moderation` → "Moderation").
 - **GUIs**: `.../guis/**`; open them with `GUIManager.open(player, id)`. Base classes: `PluginGUI` (single page) and `PagedPluginGUI` (paginated).
 - **Listeners**: `.../listeners/**`; `ListenerRegistrar` discovers and registers them automatically.
-- **Tasks**: `TaskRegistrar` currently scans `net.trilleo.mc.plugins.trihunt.tasks`. If you add tasks, either place them in that package or update the `TASKS_PACKAGE` constant in `TaskRegistrar.kt`.
+- **Tasks**: `TaskRegistrar` currently scans `net.trilleo.mc.plugins.tribingo.tasks`. If you add tasks, either place them in that package or update the `TASKS_PACKAGE` constant in `TaskRegistrar.kt`.
 - **Code objectives**: `.../bingo/custom/**`; annotate concrete classes with `@CustomObjective` so `CodeObjectiveLoader` picks them up. No manual registration needed.
 - **YAML-backed objectives**: `.../bingo/objectives/**`; these are parameterized classes instantiated by `YamlObjectiveLoader` from `bingo_objectives.yml`.
 
@@ -250,7 +250,7 @@ INACTIVE ──start()──► ACTIVE ──end()──► ENDED
 - Prefer `./gradlew.bat build` (Windows) or `./gradlew build` (Linux/macOS) for a full local verification.
 - `./gradlew test` is available (JUnit 5 platform), but there is currently no `src/test` tree in the repo.
 - `./gradlew copyPlugin` copies the jar into `run/plugins`; `./gradlew startServer` depends on that and launches Paper from `run/`.
-- Current `TaskRegistrar` scans `net.trilleo.mc.plugins.trihunt.tasks`; if you add or move tasks, keep that package path in mind or update the `TASKS_PACKAGE` constant.
+- Current `TaskRegistrar` scans `net.trilleo.mc.plugins.tribingo.tasks`; if you add or move tasks, keep that package path in mind or update the `TASKS_PACKAGE` constant.
 - The fat-JAR (`tasks.jar`) includes all `runtimeClasspath` dependencies and sets `paperweight-mappings-namespace` to `"spigot"` in the manifest.
 - No CI workflows are configured; validation is done locally.
 
