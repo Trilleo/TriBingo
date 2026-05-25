@@ -2,6 +2,7 @@ package net.trilleo.mc.plugins.tribingo
 
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
 import net.trilleo.mc.plugins.tribingo.bingo.ObjectiveTestManager
+import net.trilleo.mc.plugins.tribingo.bingo.SecretHintManager
 import net.trilleo.mc.plugins.tribingo.bingo.registry.BingoObjectiveRegistry
 import net.trilleo.mc.plugins.tribingo.bingo.registry.CodeObjectiveLoader
 import net.trilleo.mc.plugins.tribingo.bingo.registry.YamlObjectiveLoader
@@ -61,6 +62,7 @@ class Main : JavaPlugin() {
             "net.trilleo.mc.plugins.tribingo.bingo.custom"
         )
         YamlObjectiveLoader.load(this, BingoObjectiveRegistry)
+        SecretHintManager.init(this)
         BingoManager.init(this)
         ObjectiveTestManager.init(this)
 
@@ -73,6 +75,9 @@ class Main : JavaPlugin() {
 
         // Shutdown test manager
         ObjectiveTestManager.shutdown()
+
+        // Clear secret hint state
+        SecretHintManager.reset()
 
         // Remove all registered recipes
         RecipeRegistrar.unregisterAll()
