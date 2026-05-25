@@ -1,4 +1,4 @@
-package net.trilleo.mc.plugins.tribingo.bingo.custom
+package net.trilleo.mc.plugins.tribingo.bingo.custom.secretObjectives
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
