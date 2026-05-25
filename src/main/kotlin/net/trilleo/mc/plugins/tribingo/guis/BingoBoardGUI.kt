@@ -36,7 +36,7 @@ import java.util.*
  * Row 2: [BG] [R2] [B20] [B21] [B22] [B23] [B24] [BG] [BG]
  * Row 3: [BG] [R3] [B30] [B31] [B32] [B33] [B34] [BG] [BG]
  * Row 4: [BG] [R4] [B40] [B41] [B42] [B43] [B44] [BG] [BG]
- * Row 5: [BG] [D↗] [C0]  [C1]  [C2]  [C3]  [C4] [D↘] [BG]
+ * Row 5: [Y]  [D↗] [C0]  [C1]  [C2]  [C3]  [C4]  [D↘] [P]
  * ```
  * - **BG** – black glass pane filler
  * - **R0–R4** – row indicator panes (col 1, rows 0–4)
