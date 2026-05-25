@@ -1,6 +1,7 @@
 package net.trilleo.mc.plugins.tribingo.bingo.registry
 
 import net.trilleo.mc.plugins.tribingo.bingo.BingoObjective
+import net.trilleo.mc.plugins.tribingo.bingo.SecretBingoObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -63,8 +64,12 @@ object BingoObjectiveRegistry {
             return
         }
         objectives[objective.id] = objective
-        if (objective is Listener) {
-            plugin.server.pluginManager.registerEvents(objective, plugin)
+
+        // For SecretBingoObjective wrappers, register the inner objective's
+        // listener (the wrapper itself is not a Listener).
+        val listenerCandidate = if (objective is SecretBingoObjective) objective.inner else objective
+        if (listenerCandidate is Listener) {
+            plugin.server.pluginManager.registerEvents(listenerCandidate, plugin)
         }
         plugin.logger.fine("[BingoObjectiveRegistry] Registered objective: ${objective.id}")
     }

@@ -9,6 +9,8 @@ import net.trilleo.mc.plugins.tribingo.bingo.BingoBoard
 import net.trilleo.mc.plugins.tribingo.bingo.BingoGame
 import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
 import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
+import net.trilleo.mc.plugins.tribingo.bingo.SecretBingoObjective
+import net.trilleo.mc.plugins.tribingo.bingo.SecretHintManager
 import net.trilleo.mc.plugins.tribingo.enums.FillMode
 import net.trilleo.mc.plugins.tribingo.registration.PluginGUI
 import net.trilleo.mc.plugins.tribingo.utils.TeamUtil
@@ -112,9 +114,19 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
             .append(Component.text(" ──", NamedTextColor.DARK_GRAY))
 
         player.sendMessage(header)
-        player.sendMessage(cell.objective.description.color(NamedTextColor.GRAY))
+
+        // Secret objectives mask their description unless completed by this player
+        val objective = cell.objective
+        val secretObjective = objective as? SecretBingoObjective
 
         if (TeamUtil.isInTeam(player, "spectator")) {
+            if (secretObjective != null) {
+                player.sendMessage(
+                    Component.text("*****", NamedTextColor.DARK_GRAY)
+                )
+            } else {
+                player.sendMessage(cell.objective.description.color(NamedTextColor.GRAY))
+            }
             val completedCount = game.playerStates.values.count { it.isCompleted(cell.cellIndex) }
             val total = game.playerStates.size
             player.sendMessage(
@@ -123,6 +135,23 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
         } else {
             val state = game.getOrCreateState(player.uniqueId)
             val completed = state.isCompleted(cell.cellIndex)
+
+            if (secretObjective != null && !completed) {
+                player.sendMessage(
+                    Component.text("*****", NamedTextColor.DARK_GRAY)
+                )
+                // Show revealed hints in chat as well
+                val revealedHints = SecretHintManager.getRevealedHints(secretObjective)
+                for ((index, hint) in revealedHints.withIndex()) {
+                    player.sendMessage(
+                        Component.text("Hint ${index + 1}: ", NamedTextColor.GOLD)
+                            .append(Component.text(hint, NamedTextColor.YELLOW))
+                    )
+                }
+            } else {
+                player.sendMessage(cell.objective.description.color(NamedTextColor.GRAY))
+            }
+
             val statusLine = if (completed) {
                 Component.text("  ✓ Completed!", NamedTextColor.GREEN)
             } else {
