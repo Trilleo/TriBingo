@@ -5,12 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.trilleo.mc.plugins.tribingo.Main
-import net.trilleo.mc.plugins.tribingo.bingo.BingoBoard
-import net.trilleo.mc.plugins.tribingo.bingo.BingoGame
-import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
-import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
-import net.trilleo.mc.plugins.tribingo.bingo.SecretBingoObjective
-import net.trilleo.mc.plugins.tribingo.bingo.SecretHintManager
+import net.trilleo.mc.plugins.tribingo.bingo.*
 import net.trilleo.mc.plugins.tribingo.enums.FillMode
 import net.trilleo.mc.plugins.tribingo.registration.PluginGUI
 import net.trilleo.mc.plugins.tribingo.utils.TeamUtil

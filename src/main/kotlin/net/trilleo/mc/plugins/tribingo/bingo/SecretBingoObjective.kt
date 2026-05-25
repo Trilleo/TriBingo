@@ -3,7 +3,6 @@ package net.trilleo.mc.plugins.tribingo.bingo
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.trilleo.mc.plugins.tribingo.enums.Difficulty
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
