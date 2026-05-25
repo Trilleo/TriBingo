@@ -14,16 +14,16 @@ anything up.
 
 | System          | Base Class / Interface                | Package                                        |
 |:----------------|:--------------------------------------|:-----------------------------------------------|
-| Commands        | `PluginCommand`                       | `net.trilleo.mc.plugins.tribingo.commands`      |
+| Commands        | `PluginCommand`                       | `net.trilleo.mc.plugins.tribingo.commands`     |
 | Permissions     | *(derived from commands)*             | *(automatic — no package needed)*              |
-| Listeners       | `Listener`                            | `net.trilleo.mc.plugins.tribingo.listeners`     |
-| GUIs            | `PluginGUI`                           | `net.trilleo.mc.plugins.tribingo.guis`          |
-| Tasks           | `PluginTask`                          | `net.trilleo.mc.plugins.tribingo.tasks`         |
-| Custom Items    | `PluginItem`                          | `net.trilleo.mc.plugins.tribingo.items`         |
-| Recipes         | `PluginRecipe`                        | `net.trilleo.mc.plugins.tribingo.recipes`       |
-| Configuration   | `PluginConfig`                        | `net.trilleo.mc.plugins.tribingo.config`        |
-| Player Data     | `PlayerData`                          | `net.trilleo.mc.plugins.tribingo.data`          |
-| Server Data     | `ServerData`                          | `net.trilleo.mc.plugins.tribingo.data`          |
+| Listeners       | `Listener`                            | `net.trilleo.mc.plugins.tribingo.listeners`    |
+| GUIs            | `PluginGUI`                           | `net.trilleo.mc.plugins.tribingo.guis`         |
+| Tasks           | `PluginTask`                          | `net.trilleo.mc.plugins.tribingo.tasks`        |
+| Custom Items    | `PluginItem`                          | `net.trilleo.mc.plugins.tribingo.items`        |
+| Recipes         | `PluginRecipe`                        | `net.trilleo.mc.plugins.tribingo.recipes`      |
+| Configuration   | `PluginConfig`                        | `net.trilleo.mc.plugins.tribingo.config`       |
+| Player Data     | `PlayerData`                          | `net.trilleo.mc.plugins.tribingo.data`         |
+| Server Data     | `ServerData`                          | `net.trilleo.mc.plugins.tribingo.data`         |
 | Code Objectives | `BingoObjective` + `@CustomObjective` | `net.trilleo.mc.plugins.tribingo.bingo.custom` |
 
 Subpackages are also scanned, so you can freely organize classes into folders like `commands/game/`,

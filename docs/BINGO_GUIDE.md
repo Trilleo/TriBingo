@@ -432,10 +432,10 @@ progressively to all players as the game timer elapses.
 
 **Constructor parameters:**
 
-| Parameter | Type               | Description                                                             |
-|:----------|:-------------------|:------------------------------------------------------------------------|
-| `inner`   | `BingoObjective`   | The real objective being wrapped (any subclass)                         |
-| `hints`   | `List<String>`     | Ordered list of hint strings revealed progressively during the game     |
+| Parameter | Type             | Description                                                         |
+|:----------|:-----------------|:--------------------------------------------------------------------|
+| `inner`   | `BingoObjective` | The real objective being wrapped (any subclass)                     |
+| `hints`   | `List<String>`   | Ordered list of hint strings revealed progressively during the game |
 
 **Design:**
 
@@ -446,10 +446,10 @@ progressively to all players as the game timer elapses.
 
 **Display behaviour (`displayItem`):**
 
-| State                   | Material                 |
-|:------------------------|:-------------------------|
-| Completed               | `LIME_CONCRETE`          |
-| Not completed (secret)  | `MAGENTA_STAINED_GLASS`  |
+| State                  | Material                |
+|:-----------------------|:------------------------|
+| Completed              | `LIME_CONCRETE`         |
+| Not completed (secret) | `MAGENTA_STAINED_GLASS` |
 
 **Lore layout:**
 
@@ -470,7 +470,9 @@ Difficulty: <colour>Easy/Medium/Hard/Insane
 **Helper check:**
 
 ```kotlin
-if (objective is SecretBingoObjective) { ... }
+if (objective is SecretBingoObjective) {
+    ...
+}
 ```
 
 ---
@@ -487,26 +489,27 @@ Hints are revealed **globally** — all players see the same hints at the same t
 For an objective with N hints, the reveal thresholds are at fractions `1/(N+1), 2/(N+1), ..., N/(N+1)` of the total
 timer duration.
 
-| Hints | Reveal thresholds            | Example (60-min timer)         |
-|:------|:-----------------------------|:-------------------------------|
-| 1     | 50%                          | 30 min elapsed                 |
-| 2     | 33%, 67%                     | 20 min, 40 min                 |
-| 3     | 25%, 50%, 75%                | 15 min, 30 min, 45 min        |
-| 4     | 20%, 40%, 60%, 80%           | 12 min, 24 min, 36 min, 48 min |
+| Hints | Reveal thresholds  | Example (60-min timer)         |
+|:------|:-------------------|:-------------------------------|
+| 1     | 50%                | 30 min elapsed                 |
+| 2     | 33%, 67%           | 20 min, 40 min                 |
+| 3     | 25%, 50%, 75%      | 15 min, 30 min, 45 min         |
+| 4     | 20%, 40%, 60%, 80% | 12 min, 24 min, 36 min, 48 min |
 
 **Key methods:**
 
-| Method                                          | Description                                                              |
-|:------------------------------------------------|:-------------------------------------------------------------------------|
-| `init(plugin)`                                  | Stores the plugin reference; call once during startup                    |
-| `tick(totalSeconds, remaining)`                 | Called every countdown tick; checks if new hints should be revealed      |
-| `getRevealedHints(objective): List<String>`     | Returns the subset of hints currently visible for a secret objective     |
-| `getRevealedHintCount(objectiveId): Int`        | Returns the count of revealed hints for a given objective ID             |
-| `reset()`                                       | Clears all revealed hint state (called on game end/reset/shutdown)       |
+| Method                                      | Description                                                          |
+|:--------------------------------------------|:---------------------------------------------------------------------|
+| `init(plugin)`                              | Stores the plugin reference; call once during startup                |
+| `tick(totalSeconds, remaining)`             | Called every countdown tick; checks if new hints should be revealed  |
+| `getRevealedHints(objective): List<String>` | Returns the subset of hints currently visible for a secret objective |
+| `getRevealedHintCount(objectiveId): Int`    | Returns the count of revealed hints for a given objective ID         |
+| `reset()`                                   | Clears all revealed hint state (called on game end/reset/shutdown)   |
 
 **Chat notification:**
 
 When a new hint is revealed, all online players receive:
+
 ```
 [Bingo] A new hint is available for a secret objective! Check the board.
 ```
@@ -521,7 +524,8 @@ When a new hint is revealed, all online players receive:
 
 - **No timer / timer is 0**: No hints are revealed (elapsed fraction stays at 0)
 - **Player joins mid-game**: They see whatever hints have been globally revealed when they open the board
-- **Objective completed before all hints revealed**: That player sees the full description; others still see only revealed hints
+- **Objective completed before all hints revealed**: That player sees the full description; others still see only
+  revealed hints
 - **Server restart mid-game**: Hint state is cleared; game resets to INACTIVE on rehydration anyway
 
 ---
@@ -1412,7 +1416,8 @@ class SecretKillWithers : SecretBingoObjective(
 **What happens:**
 
 - `SecretKillWithers` is discovered by `CodeObjectiveLoader` and registered
-- The registry sees it's a `SecretBingoObjective` and checks the `inner` for `Listener` → registers `KillWithersObjective` as a Bukkit event listener
+- The registry sees it's a `SecretBingoObjective` and checks the `inner` for `Listener` → registers
+  `KillWithersObjective` as a Bukkit event listener
 - On the board, the cell shows `MAGENTA_STAINED_GLASS` with a `⚡ Secret` tag
 - Players see `*****` instead of "Kill 3 Withers." until they complete it
 - Hints are revealed progressively as the game timer elapses
@@ -1477,19 +1482,21 @@ class SecretBrewAndDrink : SecretBingoObjective(
 
 The `SecretBingoObjective.displayItem()` rendering works as follows:
 
-| Player state           | What they see                                                                              |
-|:-----------------------|:-------------------------------------------------------------------------------------------|
-| Has NOT completed      | Magenta glass, name, difficulty, `⚡ Secret` tag, `*****`, revealed hints, status           |
-| Has completed          | Lime concrete, name, difficulty, `⚡ Secret` tag, **real description**, status              |
-| Spectator              | Board shows `*****` + revealed hints (spectators cannot complete objectives)                |
+| Player state      | What they see                                                                    |
+|:------------------|:---------------------------------------------------------------------------------|
+| Has NOT completed | Magenta glass, name, difficulty, `⚡ Secret` tag, `*****`, revealed hints, status |
+| Has completed     | Lime concrete, name, difficulty, `⚡ Secret` tag, **real description**, status    |
+| Spectator         | Board shows `*****` + revealed hints (spectators cannot complete objectives)     |
 
 Hints appear in the lore as:
+
 ```
 Hint 1: This involves a boss mob
 Hint 2: You need to summon it yourself
 ```
 
-Only hints that have been globally revealed (based on elapsed time) are shown. Unrevealed hints are not displayed at all.
+Only hints that have been globally revealed (based on elapsed time) are shown. Unrevealed hints are not displayed at
+all.
 
 ---
 
@@ -1508,7 +1515,8 @@ When a player clicks a secret objective cell in the board GUI:
 2. **The inner objective's `id`** is what's used for persistence — the wrapper delegates its `id` to the inner
 3. **Hints are revealed globally** — all players see the same hints at the same time
 4. **No timer = no hints** — if the countdown timer is 0 or not set, hints won't reveal
-5. **Test sessions** (`/bingo test <id>`) work normally with secret objectives — the test system uses the objective's `id` which delegates to the inner
+5. **Test sessions** (`/bingo test <id>`) work normally with secret objectives — the test system uses the objective's
+   `id` which delegates to the inner
 6. **Board randomizers** can filter secret objectives using `objective is SecretBingoObjective`
 7. **The `difficulty` property** is preserved from the inner objective, so randomizers can still group by difficulty
 
