@@ -66,7 +66,7 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
     title = Component.text("✦ Bingo Board ✦").color(NamedTextColor.GOLD)
         .decoration(TextDecoration.BOLD, true),
     rows = 6,
-    fillMode = FillMode.NONE
+    fillMode = FillMode.LIGHT
 ) {
 
     /** Typed plugin config, resolved once at construction time. */
@@ -158,9 +158,6 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
     private fun populateBoard(player: Player, inventory: Inventory) {
         val linePoints = pluginConfig?.linePoints ?: 3
         val diagPoints = pluginConfig?.diagonalPoints ?: 5
-
-        val filler = blackGlass()
-        for (i in 0 until 54) inventory.setItem(i, filler.clone())
 
         val game = BingoManager.currentGame
         inventory.setItem(45, viewerPointsItem(player, game))
