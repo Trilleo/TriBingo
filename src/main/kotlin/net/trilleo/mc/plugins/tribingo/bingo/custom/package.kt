@@ -24,3 +24,14 @@
  *    and worked examples.
  */
 package net.trilleo.mc.plugins.tribingo.bingo.custom
+
+import net.kyori.adventure.text.format.NamedTextColor
+import net.trilleo.mc.plugins.tribingo.enums.Difficulty
+
+internal fun difficultyNameColor(difficulty: Difficulty): NamedTextColor = when (difficulty) {
+	Difficulty.EASY -> NamedTextColor.GREEN
+	Difficulty.MEDIUM -> NamedTextColor.YELLOW
+	Difficulty.HARD -> NamedTextColor.RED
+	Difficulty.INSANE -> NamedTextColor.DARK_RED
+}
+

@@ -5,10 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.trilleo.mc.plugins.tribingo.Main
-import net.trilleo.mc.plugins.tribingo.bingo.BingoBoard
-import net.trilleo.mc.plugins.tribingo.bingo.BingoGame
-import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
-import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
+import net.trilleo.mc.plugins.tribingo.bingo.*
 import net.trilleo.mc.plugins.tribingo.enums.FillMode
 import net.trilleo.mc.plugins.tribingo.registration.PluginGUI
 import net.trilleo.mc.plugins.tribingo.utils.TeamUtil
@@ -36,7 +33,7 @@ import java.util.*
  * Row 2: [BG] [R2] [B20] [B21] [B22] [B23] [B24] [BG] [BG]
  * Row 3: [BG] [R3] [B30] [B31] [B32] [B33] [B34] [BG] [BG]
  * Row 4: [BG] [R4] [B40] [B41] [B42] [B43] [B44] [BG] [BG]
- * Row 5: [BG] [D↗] [C0]  [C1]  [C2]  [C3]  [C4] [D↘] [BG]
+ * Row 5: [Y]  [D↗] [C0]  [C1]  [C2]  [C3]  [C4]  [D↘] [P]
  * ```
  * - **BG** – black glass pane filler
  * - **R0–R4** – row indicator panes (col 1, rows 0–4)
@@ -66,7 +63,7 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
     title = Component.text("✦ Bingo Board ✦").color(NamedTextColor.GOLD)
         .decoration(TextDecoration.BOLD, true),
     rows = 6,
-    fillMode = FillMode.NONE
+    fillMode = FillMode.LIGHT
 ) {
 
     /** Typed plugin config, resolved once at construction time. */
@@ -112,9 +109,19 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
             .append(Component.text(" ──", NamedTextColor.DARK_GRAY))
 
         player.sendMessage(header)
-        player.sendMessage(cell.objective.description.color(NamedTextColor.GRAY))
+
+        // Secret objectives mask their description unless completed by this player
+        val objective = cell.objective
+        val secretObjective = objective as? SecretBingoObjective
 
         if (TeamUtil.isInTeam(player, "spectator")) {
+            if (secretObjective != null) {
+                player.sendMessage(
+                    Component.text("*****", NamedTextColor.DARK_GRAY)
+                )
+            } else {
+                player.sendMessage(cell.objective.description.color(NamedTextColor.GRAY))
+            }
             val completedCount = game.playerStates.values.count { it.isCompleted(cell.cellIndex) }
             val total = game.playerStates.size
             player.sendMessage(
@@ -123,6 +130,23 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
         } else {
             val state = game.getOrCreateState(player.uniqueId)
             val completed = state.isCompleted(cell.cellIndex)
+
+            if (secretObjective != null && !completed) {
+                player.sendMessage(
+                    Component.text("*****", NamedTextColor.DARK_GRAY)
+                )
+                // Show revealed hints in chat as well
+                val revealedHints = SecretHintManager.getRevealedHints(secretObjective)
+                for ((index, hint) in revealedHints.withIndex()) {
+                    player.sendMessage(
+                        Component.text("Hint ${index + 1}: ", NamedTextColor.GOLD)
+                            .append(Component.text(hint, NamedTextColor.YELLOW))
+                    )
+                }
+            } else {
+                player.sendMessage(cell.objective.description.color(NamedTextColor.GRAY))
+            }
+
             val statusLine = if (completed) {
                 Component.text("  ✓ Completed!", NamedTextColor.GREEN)
             } else {
@@ -158,9 +182,6 @@ class BingoBoardGUI(plugin: JavaPlugin) : PluginGUI(
     private fun populateBoard(player: Player, inventory: Inventory) {
         val linePoints = pluginConfig?.linePoints ?: 3
         val diagPoints = pluginConfig?.diagonalPoints ?: 5
-
-        val filler = blackGlass()
-        for (i in 0 until 54) inventory.setItem(i, filler.clone())
 
         val game = BingoManager.currentGame
         inventory.setItem(45, viewerPointsItem(player, game))

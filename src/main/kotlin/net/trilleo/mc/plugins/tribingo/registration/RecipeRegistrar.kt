@@ -20,7 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 object RecipeRegistrar {
 
-    private const val RECIPES_PACKAGE = "net.trilleo.mc.plugins.trihunt.recipes"
+    private const val RECIPES_PACKAGE = "net.trilleo.mc.plugins.tribingo.recipes"
 
     /** [NamespacedKey]s of every recipe successfully registered by [registerAll]. */
     private val registeredKeys = mutableListOf<NamespacedKey>()

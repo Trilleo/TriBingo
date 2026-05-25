@@ -20,7 +20,7 @@ import org.bukkit.persistence.PersistentDataType
  * ### Quick-start (Entity / Chunk)
  *
  * ```kotlin
- * import net.trilleo.mc.plugins.trihunt.utils.PDCUtil
+ * import net.trilleo.mc.plugins.tribingo.utils.PDCUtil
  * import org.bukkit.NamespacedKey
  * import org.bukkit.persistence.PersistentDataType
  * import org.bukkit.plugin.java.JavaPlugin

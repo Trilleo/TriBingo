@@ -23,6 +23,8 @@ system.
     - [MultiEventBingoObjective](#multieventbingoobjective)
     - [SequentialBingoObjective](#sequentialbingoobjective)
     - [Built-in Objective Types](#built-in-objective-types)
+    - [SecretBingoObjective](#secretbingoobjective)
+    - [SecretHintManager](#secrethintmanager)
 6. [Registry & Loading](#registry--loading)
     - [BingoObjectiveRegistry](#bingoobjectiveregistry)
     - [CodeObjectiveLoader](#codeobjectiveloader)
@@ -36,6 +38,7 @@ system.
 11. [Board GUI](#board-gui)
 12. [Writing a Custom Objective](#writing-a-custom-objective)
 13. [Writing a Code Objective](#writing-a-code-objective)
+14. [Writing a Secret Objective](#writing-a-secret-objective)
 
 ---
 
@@ -416,6 +419,114 @@ All built-in implementations live in `net.trilleo.mc.plugins.tribingo.bingo.obje
 | `TameEntityObjective`     | `tame_entity`     | `EntityTameEvent`        | Taming events (optionally filtered by entity type)                           |
 
 All built-in objectives listen at `EventPriority.MONITOR` with `ignoreCancelled = true`.
+
+---
+
+### SecretBingoObjective
+
+**Package:** `net.trilleo.mc.plugins.tribingo.bingo`
+
+A **decorator / wrapper** that wraps any existing `BingoObjective` subclass to mark it as a "secret" objective. Secret
+objectives hide their description from players until they personally complete the objective. Hints are revealed
+progressively to all players as the game timer elapses.
+
+**Constructor parameters:**
+
+| Parameter | Type             | Description                                                         |
+|:----------|:-----------------|:--------------------------------------------------------------------|
+| `inner`   | `BingoObjective` | The real objective being wrapped (any subclass)                     |
+| `hints`   | `List<String>`   | Ordered list of hint strings revealed progressively during the game |
+
+**Design:**
+
+- Extends `BingoObjective` with `id`, `name`, `description`, and `difficulty` all delegated to the inner objective
+- `isCompletedBy(player, state)` and `onReset(player, state)` delegate to the inner objective
+- The wrapper itself is **not** a Bukkit `Listener` — the inner objective retains its event listener registration
+- `BingoObjectiveRegistry` checks if the inner objective `is Listener` and registers it accordingly
+
+**Display behaviour (`displayItem`):**
+
+| State                  | Material                |
+|:-----------------------|:------------------------|
+| Completed              | `LIME_CONCRETE`         |
+| Not completed (secret) | `MAGENTA_STAINED_GLASS` |
+
+**Lore layout:**
+
+```
+Difficulty: <colour>Easy/Medium/Hard/Insane
+⚡ Secret
+
+[If completed: real description]
+[If not completed: "*****"]
+
+[Revealed hints, if any:]
+  Hint 1: <text>
+  Hint 2: <text>
+
+✓ Completed / ○ Not yet completed
+```
+
+**Helper check:**
+
+```kotlin
+if (objective is SecretBingoObjective) {
+    ...
+}
+```
+
+---
+
+### SecretHintManager
+
+**Package:** `net.trilleo.mc.plugins.tribingo.bingo`
+
+Singleton that manages the progressive reveal of hints for all `SecretBingoObjective` instances on the current board.
+Hints are revealed **globally** — all players see the same hints at the same time.
+
+**Reveal schedule:**
+
+For an objective with N hints, the reveal thresholds are at fractions `1/(N+1), 2/(N+1), ..., N/(N+1)` of the total
+timer duration.
+
+| Hints | Reveal thresholds  | Example (60-min timer)         |
+|:------|:-------------------|:-------------------------------|
+| 1     | 50%                | 30 min elapsed                 |
+| 2     | 33%, 67%           | 20 min, 40 min                 |
+| 3     | 25%, 50%, 75%      | 15 min, 30 min, 45 min         |
+| 4     | 20%, 40%, 60%, 80% | 12 min, 24 min, 36 min, 48 min |
+
+**Key methods:**
+
+| Method                                      | Description                                                          |
+|:--------------------------------------------|:---------------------------------------------------------------------|
+| `init(plugin)`                              | Stores the plugin reference; call once during startup                |
+| `tick(totalSeconds, remaining)`             | Called every countdown tick; checks if new hints should be revealed  |
+| `getRevealedHints(objective): List<String>` | Returns the subset of hints currently visible for a secret objective |
+| `getRevealedHintCount(objectiveId): Int`    | Returns the count of revealed hints for a given objective ID         |
+| `reset()`                                   | Clears all revealed hint state (called on game end/reset/shutdown)   |
+
+**Chat notification:**
+
+When a new hint is revealed, all online players receive:
+
+```
+[Bingo] A new hint is available for a secret objective! Check the board.
+```
+
+**Lifecycle:**
+
+- Initialised in `Main.onEnable` after objective loading: `SecretHintManager.init(this)`
+- Ticked from `BingoManager`'s countdown each second
+- Reset on game stop, game reset, timer expiry, board-full win, and server shutdown
+
+**Edge cases:**
+
+- **No timer / timer is 0**: No hints are revealed (elapsed fraction stays at 0)
+- **Player joins mid-game**: They see whatever hints have been globally revealed when they open the board
+- **Objective completed before all hints revealed**: That player sees the full description; others still see only
+  revealed hints
+- **Server restart mid-game**: Hint state is cleared; game resets to INACTIVE on rehydration anyway
 
 ---
 
@@ -1216,5 +1327,197 @@ CodeObjectiveLoader.load(
     "com.example.myplugin.objectives"
 )
 ```
+
+---
+
+## Writing a Secret Objective
+
+Secret objectives use the `SecretBingoObjective` wrapper to hide an objective's description and reveal hints over time.
+Any existing `BingoObjective` subclass can be made secret by wrapping it.
+
+---
+
+### Quick-start
+
+1. Create your inner objective (any `BingoObjective` subclass — event-driven, sequential, etc.).
+2. Create a class that extends `SecretBingoObjective`, passing the inner objective and a list of hints.
+3. Annotate the **wrapper** class with `@CustomObjective` (not the inner class).
+4. Place the file in `net.trilleo.mc.plugins.tribingo.bingo.custom`.
+
+That's it — the registry handles listener registration for the inner objective automatically.
+
+---
+
+### Basic Example: Wrapping an EventBingoObjective
+
+```kotlin
+package net.trilleo.mc.plugins.tribingo.bingo.custom
+
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.trilleo.mc.plugins.tribingo.bingo.*
+import net.trilleo.mc.plugins.tribingo.bingo.annotation.CustomObjective
+import net.trilleo.mc.plugins.tribingo.enums.Difficulty
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.entity.EntityDeathEvent
+
+/**
+ * Inner objective: kill 3 Withers.
+ * This class is NOT annotated with @CustomObjective — only the wrapper is.
+ */
+class KillWithersObjective : EventBingoObjective<EntityDeathEvent>(
+    id = "secret_kill_withers",
+    name = Component.text("???", NamedTextColor.LIGHT_PURPLE),
+    description = Component.text("Kill 3 Withers."),
+    difficulty = Difficulty.INSANE,
+    eventClass = EntityDeathEvent::class.java
+) {
+    private val required = 3
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onEntityDeath(event: EntityDeathEvent) {
+        if (event.entity.type != EntityType.WITHER) return
+        val killer = event.entity.killer ?: return
+        val state = BingoManager.getActiveState(killer, id) ?: return
+        onEvent(event, killer, state)
+    }
+
+    override fun onEvent(event: EntityDeathEvent, player: Player, state: BingoPlayerState) {
+        val progress = state.getProgress(id) + 1
+        state.setProgress(id, progress)
+        if (progress >= required) BingoManager.checkCompletion(player, this)
+    }
+
+    override fun isCompletedBy(player: Player, state: BingoPlayerState) =
+        state.getProgress(id) >= required
+
+    override fun onReset(player: Player, state: BingoPlayerState) {
+        state.setProgress(id, 0)
+    }
+}
+
+/**
+ * The secret wrapper — this is what gets registered and placed on the board.
+ */
+@CustomObjective
+class SecretKillWithers : SecretBingoObjective(
+    inner = KillWithersObjective(),
+    hints = listOf(
+        "This involves a boss mob",
+        "You need to summon it yourself",
+        "Three skulls, soul sand, and patience"
+    )
+)
+```
+
+**What happens:**
+
+- `SecretKillWithers` is discovered by `CodeObjectiveLoader` and registered
+- The registry sees it's a `SecretBingoObjective` and checks the `inner` for `Listener` → registers
+  `KillWithersObjective` as a Bukkit event listener
+- On the board, the cell shows `MAGENTA_STAINED_GLASS` with a `⚡ Secret` tag
+- Players see `*****` instead of "Kill 3 Withers." until they complete it
+- Hints are revealed progressively as the game timer elapses
+
+---
+
+### Using a Companion Factory
+
+When the inner objective requires dynamic construction or parameters:
+
+```kotlin
+@CustomObjective
+class SecretNetherExplorer private constructor() : SecretBingoObjective(
+    inner = TravelDistanceInNetherObjective(),
+    hints = listOf(
+        "This involves travelling",
+        "You need to visit a specific dimension",
+        "Cover a large distance there"
+    )
+) {
+    companion object : BingoObjectiveFactory {
+        override fun create() = SecretNetherExplorer()
+    }
+}
+```
+
+---
+
+### Wrapping a MultiEventBingoObjective
+
+Secret objectives can wrap any objective type, including multi-event objectives:
+
+```kotlin
+class BrewAndDrinkObjective : MultiEventBingoObjective(
+    id = "secret_brew_drink",
+    name = Component.text("???", NamedTextColor.LIGHT_PURPLE),
+    description = Component.text("Brew and drink a Strength potion."),
+    difficulty = Difficulty.MEDIUM
+) {
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onBrew(event: BrewEvent) { /* ... track brewing ... */ }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    fun onDrink(event: PlayerItemConsumeEvent) { /* ... track drinking ... */ }
+
+    // ... isCompletedBy, onReset ...
+}
+
+@CustomObjective
+class SecretBrewAndDrink : SecretBingoObjective(
+    inner = BrewAndDrinkObjective(),
+    hints = listOf(
+        "This involves alchemy",
+        "Drink your own creation"
+    )
+)
+```
+
+---
+
+### Display Behaviour
+
+The `SecretBingoObjective.displayItem()` rendering works as follows:
+
+| Player state      | What they see                                                                    |
+|:------------------|:---------------------------------------------------------------------------------|
+| Has NOT completed | Magenta glass, name, difficulty, `⚡ Secret` tag, `*****`, revealed hints, status |
+| Has completed     | Lime concrete, name, difficulty, `⚡ Secret` tag, **real description**, status    |
+| Spectator         | Board shows `*****` + revealed hints (spectators cannot complete objectives)     |
+
+Hints appear in the lore as:
+
+```
+Hint 1: This involves a boss mob
+Hint 2: You need to summon it yourself
+```
+
+Only hints that have been globally revealed (based on elapsed time) are shown. Unrevealed hints are not displayed at
+all.
+
+---
+
+### Board GUI Chat Output
+
+When a player clicks a secret objective cell in the board GUI:
+
+- **If completed by that player**: the full description is shown in chat (same as regular objectives)
+- **If not completed**: `*****` is shown, followed by any currently revealed hints
+
+---
+
+### Important Notes
+
+1. **Only annotate the wrapper** with `@CustomObjective`, not the inner objective class
+2. **The inner objective's `id`** is what's used for persistence — the wrapper delegates its `id` to the inner
+3. **Hints are revealed globally** — all players see the same hints at the same time
+4. **No timer = no hints** — if the countdown timer is 0 or not set, hints won't reveal
+5. **Test sessions** (`/bingo test <id>`) work normally with secret objectives — the test system uses the objective's
+   `id` which delegates to the inner
+6. **Board randomizers** can filter secret objectives using `objective is SecretBingoObjective`
+7. **The `difficulty` property** is preserved from the inner objective, so randomizers can still group by difficulty
 
 ---

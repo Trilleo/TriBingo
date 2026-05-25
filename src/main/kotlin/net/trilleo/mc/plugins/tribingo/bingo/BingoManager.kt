@@ -120,6 +120,7 @@ object BingoManager {
         // next startup begins with a clean INACTIVE game.
         if (game.state == GameState.ACTIVE) {
             cancelCountdown()
+            SecretHintManager.reset()
             data.clearGameData()
             plugin.logger.info(
                 "[BingoManager] Server stopped during an active game; game data cleared (will reset on restart)"
@@ -271,6 +272,7 @@ object BingoManager {
         val game = currentGame ?: return
         if (game.state != GameState.ACTIVE) return
         cancelCountdown()
+        SecretHintManager.reset()
         game.end(null)
         restoreGameModes()
     }
@@ -282,6 +284,7 @@ object BingoManager {
      * Does nothing when no game exists.
      */
     fun resetGame() {
+        SecretHintManager.reset()
         currentGame?.reset()
     }
 
@@ -391,6 +394,7 @@ object BingoManager {
         // Win condition: first player to complete the full board wins
         if (game.board.isBoardFull(state)) {
             cancelCountdown()
+            SecretHintManager.reset()
             game.end(player, state.points)
             restoreGameModes()
         }
@@ -453,6 +457,10 @@ object BingoManager {
                 .append(Component.text(timeText, NamedTextColor.YELLOW))
                 .build()
             plugin.server.onlinePlayers.forEach { it.sendActionBar(bar) }
+
+            // Tick the secret hint manager to check for new hint reveals
+            SecretHintManager.tick(getTimerSeconds(), remainingSeconds)
+
             remainingSeconds--
         }, 0L, 20L)
     }
@@ -480,6 +488,8 @@ object BingoManager {
     private fun onTimerExpired() {
         val game = currentGame ?: return
         if (game.state != GameState.ACTIVE) return
+
+        SecretHintManager.reset()
 
         val topState = game.playerStates.values.maxByOrNull { it.points }
         if (topState == null || topState.points == 0) {

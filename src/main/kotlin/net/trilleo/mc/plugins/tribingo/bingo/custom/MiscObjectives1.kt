@@ -99,8 +99,8 @@ private fun formatProgressSeconds(totalSeconds: Int): String {
 @CustomObjective
 class BronzeAgeObjective : MultiEventBingoObjective(
     id = "bronze_age",
-    name = Component.text("Bronze Age"),
-    description = Component.text("Wear all 4 copper armor pieces."),
+    name = Component.text("Bronze Age", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Wear all 4 copper armor pieces.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -123,8 +123,8 @@ class BronzeAgeObjective : MultiEventBingoObjective(
 @CustomObjective
 class NeverGrowUpObjective : MultiEventBingoObjective(
     id = "never_grow_up",
-    name = Component.text("Never grow up!"),
-    description = Component.text("Feed a golden dandelion potion to a cub."),
+    name = Component.text("Never grow up!", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Feed a golden dandelion potion to a cub.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -147,8 +147,8 @@ class NeverGrowUpObjective : MultiEventBingoObjective(
 @CustomObjective
 class CopperArmyObjective : MultiEventBingoObjective(
     id = "copper_army",
-    name = Component.text("Copper army!"),
-    description = Component.text("Get all kinds of copper golem statues."),
+    name = Component.text("Copper army!", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Get all kinds of copper golem statues.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     private val count = COPPER_STATUE_VARIANTS_REQUIRED
@@ -186,8 +186,8 @@ class CopperArmyObjective : MultiEventBingoObjective(
 @CustomObjective
 class IAmTheGodObjective : EventBingoObjective<PlayerItemConsumeEvent>(
     id = "i_am_the_god",
-    name = Component.text("I am the God!"),
-    description = Component.text("Eat an enchanted golden apple."),
+    name = Component.text("I am the God!", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Eat an enchanted golden apple.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM,
     eventClass = PlayerItemConsumeEvent::class.java
 ) {
@@ -213,8 +213,8 @@ class IAmTheGodObjective : EventBingoObjective<PlayerItemConsumeEvent>(
 @CustomObjective
 class LookAtMeObjective : EventBingoObjective<PlayerDeathEvent>(
     id = "look_at_me",
-    name = Component.text("Look at me!"),
-    description = Component.text("Killed by a creaking."),
+    name = Component.text("Look at me!", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Killed by a creaking.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM,
     eventClass = PlayerDeathEvent::class.java
 ) {
@@ -242,8 +242,8 @@ class LookAtMeObjective : EventBingoObjective<PlayerDeathEvent>(
 @CustomObjective
 class QuietObjective : EventBingoObjective<PlayerDeathEvent>(
     id = "quiet",
-    name = Component.text("Quiet!"),
-    description = Component.text("Killed by the Warden."),
+    name = Component.text("Quiet!", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Killed by the Warden.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM,
     eventClass = PlayerDeathEvent::class.java
 ) {
@@ -271,8 +271,8 @@ class QuietObjective : EventBingoObjective<PlayerDeathEvent>(
 @CustomObjective
 class YouCanSpeakNowObjective : EventBingoObjective<EntityDeathEvent>(
     id = "you_can_speak_now",
-    name = Component.text("You can speak now."),
-    description = Component.text("Kill the Warden."),
+    name = Component.text("You can speak now.", difficultyNameColor(Difficulty.INSANE)),
+    description = Component.text("Kill the Warden.", NamedTextColor.GRAY),
     difficulty = Difficulty.INSANE,
     eventClass = EntityDeathEvent::class.java
 ) {
@@ -299,8 +299,8 @@ class YouCanSpeakNowObjective : EventBingoObjective<EntityDeathEvent>(
 @CustomObjective
 class TitanicObjective : MultiEventBingoObjective(
     id = "titanic",
-    name = Component.text("Titanic"),
-    description = Component.text("Keep boating for 5 minutes."),
+    name = Component.text("Titanic", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Keep boating for 5 minutes.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     private val count = TITANIC_REQUIRED_SECONDS
@@ -361,8 +361,8 @@ class TitanicObjective : MultiEventBingoObjective(
 @CustomObjective
 class MayTheForceBeWithYouObjective : MultiEventBingoObjective(
     id = "may_the_force_be_with_you",
-    name = Component.text("May the Force Be With You"),
-    description = Component.text("Die 10 times in 3 minutes."),
+    name = Component.text("May the Force Be With You", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Die 10 times in 3 minutes.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     private val count = FORCE_REQUIRED_DEATHS
@@ -407,9 +407,9 @@ class MayTheForceBeWithYouObjective : MultiEventBingoObjective(
 @CustomObjective
 class AvengersAssembleObjective : MultiEventBingoObjective(
     id = "avengers_assemble",
-    name = Component.text("Avengers Assemble!"),
-    description = Component.text("Make 10 iron golems in 3 minutes."),
-    difficulty = Difficulty.EASY
+    name = Component.text("Avengers Assemble!", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Make 10 iron golems in 3 minutes.", NamedTextColor.GRAY),
+    difficulty = Difficulty.HARD
 ) {
     private val count = AVENGERS_REQUIRED_GOLEMS
     private val windowMillis = AVENGERS_WINDOW_MILLIS
