@@ -124,8 +124,8 @@ private fun misc5EnchantedBookAmount(item: ItemStack?): Int =
 @CustomObjective
 class SwitchMeansSuperWitchObjective : MultiEventBingoObjective(
     id = "switch_means_super_witch",
-    name = Component.text("Switch means super witch"),
-    description = Component.text("Have 10 kinds of potions."),
+    name = Component.text("Switch means super witch", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Have 10 kinds of potions.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD
 ) {
     private val count = SWITCH_MEANS_SUPER_WITCH_REQUIRED
@@ -170,8 +170,8 @@ class SwitchMeansSuperWitchObjective : MultiEventBingoObjective(
 @CustomObjective
 class RainbowObjective : MultiEventBingoObjective(
     id = "rainbow",
-    name = Component.text("Rainbow"),
-    description = Component.text("Get wool of all colors."),
+    name = Component.text("Rainbow", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Get wool of all colors.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -216,8 +216,8 @@ class RainbowObjective : MultiEventBingoObjective(
 @CustomObjective
 class InfinityVioletObjective : EventBingoObjective<CraftItemEvent>(
     id = "infinity_violet",
-    name = Component.text("Infinity Violet"),
-    description = Component.text("Craft an amethyst block."),
+    name = Component.text("Infinity Violet", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Craft an amethyst block.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY,
     eventClass = CraftItemEvent::class.java
 ) {
@@ -244,8 +244,8 @@ class InfinityVioletObjective : EventBingoObjective<CraftItemEvent>(
 @CustomObjective
 class TheChosenOne1Objective : MultiEventBingoObjective(
     id = "the_chosen_one_1",
-    name = Component.text("The Chosen One 1"),
-    description = Component.text("Get a deepslate coal ore (use Silk Touch)."),
+    name = Component.text("The Chosen One 1", difficultyNameColor(Difficulty.INSANE)),
+    description = Component.text("Get a deepslate coal ore (use Silk Touch).", NamedTextColor.GRAY),
     difficulty = Difficulty.INSANE
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -276,8 +276,8 @@ class TheChosenOne1Objective : MultiEventBingoObjective(
 @CustomObjective
 class TheChosenOne2Objective : MultiEventBingoObjective(
     id = "the_chosen_one_2",
-    name = Component.text("The Chosen One 2"),
-    description = Component.text("Find a blue axolotl and place it in your bucket."),
+    name = Component.text("The Chosen One 2", difficultyNameColor(Difficulty.INSANE)),
+    description = Component.text("Find a blue axolotl and place it in your bucket.", NamedTextColor.GRAY),
     difficulty = Difficulty.INSANE
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -309,8 +309,8 @@ class TheChosenOne2Objective : MultiEventBingoObjective(
 @CustomObjective
 class PandoraGumObjective : EventBingoObjective<CraftItemEvent>(
     id = "pandora_gum",
-    name = Component.text("Pandora Gum"),
-    description = Component.text("Craft a resin block."),
+    name = Component.text("Pandora Gum", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Craft a resin block.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY,
     eventClass = CraftItemEvent::class.java
 ) {
@@ -337,8 +337,8 @@ class PandoraGumObjective : EventBingoObjective<CraftItemEvent>(
 @CustomObjective
 class GameOfSkullsObjective : MultiEventBingoObjective(
     id = "game_of_skulls",
-    name = Component.text("Game of Skulls"),
-    description = Component.text("Collect all kinds of heads (zombie, skeleton, creeper, wither skeleton, piglin, ender dragon)."),
+    name = Component.text("Game of Skulls", difficultyNameColor(Difficulty.INSANE)),
+    description = Component.text("Collect all kinds of heads (zombie, skeleton, creeper, wither skeleton, piglin, ender dragon).", NamedTextColor.GRAY),
     difficulty = Difficulty.INSANE
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -383,8 +383,8 @@ class GameOfSkullsObjective : MultiEventBingoObjective(
 @CustomObjective
 class RockPaperScissorsObjective : MultiEventBingoObjective(
     id = "rock_paper_scissors",
-    name = Component.text("Rock, paper, scissors"),
-    description = Component.text("Use paper to break a stone."),
+    name = Component.text("Rock, paper, scissors", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Use paper to break a stone.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -406,8 +406,8 @@ class RockPaperScissorsObjective : MultiEventBingoObjective(
 @CustomObjective
 class LibrarianObjective : MultiEventBingoObjective(
     id = "librarian",
-    name = Component.text("Librarian"),
-    description = Component.text("Collect 10 enchanted books."),
+    name = Component.text("Librarian", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Collect 10 enchanted books.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD
 ) {
     private val count = LIBRARIAN_REQUIRED_BOOKS
@@ -474,8 +474,8 @@ class LibrarianObjective : MultiEventBingoObjective(
 @CustomObjective
 class DrunkDriverObjective : MultiEventBingoObjective(
     id = "drunk_driver",
-    name = Component.text("Drunk driver"),
-    description = Component.text("Ride your horse into lava and burn to death."),
+    name = Component.text("Drunk driver", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Ride your horse into lava and burn to death.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     @EventHandler(priority = EventPriority.MONITOR)
@@ -498,8 +498,8 @@ class DrunkDriverObjective : MultiEventBingoObjective(
 @CustomObjective
 class MurderVillagerObjective : EventBingoObjective<EntityDeathEvent>(
     id = "murder_villager",
-    name = Component.text("Murder villager"),
-    description = Component.text("Kill 30 villagers."),
+    name = Component.text("Murder villager", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Kill 30 villagers.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY,
     eventClass = EntityDeathEvent::class.java
 ) {

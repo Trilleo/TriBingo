@@ -207,9 +207,10 @@ private fun misc4WillEquipChainArmor(player: Player, event: InventoryClickEvent)
 @CustomObjective
 class GreenThumbObjective : MultiEventBingoObjective(
     id = "green_thumb",
-    name = Component.text("Green thumb"),
+    name = Component.text("Green thumb", difficultyNameColor(Difficulty.HARD)),
     description = Component.text(
-        "Plant all kinds of crops (including sweet berries, glow berries, carrot, potato, beetroot, wheat, cocoa beans, pumpkin, melon, torchflower, pitcher, nether wart, kelp, sugar cane, bamboo, chorus flower)."
+        "Plant all kinds of crops (including sweet berries, glow berries, carrot, potato, beetroot, wheat, cocoa beans, pumpkin, melon, torchflower, pitcher, nether wart, kelp, sugar cane, bamboo, chorus flower).",
+        NamedTextColor.GRAY
     ),
     difficulty = Difficulty.HARD
 ) {
@@ -252,8 +253,8 @@ class GreenThumbObjective : MultiEventBingoObjective(
 @CustomObjective
 class TheMummysCurseObjective : MultiEventBingoObjective(
     id = "the_mummys_curse",
-    name = Component.text("The Mummy's Curse"),
-    description = Component.text("Trigger the explosion trap of a desert pyramid."),
+    name = Component.text("The Mummy's Curse", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Trigger the explosion trap of a desert pyramid.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -276,8 +277,8 @@ class TheMummysCurseObjective : MultiEventBingoObjective(
 @CustomObjective
 class TempleRunObjective : MultiEventBingoObjective(
     id = "temple_run",
-    name = Component.text("Temple Run"),
-    description = Component.text("Get into a jungle pyramid."),
+    name = Component.text("Temple Run", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Get into a jungle pyramid.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -300,8 +301,8 @@ class TempleRunObjective : MultiEventBingoObjective(
 @CustomObjective
 class StarSpangledWardObjective : EventBingoObjective<CraftItemEvent>(
     id = "star_spangled_ward",
-    name = Component.text("Star-Spangled Ward"),
-    description = Component.text("Craft a shield."),
+    name = Component.text("Star-Spangled Ward", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Craft a shield.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY,
     eventClass = CraftItemEvent::class.java
 ) {
@@ -328,8 +329,8 @@ class StarSpangledWardObjective : EventBingoObjective<CraftItemEvent>(
 @CustomObjective
 class HornOfGondorObjective : MultiEventBingoObjective(
     id = "horn_of_gondor",
-    name = Component.text("Horn of Gondor"),
-    description = Component.text("Get a goat horn."),
+    name = Component.text("Horn of Gondor", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Get a goat horn.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -351,8 +352,8 @@ class HornOfGondorObjective : MultiEventBingoObjective(
 @CustomObjective
 class VikingChainwardObjective : MultiEventBingoObjective(
     id = "viking_chainward",
-    name = Component.text("Viking Chainward"),
-    description = Component.text("Wear any chain armor."),
+    name = Component.text("Viking Chainward", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Wear any chain armor.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -374,8 +375,8 @@ class VikingChainwardObjective : MultiEventBingoObjective(
 @CustomObjective
 class RedstoneAgeObjective : MultiEventBingoObjective(
     id = "redstone_age",
-    name = Component.text("Redstone Age"),
-    description = Component.text("Use redstone to light TNT."),
+    name = Component.text("Redstone Age", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Use redstone to light TNT.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -407,8 +408,8 @@ class RedstoneAgeObjective : MultiEventBingoObjective(
 @CustomObjective
 class FenrirsPlateObjective : EventBingoObjective<CraftItemEvent>(
     id = "fenrirs_plate",
-    name = Component.text("Fenrir's Plate"),
-    description = Component.text("Craft wolf armor."),
+    name = Component.text("Fenrir's Plate", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Craft wolf armor.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM,
     eventClass = CraftItemEvent::class.java
 ) {
@@ -435,8 +436,8 @@ class FenrirsPlateObjective : EventBingoObjective<CraftItemEvent>(
 @CustomObjective
 class AntiAircraftGunObjective : MultiEventBingoObjective(
     id = "anti_aircraft_gun",
-    name = Component.text("Anti-aircraft gun"),
-    description = Component.text("Kill 3 phantoms with arrows."),
+    name = Component.text("Anti-aircraft gun", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Kill 3 phantoms with arrows.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM
 ) {
     private val count = ANTI_AIRCRAFT_GUN_REQUIRED_KILLS
@@ -477,8 +478,8 @@ class AntiAircraftGunObjective : MultiEventBingoObjective(
 @CustomObjective
 class RedDeadRedemptionObjective : EventBingoObjective<EntityDeathEvent>(
     id = "red_dead_redemption",
-    name = Component.text("Red Dead Redemption"),
-    description = Component.text("Kill a wandering trader."),
+    name = Component.text("Red Dead Redemption", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Kill a wandering trader.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM,
     eventClass = EntityDeathEvent::class.java
 ) {

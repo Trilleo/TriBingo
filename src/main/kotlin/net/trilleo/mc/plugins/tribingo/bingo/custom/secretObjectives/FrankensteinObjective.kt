@@ -7,6 +7,7 @@ import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.SecretBingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.annotation.CustomObjective
+import net.trilleo.mc.plugins.tribingo.bingo.custom.difficultyNameColor
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -43,7 +44,7 @@ private fun hasFourDistinctArmorFamilies(player: Player): Boolean {
 
 class FrankensteinObjective : EventBingoObjective<PlayerMoveEvent>(
     id = "frankenstein",
-    name = Component.text("Frankenstein"),
+    name = Component.text("Frankenstein", difficultyNameColor(Difficulty.EASY)),
     description = Component.text("Wear 4 armor pieces all of different material types simultaneously.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY,
     eventClass = PlayerMoveEvent::class.java

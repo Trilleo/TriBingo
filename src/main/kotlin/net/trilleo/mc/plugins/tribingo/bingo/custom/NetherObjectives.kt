@@ -34,8 +34,8 @@ private const val ZOMBIE_PORTAL_PROXIMITY_RADIUS = 16.0
 @CustomObjective
 class NetherHunterObjective : MultiEventBingoObjective(
     id = "nether_hunter",
-    name = Component.text("Nether Hunter"),
-    description = Component.text("Kill all kinds of naturally generated nether mobs except the Wither."),
+    name = Component.text("Nether Hunter", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Kill all kinds of naturally generated nether mobs except the Wither.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD
 ) {
     private val requiredMobSteps = setOf(
@@ -85,8 +85,8 @@ class NetherHunterObjective : MultiEventBingoObjective(
 @CustomObjective
 class NetheriteForgerObjective : EventBingoObjective<CraftItemEvent>(
     id = "netherite_forger",
-    name = Component.text("Netherite Forger"),
-    description = Component.text("Craft a netherite ingot."),
+    name = Component.text("Netherite Forger", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Craft a netherite ingot.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD,
     eventClass = CraftItemEvent::class.java
 ) {
@@ -115,8 +115,8 @@ class NetheriteForgerObjective : EventBingoObjective<CraftItemEvent>(
 @CustomObjective
 class HappyGhastObjective : MultiEventBingoObjective(
     id = "happy_ghast",
-    name = Component.text("Happy Ghast!"),
-    description = Component.text("Fly on a happy ghast."),
+    name = Component.text("Happy Ghast!", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Fly on a happy ghast.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -138,8 +138,8 @@ class HappyGhastObjective : MultiEventBingoObjective(
 @CustomObjective
 class WitherEnderObjective : EventBingoObjective<EntityDeathEvent>(
     id = "wither_ender",
-    name = Component.text("Wither Ender"),
-    description = Component.text("Kill the Wither."),
+    name = Component.text("Wither Ender", difficultyNameColor(Difficulty.INSANE)),
+    description = Component.text("Kill the Wither.", NamedTextColor.GRAY),
     difficulty = Difficulty.INSANE,
     eventClass = EntityDeathEvent::class.java
 ) {
@@ -166,8 +166,8 @@ class WitherEnderObjective : EventBingoObjective<EntityDeathEvent>(
 @CustomObjective
 class GoldRoadObjective : MultiEventBingoObjective(
     id = "gold_road",
-    name = Component.text("Gold Road"),
-    description = Component.text("Trade with piglins $GOLD_ROAD_TRADES_REQUIRED times."),
+    name = Component.text("Gold Road", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Trade with piglins $GOLD_ROAD_TRADES_REQUIRED times.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM
 ) {
     private val count = GOLD_ROAD_TRADES_REQUIRED
@@ -233,8 +233,8 @@ class GoldRoadObjective : MultiEventBingoObjective(
 @CustomObjective
 class NetherFarmerObjective : EventBingoObjective<BlockPlaceEvent>(
     id = "nether_farmer",
-    name = Component.text("Nether Farmer"),
-    description = Component.text("Plant nether wart $NETHER_FARMER_PLANTS_REQUIRED times."),
+    name = Component.text("Nether Farmer", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Plant nether wart $NETHER_FARMER_PLANTS_REQUIRED times.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM,
     eventClass = BlockPlaceEvent::class.java
 ) {
@@ -277,8 +277,8 @@ class NetherFarmerObjective : EventBingoObjective<BlockPlaceEvent>(
 @CustomObjective
 class LaLaLaLavaObjective : EventBingoObjective<EntityDamageEvent>(
     id = "la_la_la_lava",
-    name = Component.text("La-La-La-Lava!"),
-    description = Component.text("Try to swim in lava $LAVA_SWIMS_REQUIRED times."),
+    name = Component.text("La-La-La-Lava!", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Try to swim in lava $LAVA_SWIMS_REQUIRED times.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY,
     eventClass = EntityDamageEvent::class.java
 ) {
@@ -327,8 +327,8 @@ class LaLaLaLavaObjective : EventBingoObjective<EntityDamageEvent>(
 @CustomObjective
 class ZombieConversionObjective : MultiEventBingoObjective(
     id = "zombie_conversion",
-    name = Component.text("Zombie!"),
-    description = Component.text("Make a piglin and piglin brute become zombified piglins, and a hoglin become a zoglin."),
+    name = Component.text("Zombie!", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Make a piglin and piglin brute become zombified piglins, and a hoglin become a zoglin.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD
 ) {
     private val requiredSteps = setOf(
@@ -404,8 +404,8 @@ class ZombieConversionObjective : MultiEventBingoObjective(
 @CustomObjective
 class IAmPiglinObjective : EventBingoObjective<EntityPickupItemEvent>(
     id = "i_am_piglin",
-    name = Component.text("I Am Piglin"),
-    description = Component.text("Get a piglin head."),
+    name = Component.text("I Am Piglin", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Get a piglin head.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD,
     eventClass = EntityPickupItemEvent::class.java
 ) {
@@ -432,8 +432,8 @@ class IAmPiglinObjective : EventBingoObjective<EntityPickupItemEvent>(
 @CustomObjective
 class ImSoTiredObjective : EventBingoObjective<PlayerDeathEvent>(
     id = "im_so_tired",
-    name = Component.text("I'm so tired!"),
-    description = Component.text("Get killed by a bed explosion in the Nether or the End."),
+    name = Component.text("I'm so tired!", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Get killed by a bed explosion in the Nether or the End.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY,
     eventClass = PlayerDeathEvent::class.java
 ) {

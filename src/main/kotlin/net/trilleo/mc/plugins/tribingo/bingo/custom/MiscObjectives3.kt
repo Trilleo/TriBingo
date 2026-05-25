@@ -88,8 +88,8 @@ private fun isIllager(type: EntityType): Boolean = type in setOf(
 @CustomObjective
 class SilentHillObjective : MultiEventBingoObjective(
     id = "silent_hill",
-    name = Component.text("Silent Hill"),
-    description = Component.text("Find a pale garden biome."),
+    name = Component.text("Silent Hill", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Find a pale garden biome.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -112,8 +112,8 @@ class SilentHillObjective : MultiEventBingoObjective(
 @CustomObjective
 class PlantsVsZombiesObjective : MultiEventBingoObjective(
     id = "plants_vs_zombies",
-    name = Component.text("Plants vs Zombies"),
-    description = Component.text("Kill a zombie with a melon block."),
+    name = Component.text("Plants vs Zombies", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Kill a zombie with a melon block.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     private val trackedZombies = ConcurrentHashMap<UUID, TimedPlayerReference>()
@@ -153,8 +153,8 @@ class PlantsVsZombiesObjective : MultiEventBingoObjective(
 @CustomObjective
 class NeverGonnaGiveYouUpObjective : MultiEventBingoObjective(
     id = "never_gonna_give_you_up",
-    name = Component.text("Never Gonna Give You Up"),
-    description = Component.text("Craft black leather boots."),
+    name = Component.text("Never Gonna Give You Up", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Craft black leather boots.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -179,8 +179,8 @@ class NeverGonnaGiveYouUpObjective : MultiEventBingoObjective(
 @CustomObjective
 class PoorGreenObjective : MultiEventBingoObjective(
     id = "poor_green",
-    name = Component.text("Poor Green"),
-    description = Component.text("Place a slimeball in an item frame."),
+    name = Component.text("Poor Green", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Place a slimeball in an item frame.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -202,8 +202,8 @@ class PoorGreenObjective : MultiEventBingoObjective(
 @CustomObjective
 class GodfatherObjective : MultiEventBingoObjective(
     id = "godfather",
-    name = Component.text("You don't even think to call me Godfather."),
-    description = Component.text("Start a raid but don't kill any illager until all villagers die."),
+    name = Component.text("You don't even think to call me Godfather.", difficultyNameColor(Difficulty.INSANE)),
+    description = Component.text("Start a raid but don't kill any illager until all villagers die.", NamedTextColor.GRAY),
     difficulty = Difficulty.INSANE
 ) {
     private val activeRaids = ConcurrentHashMap<String, RaidContext>()
@@ -281,8 +281,8 @@ class GodfatherObjective : MultiEventBingoObjective(
 @CustomObjective
 class TearsOfIsaacObjective : MultiEventBingoObjective(
     id = "tears_of_isaac",
-    name = Component.text("Tears of Isaac"),
-    description = Component.text("Kill 5 blazes with splash water bottles."),
+    name = Component.text("Tears of Isaac", difficultyNameColor(Difficulty.INSANE)),
+    description = Component.text("Kill 5 blazes with splash water bottles.", NamedTextColor.GRAY),
     difficulty = Difficulty.INSANE
 ) {
     private val count = TEARS_OF_ISAAC_REQUIRED
@@ -339,8 +339,8 @@ class TearsOfIsaacObjective : MultiEventBingoObjective(
 @CustomObjective
 class KingSlimeObjective : EventBingoObjective<EntityDeathEvent>(
     id = "king_slime",
-    name = Component.text("King Slime"),
-    description = Component.text("Kill 100 slimes."),
+    name = Component.text("King Slime", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Kill 100 slimes.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD,
     eventClass = EntityDeathEvent::class.java
 ) {
@@ -383,8 +383,8 @@ class KingSlimeObjective : EventBingoObjective<EntityDeathEvent>(
 @CustomObjective
 class TerrarianYoyoObjective : MultiEventBingoObjective(
     id = "terrarian_yoyo",
-    name = Component.text("Terrarian Yoyo"),
-    description = Component.text("Hold 10 mobs with a leash."),
+    name = Component.text("Terrarian Yoyo", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Hold 10 mobs with a leash.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM
 ) {
     private val count = TERRARIAN_YOYO_REQUIRED
@@ -417,8 +417,8 @@ class TerrarianYoyoObjective : MultiEventBingoObjective(
 @CustomObjective
 class ZeusWrathObjective : MultiEventBingoObjective(
     id = "zeus_wrath",
-    name = Component.text("Zeus's Wrath"),
-    description = Component.text("Use a Channeling trident to strike a mob with lightning."),
+    name = Component.text("Zeus's Wrath", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Use a Channeling trident to strike a mob with lightning.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD
 ) {
     private val trackedStrikes = ConcurrentHashMap<UUID, ChannelingStrikeReference>()
@@ -474,8 +474,8 @@ class ZeusWrathObjective : MultiEventBingoObjective(
 @CustomObjective
 class WorldWarObjective : MultiEventBingoObjective(
     id = "world_war",
-    name = Component.text("World War"),
-    description = Component.text("Make illagers fight with piglins."),
+    name = Component.text("World War", difficultyNameColor(Difficulty.INSANE)),
+    description = Component.text("Make illagers fight with piglins.", NamedTextColor.GRAY),
     difficulty = Difficulty.INSANE
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

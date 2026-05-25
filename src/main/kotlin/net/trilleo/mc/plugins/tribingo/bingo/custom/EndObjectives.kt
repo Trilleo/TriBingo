@@ -27,8 +27,8 @@ private const val END_EXTERMINATOR_REQUIRED = 5
 @CustomObjective
 class DragonKillerObjective : EventBingoObjective<EntityDeathEvent>(
     id = "dragon_killer",
-    name = Component.text("Dragon Killer"),
-    description = Component.text("Kill the Ender Dragon."),
+    name = Component.text("Dragon Killer", difficultyNameColor(Difficulty.INSANE)),
+    description = Component.text("Kill the Ender Dragon.", NamedTextColor.GRAY),
     difficulty = Difficulty.INSANE,
     eventClass = EntityDeathEvent::class.java
 ) {
@@ -55,8 +55,8 @@ class DragonKillerObjective : EventBingoObjective<EntityDeathEvent>(
 @CustomObjective
 class MyBagIsHeavyObjective : MultiEventBingoObjective(
     id = "my_bag_is_heavy",
-    name = Component.text("My bag is heavy!"),
-    description = Component.text("Get 3 shulker boxes in a chest."),
+    name = Component.text("My bag is heavy!", difficultyNameColor(Difficulty.INSANE)),
+    description = Component.text("Get 3 shulker boxes in a chest.", NamedTextColor.GRAY),
     difficulty = Difficulty.INSANE
 ) {
     private val count = MY_BAG_IS_HEAVY_REQUIRED
@@ -96,8 +96,8 @@ class MyBagIsHeavyObjective : MultiEventBingoObjective(
 @CustomObjective
 class EndFarmerObjective : EventBingoObjective<BlockPlaceEvent>(
     id = "end_farmer",
-    name = Component.text("End Farmer"),
-    description = Component.text("Plant chorus flowers 10 times."),
+    name = Component.text("End Farmer", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Plant chorus flowers 10 times.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD,
     eventClass = BlockPlaceEvent::class.java
 ) {
@@ -139,8 +139,8 @@ class EndFarmerObjective : EventBingoObjective<BlockPlaceEvent>(
 @CustomObjective
 class IAmEndermanObjective : MultiEventBingoObjective(
     id = "i_am_enderman",
-    name = Component.text("I am enderman"),
-    description = Component.text("Get 64 ender pearls."),
+    name = Component.text("I am enderman", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Get 64 ender pearls.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM
 ) {
     private val count = I_AM_ENDERMAN_REQUIRED
@@ -180,8 +180,8 @@ class IAmEndermanObjective : MultiEventBingoObjective(
 @CustomObjective
 class EndExterminatorObjective : EventBingoObjective<EntityDeathEvent>(
     id = "end_exterminator",
-    name = Component.text("End Exterminator"),
-    description = Component.text("Kill 5 endermites."),
+    name = Component.text("End Exterminator", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Kill 5 endermites.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY,
     eventClass = EntityDeathEvent::class.java
 ) {
@@ -223,8 +223,8 @@ class EndExterminatorObjective : EventBingoObjective<EntityDeathEvent>(
 @CustomObjective
 class WaitWhatObjective : EventBingoObjective<PlayerDeathEvent>(
     id = "wait_what",
-    name = Component.text("Wait What?"),
-    description = Component.text("Killed by an endermite."),
+    name = Component.text("Wait What?", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Killed by an endermite.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM,
     eventClass = PlayerDeathEvent::class.java
 ) {
@@ -252,8 +252,8 @@ class WaitWhatObjective : EventBingoObjective<PlayerDeathEvent>(
 @CustomObjective
 class AloneObjective : EventBingoObjective<PlayerDeathEvent>(
     id = "alone",
-    name = Component.text("Alone"),
-    description = Component.text("Fall out of the world."),
+    name = Component.text("Alone", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Fall out of the world.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM,
     eventClass = PlayerDeathEvent::class.java
 ) {
@@ -281,8 +281,8 @@ class AloneObjective : EventBingoObjective<PlayerDeathEvent>(
 @CustomObjective
 class ThatsTooFastObjective : EventBingoObjective<PlayerDeathEvent>(
     id = "thats_too_fast",
-    name = Component.text("That's too fast!"),
-    description = Component.text("Experience kinetic energy."),
+    name = Component.text("That's too fast!", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Experience kinetic energy.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD,
     eventClass = PlayerDeathEvent::class.java
 ) {
@@ -310,8 +310,8 @@ class ThatsTooFastObjective : EventBingoObjective<PlayerDeathEvent>(
 @CustomObjective
 class HereComesThePlaneObjective : MultiEventBingoObjective(
     id = "here_comes_the_plane",
-    name = Component.text("Here comes the plane!"),
-    description = Component.text("Kill a mob with a trident while flying."),
+    name = Component.text("Here comes the plane!", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Kill a mob with a trident while flying.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD
 ) {
     private val trackedTargets = ConcurrentHashMap<UUID, UUID>()
@@ -350,8 +350,8 @@ class HereComesThePlaneObjective : MultiEventBingoObjective(
 @CustomObjective
 class BombObjective : MultiEventBingoObjective(
     id = "bomb",
-    name = Component.text("Bomb!"),
-    description = Component.text("Detonate an end crystal."),
+    name = Component.text("Bomb!", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Detonate an end crystal.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

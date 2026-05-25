@@ -104,8 +104,8 @@ private fun hasNearbyBoneBlock(player: Player): Boolean {
 @CustomObjective
 class WelcomeToJurassicParkObjective : MultiEventBingoObjective(
     id = "welcome_to_jurassic_park",
-    name = Component.text("Welcome to Jurassic Park!"),
-    description = Component.text("Find a fossil."),
+    name = Component.text("Welcome to Jurassic Park!", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Find a fossil.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -137,8 +137,8 @@ class WelcomeToJurassicParkObjective : MultiEventBingoObjective(
 @CustomObjective
 class ShawshankEscapeObjective : MultiEventBingoObjective(
     id = "shawshank_escape",
-    name = Component.text("Shawshank Escape"),
-    description = Component.text("Find an igloo basement."),
+    name = Component.text("Shawshank Escape", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Find an igloo basement.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -166,8 +166,8 @@ class ShawshankEscapeObjective : MultiEventBingoObjective(
 @CustomObjective
 class FlightOfTheWizardObjective : MultiEventBingoObjective(
     id = "flight_of_the_wizard",
-    name = Component.text("Flight of the Wizard"),
-    description = Component.text("Keep flying for 5 minutes."),
+    name = Component.text("Flight of the Wizard", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Keep flying for 5 minutes.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD
 ) {
     private val count = FLIGHT_OF_THE_WIZARD_REQUIRED_SECONDS
@@ -225,8 +225,8 @@ class FlightOfTheWizardObjective : MultiEventBingoObjective(
 @CustomObjective
 class RaccoonCityOutbreakObjective : EventBingoObjective<EntityDeathEvent>(
     id = "raccoon_city_outbreak",
-    name = Component.text("Raccoon City Outbreak"),
-    description = Component.text("Kill 100 zombies."),
+    name = Component.text("Raccoon City Outbreak", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Kill 100 zombies.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM,
     eventClass = EntityDeathEvent::class.java
 ) {
@@ -269,8 +269,8 @@ class RaccoonCityOutbreakObjective : EventBingoObjective<EntityDeathEvent>(
 @CustomObjective
 class MariosFavoriteObjective : MultiEventBingoObjective(
     id = "marios_favorite",
-    name = Component.text("Mario's favorite"),
-    description = Component.text("Find a mushroom fields biome."),
+    name = Component.text("Mario's favorite", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Find a mushroom fields biome.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -293,8 +293,8 @@ class MariosFavoriteObjective : MultiEventBingoObjective(
 @CustomObjective
 class TheLordOfTheMaceObjective : EventBingoObjective<CraftItemEvent>(
     id = "the_lord_of_the_mace",
-    name = Component.text("The Lord of the Mace"),
-    description = Component.text("Craft a mace."),
+    name = Component.text("The Lord of the Mace", difficultyNameColor(Difficulty.HARD)),
+    description = Component.text("Craft a mace.", NamedTextColor.GRAY),
     difficulty = Difficulty.HARD,
     eventClass = CraftItemEvent::class.java
 ) {
@@ -321,8 +321,8 @@ class TheLordOfTheMaceObjective : EventBingoObjective<CraftItemEvent>(
 @CustomObjective
 class PraiseTheSunObjective : EventBingoObjective<CraftItemEvent>(
     id = "praise_the_sun",
-    name = Component.text("Praise The Sun!"),
-    description = Component.text("Craft a daylight detector."),
+    name = Component.text("Praise The Sun!", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Craft a daylight detector.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY,
     eventClass = CraftItemEvent::class.java
 ) {
@@ -349,8 +349,8 @@ class PraiseTheSunObjective : EventBingoObjective<CraftItemEvent>(
 @CustomObjective
 class HeresJohnnyObjective : MultiEventBingoObjective(
     id = "heres_johnny",
-    name = Component.text("Here's Johnny"),
-    description = Component.text("Name a vindicator Johnny."),
+    name = Component.text("Here's Johnny", difficultyNameColor(Difficulty.MEDIUM)),
+    description = Component.text("Name a vindicator Johnny.", NamedTextColor.GRAY),
     difficulty = Difficulty.MEDIUM
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -376,8 +376,8 @@ class HeresJohnnyObjective : MultiEventBingoObjective(
 @CustomObjective
 class DeadMenTellNoTalesObjective : MultiEventBingoObjective(
     id = "dead_men_tell_no_tales",
-    name = Component.text("Dead Men Tell No Tales"),
-    description = Component.text("Find a shipwreck."),
+    name = Component.text("Dead Men Tell No Tales", difficultyNameColor(Difficulty.EASY)),
+    description = Component.text("Find a shipwreck.", NamedTextColor.GRAY),
     difficulty = Difficulty.EASY
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -408,8 +408,8 @@ class DeadMenTellNoTalesObjective : MultiEventBingoObjective(
 @CustomObjective
 class TwilightOfTheGodsObjective : MultiEventBingoObjective(
     id = "twilight_of_the_gods",
-    name = Component.text("Twilight of the Gods"),
-    description = Component.text("Start a raid in the End."),
+    name = Component.text("Twilight of the Gods", difficultyNameColor(Difficulty.INSANE)),
+    description = Component.text("Start a raid in the End.", NamedTextColor.GRAY),
     difficulty = Difficulty.INSANE
 ) {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
