@@ -409,7 +409,7 @@ class AvengersAssembleObjective : MultiEventBingoObjective(
     id = "avengers_assemble",
     name = Component.text("Avengers Assemble!"),
     description = Component.text("Make 10 iron golems in 3 minutes."),
-    difficulty = Difficulty.EASY
+    difficulty = Difficulty.HARD
 ) {
     private val count = AVENGERS_REQUIRED_GOLEMS
     private val windowMillis = AVENGERS_WINDOW_MILLIS
