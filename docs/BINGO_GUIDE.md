@@ -59,7 +59,7 @@ A `BingoBoardGUI` and a `BingoCommand` provide the player-facing interfaces.
                           ┌───────────────────────────────────────────────┐
                           │               BingoManager (singleton)        │
                           │  newGame · startGame · stopGame · resetGame   │
-                          │  refreshBoard · setBoardSize · checkCompletion │
+                          │  refreshBoard · checkCompletion               │
                           └──────────────────┬────────────────────────────┘
                                              │ owns
                                     ┌────────▼─────────┐
@@ -105,13 +105,22 @@ ServerDataManager.init(plugin)
 
 // 3. Initialise the Bingo system LAST, after all other systems are ready
 BingoObjectiveRegistry.init(plugin)          // stores plugin reference for listener registration
+CodeObjectiveLoader.load(plugin, BingoObjectiveRegistry,
+    "net.trilleo.mc.plugins.tribingo.bingo.custom")  // auto-discovers @CustomObjective classes
 YamlObjectiveLoader.load(plugin, BingoObjectiveRegistry)  // parses bingo_objectives.yml
+SecretHintManager.init(plugin)               // initialises hint reveal system
 BingoManager.init(plugin)                    // rehydrates or creates a default game
+ObjectiveTestManager.init(plugin)            // initialises objective test sessions
 ```
 
 And in `Main.onDisable`:
 
 ```kotlin
+TaskRegistrar.unregisterAll()
+ObjectiveTestManager.shutdown()
+SecretHintManager.reset()
+RecipeRegistrar.unregisterAll()
+PlayerDataManager.saveAll()
 // Save bingo state BEFORE ServerDataManager.save
 BingoManager.save()
 ServerDataManager.save()
@@ -147,29 +156,32 @@ INACTIVE ──start()──► ACTIVE ──end()──► ENDED
 
 The singleton facade for the entire Bingo system. All gameplay operations flow through this object.
 
-| Method                               | Description                                                                                     |
-|:-------------------------------------|:------------------------------------------------------------------------------------------------|
-| `init(plugin)`                       | Stores the plugin reference and rehydrates or creates a default game on startup                 |
-| `save()`                             | Serialises the current game into `BingoServerData` for disk persistence; clears data if ACTIVE  |
-| `newGame(size: Int): BingoGame`      | Creates a new game with randomly selected objectives; size must be `3..6`                       |
-| `startGame()`                        | Transitions the current game from `INACTIVE` → `ACTIVE`; starts the countdown                   |
-| `stopGame()`                         | Ends the current `ACTIVE` game without a winner; cancels the countdown                          |
-| `resetGame()`                        | Resets all player progress and returns the game to `INACTIVE`                                   |
-| `refreshBoard()`                     | Picks a new random set of objectives (game must be `INACTIVE`)                                  |
-| `setBoardSize(size: Int)`            | Changes the board size; refreshes if the same size and `INACTIVE`, otherwise creates a new game |
-| `getTimerSeconds(): Int`             | Returns the configured countdown duration in seconds (default 3 600)                            |
-| `setTimerSeconds(seconds: Int)`      | Persists the countdown duration; must be in `1..86_400`                                         |
-| `checkCompletion(player, objective)` | Called by event objectives to mark a cell complete and check the win condition                  |
-| `isGameActive(): Boolean`            | Returns `true` if the current game is in `ACTIVE` state                                         |
-| `currentGame: BingoGame?`            | The currently active (or most-recently-created) game; `null` if none exists                     |
+| Method                                                       | Description                                                                                     |
+|:-------------------------------------------------------------|:------------------------------------------------------------------------------------------------|
+| `init(plugin)`                                               | Stores the plugin reference and rehydrates or creates a default game on startup                 |
+| `save()`                                                     | Serialises the current game into `BingoServerData` for disk persistence; clears data if ACTIVE  |
+| `newGame(gameDifficulty: GameDifficulty): BingoGame`         | Creates a new game with randomly selected objectives; defaults to `GameDifficulty.MEDIUM`       |
+| `startGame()`                                                | Transitions the current game from `INACTIVE` → `ACTIVE`; starts the countdown                   |
+| `stopGame()`                                                 | Ends the current `ACTIVE` game without a winner; cancels the countdown                          |
+| `resetGame()`                                                | Resets all player progress and returns the game to `INACTIVE`                                   |
+| `refreshBoard()`                                             | Picks a new random set of objectives (game must be `INACTIVE`)                                  |
+| `getTimerSeconds(): Int`                                     | Returns the configured countdown duration in seconds (default 3 600)                            |
+| `setTimerSeconds(seconds: Int)`                              | Persists the countdown duration; must be in `1..86_400`                                         |
+| `checkCompletion(player, objective)`                         | Called by event objectives to mark a cell complete and check the win condition                  |
+| `isGameActive(): Boolean`                                    | Returns `true` if the current game is in `ACTIVE` state                                         |
+| `getActiveState(player, objectiveId): BingoPlayerState?`     | Returns the player's state if they have an active game/test session for the given objective     |
+| `applyTeamGameModes()`                                       | Sets players to SURVIVAL and spectators to SPECTATOR mode when a game starts                    |
+| `restoreGameModes()`                                         | Restores game modes when a game ends                                                            |
+| `currentGame: BingoGame?`                                    | The currently active (or most-recently-created) game; `null` if none exists                     |
 
 **`checkCompletion` flow:**
 
 1. Verifies a game is `ACTIVE` and the cell has not yet been completed for the player.
 2. Marks the cell complete in `BingoPlayerState`.
-3. Optionally broadcasts a server-wide completion announcement (`bingo.announce-completions`).
-4. Refreshes the player's open `BingoBoardGUI` in-place.
-5. Checks the configured win condition (`LINE` or `FULL_BOARD`) and calls `BingoGame.end(player)` if met.
+3. Awards objective points and checks for row/column/diagonal line-completion bonuses.
+4. Optionally broadcasts a server-wide completion announcement (`bingo.announce-completions`).
+5. Refreshes the player's open `BingoBoardGUI` in-place.
+6. Checks if the full board is complete and calls `BingoGame.end(player, points)` if met.
 
 ---
 
@@ -183,9 +195,10 @@ The state machine for a single game session. Create via `BingoManager.newGame`; 
 |:--------------------------------------------|:-----------------------------------------------------------------------------------------------------|
 | `board: BingoBoard`                         | The current board; replaced by `refresh()`                                                           |
 | `state: GameState`                          | Current lifecycle state                                                                              |
+| `difficulty: GameDifficulty`                | The game difficulty controlling objective distribution on refresh                                     |
 | `playerStates: Map<UUID, BingoPlayerState>` | Read-only snapshot of all player states created this session                                         |
 | `start()`                                   | `INACTIVE` → `ACTIVE`; broadcasts start message to all online players                                |
-| `end(winner: Player?)`                      | `ACTIVE` → `ENDED`; broadcasts winner (or "game ended") message                                      |
+| `end(winner, winnerPoints, winnerName?)`    | `ACTIVE` → `ENDED`; broadcasts winner (or "game ended") message with points and optional name        |
 | `reset()`                                   | Any state → `INACTIVE`; calls `onReset` on each objective for online players, then clears all states |
 | `refresh(objectives)`                       | Rebuilds the board from a new random selection (must be `INACTIVE`)                                  |
 | `getOrCreateState(uuid): BingoPlayerState`  | Returns the player's state, creating a fresh one if it does not exist                                |
@@ -196,22 +209,27 @@ The state machine for a single game session. Create via `BingoManager.newGame`; 
 
 **Package:** `net.trilleo.mc.plugins.tribingo.bingo`
 
-An N×N grid (N in `3..6`) backed by a flat, row-major list of `BingoCell` objects. Immutable after construction.
+A 5×5 grid backed by a flat, row-major list of `BingoCell` objects. Immutable after construction. The board size is
+fixed at `5` (defined by `BingoBoard.SIZE`).
 
-**Coordinate system:** cell `(row, col)` maps to `cells[row * size + col]`.
+**Coordinate system:** cell `(row, col)` maps to `cells[row * SIZE + col]`.
 
-| Method / Property                | Description                                                     |
-|:---------------------------------|:----------------------------------------------------------------|
-| `size: Int`                      | Side-length of the square board                                 |
-| `cells: List<BingoCell>`         | All cells in row-major order (`size × size` entries)            |
-| `getCell(row, col): BingoCell`   | Returns the cell at zero-based `(row, col)`                     |
-| `isLineComplete(state): Boolean` | `true` if the player has completed any row, column, or diagonal |
-| `isBoardFull(state): Boolean`    | `true` if the player has completed every cell                   |
+| Method / Property                          | Description                                                         |
+|:-------------------------------------------|:--------------------------------------------------------------------|
+| `SIZE: Int` (companion constant)           | The only supported board side-length (`5`)                          |
+| `size: Int`                                | Side-length of the square board (always `5`)                        |
+| `cells: List<BingoCell>`                   | All cells in row-major order (`25` entries)                         |
+| `getCell(row, col): BingoCell`             | Returns the cell at zero-based `(row, col)`                         |
+| `isRowComplete(state, row): Boolean`       | `true` if the player has completed every cell in the given row      |
+| `isColComplete(state, col): Boolean`       | `true` if the player has completed every cell in the given column   |
+| `isDiagMainComplete(state): Boolean`       | `true` if the player has completed the main diagonal (↘)            |
+| `isDiagAntiComplete(state): Boolean`       | `true` if the player has completed the anti-diagonal (↗)            |
+| `isBoardFull(state): Boolean`              | `true` if the player has completed every cell                       |
 
 Win-condition check performed by `BingoManager.checkCompletion`:
 
-- `LINE` mode → `isLineComplete(state)`
-- `FULL_BOARD` mode → `isBoardFull(state)`
+- The win condition is **full board** — `isBoardFull(state)` must return `true`.
+- Line completions (rows, columns, diagonals) award **bonus points** but do not trigger a win.
 
 ---
 
@@ -234,16 +252,27 @@ Immutable value type representing a single cell on the board. Completion state l
 
 Per-player mutable state for a single game session. Keyed by player `UUID`.
 
-| Property / Method                       | Description                                                   |
-|:----------------------------------------|:--------------------------------------------------------------|
-| `uuid: UUID`                            | The player this state belongs to                              |
-| `completedCells: MutableSet<Int>`       | Set of completed `cellIndex` values                           |
-| `progressData: MutableMap<String, Int>` | Per-objective progress counters, keyed by `BingoObjective.id` |
-| `isCompleted(cellIndex): Boolean`       | Returns `true` when the cell has been marked complete         |
-| `markCompleted(cellIndex)`              | Adds `cellIndex` to `completedCells`                          |
-| `getProgress(objectiveId): Int`         | Returns the current progress counter (0 if absent)            |
-| `setProgress(objectiveId, value)`       | Sets the progress counter for the given objective ID          |
-| `reset()`                               | Clears all completion and progress data                       |
+| Property / Method                       | Description                                                                |
+|:----------------------------------------|:---------------------------------------------------------------------------|
+| `uuid: UUID`                            | The player this state belongs to                                           |
+| `completedCells: MutableSet<Int>`       | Set of completed `cellIndex` values                                        |
+| `progressData: MutableMap<String, Int>` | Per-objective progress counters, keyed by `BingoObjective.id`              |
+| `stringData: MutableMap<String, String>`| Arbitrary string values, keyed by `"objectiveId:fieldName"`                |
+| `stepData: MutableMap<String, MutableSet<String>>` | Ordered step tokens for sequential objectives, keyed by objective ID |
+| `completedLines: MutableSet<String>`    | Line keys that have received bonus points (`"row_N"`, `"col_N"`, `"diag_main"`, `"diag_anti"`) |
+| `points: Int`                           | Accumulated point total for this session                                   |
+| `isCompleted(cellIndex): Boolean`       | Returns `true` when the cell has been marked complete                      |
+| `markCompleted(cellIndex)`              | Adds `cellIndex` to `completedCells`                                       |
+| `getProgress(objectiveId): Int`         | Returns the current progress counter (0 if absent)                         |
+| `setProgress(objectiveId, value)`       | Sets the progress counter for the given objective ID                       |
+| `getString(objectiveId, field): String?`| Returns a stored string value, or `null` if absent                         |
+| `setString(objectiveId, field, value)`  | Stores a string value under `"objectiveId:field"`                          |
+| `removeString(objectiveId, field)`      | Removes a stored string value                                              |
+| `getSteps(objectiveId): MutableSet<String>` | Returns the live step set (creates an empty one on first call)         |
+| `addStep(objectiveId, step): Boolean`   | Adds a step; returns `true` if new                                         |
+| `hasStep(objectiveId, step): Boolean`   | Returns `true` when the step has been recorded                             |
+| `clearSteps(objectiveId)`               | Removes all steps for the objective                                        |
+| `reset()`                               | Clears all completion, progress, string, step, line, and point data        |
 
 ---
 
@@ -320,9 +349,8 @@ class MyObjective : EventBingoObjective<SomeBukkitEvent>(
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onSomeEvent(event: SomeBukkitEvent) {
         val player = /* extract player from event */ ?: return
-        val game = BingoManager.currentGame ?: return
-        if (game.state != GameState.ACTIVE) return
-        onEvent(event, player, game.getOrCreateState(player.uniqueId))
+        val state = BingoManager.getActiveState(player, id) ?: return
+        onEvent(event, player, state)
     }
 
     override fun onEvent(event: SomeBukkitEvent, player: Player, state: BingoPlayerState) {
@@ -662,33 +690,45 @@ objectives:
 
 Extends `ServerData` to persist the active game to `serverdata.json` via `ServerDataManager`.
 
-| Property / Method                          | JSON key              | Type         | Description                                         |
-|:-------------------------------------------|:----------------------|:-------------|:----------------------------------------------------|
-| `boardSize`                                | `bingo_board_size`    | `Int`        | Side-length of the persisted board; `0` = no game   |
-| `gameStateName`                            | `bingo_game_state`    | `String`     | Serialised `GameState` name                         |
-| `boardLayout`                              | `bingo_board_layout`  | `JsonArray`  | Ordered list of objective IDs (size × size entries) |
-| `timerSeconds`                             | `bingo_timer_seconds` | `Int`        | Countdown duration in seconds; default `3600`       |
-| `savePlayerStates(states)`                 | `bingo_player_states` | `JsonObject` | Serialises all player states                        |
-| `loadPlayerStates(): Map<UUID, Pair<...>>` | `bingo_player_states` | `JsonObject` | Deserialises previously saved player states         |
-| `clearGameData()`                          | —                     | —            | Removes all bingo keys from the backing JSON        |
+| Property / Method                          | JSON key                | Type         | Description                                         |
+|:-------------------------------------------|:------------------------|:-------------|:----------------------------------------------------|
+| `boardSize`                                | `bingo_board_size`      | `Int`        | Side-length of the persisted board; `0` = no game   |
+| `gameStateName`                            | `bingo_game_state`      | `String`     | Serialised `GameState` name                         |
+| `gameDifficultyName`                       | `bingo_game_difficulty` | `String`     | Serialised `GameDifficulty` name (default `MEDIUM`) |
+| `boardLayout`                              | `bingo_board_layout`    | `JsonArray`  | Ordered list of objective IDs (size × size entries) |
+| `timerSeconds`                             | `bingo_timer_seconds`   | `Int`        | Countdown duration in seconds; default `3600`       |
+| `savePlayerStates(states)`                 | `bingo_player_states`   | `JsonObject` | Serialises all player states                        |
+| `loadPlayerStates(): Map<UUID, PersistedPlayerState>` | `bingo_player_states` | `JsonObject` | Deserialises previously saved player states  |
+| `clearGameData()`                          | —                       | —            | Removes all bingo keys from the backing JSON        |
 
 **Player-state JSON structure** (stored per UUID):
 
 ```json
 {
-  "c": [
-    0,
-    3,
-    7
-  ],
-  // completed cell indices
+  "c": [0, 3, 7],
   "p": {
-    // progress counters keyed by objective id
     "kill_creeper": 1,
     "mine_dirt": 14
+  },
+  "l": ["row_0", "col_3"],
+  "pts": 12,
+  "sd": {
+    "my_objective:last_weapon": "DIAMOND_SWORD"
+  },
+  "ssd": {
+    "sequential_obj": ["step_1", "step_2"]
   }
 }
 ```
+
+| Key   | Description                                                        |
+|:------|:-------------------------------------------------------------------|
+| `c`   | Completed cell indices                                             |
+| `p`   | Progress counters keyed by objective ID                            |
+| `l`   | Completed line keys that have received bonus points                |
+| `pts` | Accumulated point total                                            |
+| `sd`  | String data for code objectives (optional, omitted when empty)     |
+| `ssd` | Step data for sequential objectives (optional, omitted when empty) |
 
 **Rehydration:** On `BingoManager.init`, the system reads `boardSize` and `boardLayout`, looks up each objective ID in
 the registry, reconstructs the `BingoBoard` and `BingoGame`, then loads player states. If any objective ID is missing
@@ -702,17 +742,23 @@ All bingo settings live in `config.yml` under the `bingo` section. Reload at run
 
 | YAML key                     | Config property                    | Type      | Default | Description                                                                            |
 |:-----------------------------|:-----------------------------------|:----------|:--------|:---------------------------------------------------------------------------------------|
-| `bingo.default-board-size`   | `PluginConfig.boardDefaultSize`    | `Int`     | `4`     | Side-length used when no persisted game is found on startup (clamped `3..6`)           |
-| `bingo.win-condition`        | `PluginConfig.winConditionLine`    | `String`  | `LINE`  | `LINE`: first full row/column/diagonal wins. `FULL_BOARD`: all cells must be completed |
 | `bingo.announce-completions` | `PluginConfig.announceCompletions` | `Boolean` | `true`  | Broadcasts a message to all players when any player completes a cell                   |
+| `bingo.points.objective`     | `PluginConfig.objectivePoints`     | `Int`     | `1`     | Points awarded per cell completion                                                     |
+| `bingo.points.line`          | `PluginConfig.linePoints`          | `Int`     | `3`     | Bonus points for completing a row or column                                            |
+| `bingo.points.diagonal`      | `PluginConfig.diagonalPoints`      | `Int`     | `5`     | Bonus points for completing a diagonal                                                 |
+
+> **Note:** The board size is fixed at `5×5` (defined by `BingoBoard.SIZE`). The `PluginConfig.boardDefaultSize` property
+> always returns `5` regardless of configuration.
 
 **Example `config.yml` section:**
 
 ```yaml
 bingo:
-  default-board-size: 4
-  win-condition: LINE
   announce-completions: true
+  points:
+    objective: 1
+    line: 3
+    diagonal: 5
 ```
 
 ---
@@ -840,12 +886,12 @@ The board is centred within a 6-row (54-slot) double-chest inventory. All unoccu
 panes.
 
 ```
-vertPad  = (6 - N) / 2    // rows above the board
-horizPad = (9 - N) / 2    // columns to the left of the board
+vertPad  = (6 - SIZE) / 2    // rows above the board (always 0 for 5×5)
+horizPad = (9 - SIZE) / 2    // columns to the left of the board (always 2 for 5×5)
 slot(row, col) = (vertPad + row) * 9 + (horizPad + col)
 ```
 
-For example, a 5×5 board (`vertPad = 0`, `horizPad = 2`) occupies slots 2–6, 11–15, 20–24, 29–33, 38–42.
+The 5×5 board (`vertPad = 0`, `horizPad = 2`) occupies slots 2–6, 11–15, 20–24, 29–33, 38–42.
 
 Indicator panes use the remaining U-shape around the board:
 
@@ -887,7 +933,6 @@ import net.trilleo.mc.plugins.tribingo.bingo.BingoManager
 import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.bingo.EventBingoObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
-import net.trilleo.mc.plugins.tribingo.enums.GameState
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -904,9 +949,8 @@ class SleepObjective : EventBingoObjective<PlayerBedEnterEvent>(
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBedEnter(event: PlayerBedEnterEvent) {
         if (event.bedEnterResult != PlayerBedEnterEvent.BedEnterResult.OK) return
-        val game = BingoManager.currentGame ?: return
-        if (game.state != GameState.ACTIVE) return
-        onEvent(event, event.player, game.getOrCreateState(event.player.uniqueId))
+        val state = BingoManager.getActiveState(event.player, id) ?: return
+        onEvent(event, event.player, state)
     }
 
     override fun onEvent(event: PlayerBedEnterEvent, player: Player, state: BingoPlayerState) {
@@ -1025,9 +1069,8 @@ class SleepObjective : EventBingoObjective<PlayerBedEnterEvent>(
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onBedEnter(event: PlayerBedEnterEvent) {
         if (event.bedEnterResult != PlayerBedEnterEvent.BedEnterResult.OK) return
-        val game = BingoManager.currentGame ?: return
-        if (game.state != GameState.ACTIVE) return
-        onEvent(event, event.player, game.getOrCreateState(event.player.uniqueId))
+        val state = BingoManager.getActiveState(event.player, id) ?: return
+        onEvent(event, event.player, state)
     }
 
     override fun onEvent(event: PlayerBedEnterEvent, player: Player, state: BingoPlayerState) {
@@ -1113,7 +1156,6 @@ import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.bingo.MultiEventBingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.annotation.CustomObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
-import net.trilleo.mc.plugins.tribingo.enums.GameState
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -1149,9 +1191,7 @@ class KillZombieWithSwordObjective : MultiEventBingoObjective(
         if (event.entity.type != EntityType.ZOMBIE) return
         val player = event.entity.killer ?: return
         if (!lastHitWithSword.remove(event.entity.uniqueId)) return
-        val game = BingoManager.currentGame ?: return
-        if (game.state != GameState.ACTIVE) return
-        val state = game.getOrCreateState(player.uniqueId)
+        val state = BingoManager.getActiveState(player, id) ?: return
         state.setString(id, "done", "true")
         BingoManager.checkCompletion(player, this)
     }
@@ -1179,7 +1219,6 @@ import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.bingo.MultiEventBingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.annotation.CustomObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
-import net.trilleo.mc.plugins.tribingo.enums.GameState
 import org.bukkit.World
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -1201,12 +1240,10 @@ class DeliverPigToNetherObjective : MultiEventBingoObjective(
         // Skip if the pig is already in the Nether (it would be returning to the
         // Overworld, not going TO the Nether).
         if (event.entity.world.environment == World.Environment.NETHER) return
-        val game = BingoManager.currentGame ?: return
-        if (game.state != GameState.ACTIVE) return
         // Award the nearest online player within 10 blocks who is in the same world
         val pig = event.entity
         val nearbyPlayer = pig.world.getNearbyPlayers(pig.location, 10.0).firstOrNull() ?: return
-        val state = game.getOrCreateState(nearbyPlayer.uniqueId)
+        val state = BingoManager.getActiveState(nearbyPlayer, id) ?: return
         state.setString(id, "done", "true")
         BingoManager.checkCompletion(nearbyPlayer, this)
     }
@@ -1236,7 +1273,6 @@ import net.trilleo.mc.plugins.tribingo.bingo.BingoPlayerState
 import net.trilleo.mc.plugins.tribingo.bingo.SequentialBingoObjective
 import net.trilleo.mc.plugins.tribingo.bingo.annotation.CustomObjective
 import net.trilleo.mc.plugins.tribingo.enums.Difficulty
-import net.trilleo.mc.plugins.tribingo.enums.GameState
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -1255,9 +1291,7 @@ class CraftPlaceCraftObjective : SequentialBingoObjective(
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onCraft(event: CraftItemEvent) {
         val player = event.whoClicked as? Player ?: return
-        val game = BingoManager.currentGame ?: return
-        if (game.state != GameState.ACTIVE) return
-        val state = game.getOrCreateState(player.uniqueId)
+        val state = BingoManager.getActiveState(player, id) ?: return
 
         when {
             // Step 1: craft the table (only if not yet done)
@@ -1274,9 +1308,7 @@ class CraftPlaceCraftObjective : SequentialBingoObjective(
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     fun onPlace(event: BlockPlaceEvent) {
         if (event.blockPlaced.type != Material.CRAFTING_TABLE) return
-        val game = BingoManager.currentGame ?: return
-        if (game.state != GameState.ACTIVE) return
-        val state = game.getOrCreateState(event.player.uniqueId)
+        val state = BingoManager.getActiveState(event.player, id) ?: return
         // Step 2: place the crafting table
         advanceStep(state, "placed_table")
     }
