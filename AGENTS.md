@@ -1,17 +1,30 @@
 # TriBingo Agent Guide
 
 ## Project snapshot
-- **TriBingo** is a Kotlin JVM Paper plugin (`api-version: 1.21`) that implements Minecraft Bingo with a 5×5 board, team system, point scoring, and configurable objectives.
-- Plugin version: `0.1.0`. Built with Kotlin `2.3.10`, JVM toolchain 25, against `io.papermc.paper:paper-api:26.1.2.build.+`.
-- Single declared root command in `plugin.yml`: `/tribingo` (alias `/tb`). The `/bingo` command is registered at runtime as a standalone "main command".
+
+- **TriBingo** is a Kotlin JVM Paper plugin (`api-version: 1.21`) that implements Minecraft Bingo with a 5×5 board, team
+  system, point scoring, and configurable objectives.
+- Plugin version: `0.1.0`. Built with Kotlin `2.3.10`, JVM toolchain 25, against
+  `io.papermc.paper:paper-api:26.1.2.build.+`.
+- Single declared root command in `plugin.yml`: `/tribingo` (alias `/tb`). The `/bingo` command is registered at runtime
+  as a standalone "main command".
 - `src/main/kotlin/net/trilleo/mc/plugins/tribingo/Main.kt` is the startup/shutdown hub; its init order matters.
 - Paper/Adventure are the main integration points: use `Component` / MiniMessage for player-facing text.
 
 ## Startup / shutdown order
-- `Main.onEnable()` wires systems in this order: `PluginConfig` → `MessageUtil.init(...)` → `ServerDataManager.setFactory { BingoServerData() }` → `ServerDataManager.init(...)` → `PlayerDataManager.init(...)` → `ItemRegistrar` → `RecipeRegistrar` → `CommandRegistrar` → `PermissionRegistrar` → `ListenerRegistrar` → `GUIManager` → `TaskRegistrar` → `TeamManager.initializeTeam()` → `BingoObjectiveRegistry.init(...)` → `CodeObjectiveLoader.load(...)` → `YamlObjectiveLoader.load(...)` → `BingoManager.init(...)` → `ObjectiveTestManager.init(...)`.
-- `Main.onDisable()` does the reverse-style cleanup: `TaskRegistrar.unregisterAll()` → `ObjectiveTestManager.shutdown()` → `RecipeRegistrar.unregisterAll()` → `PlayerDataManager.saveAll()` → `BingoManager.save()` → `ServerDataManager.save()`.
+
+- `Main.onEnable()` wires systems in this order: `PluginConfig` → `MessageUtil.init(...)` →
+  `ServerDataManager.setFactory { BingoServerData() }` → `ServerDataManager.init(...)` → `PlayerDataManager.init(...)` →
+  `ItemRegistrar` → `RecipeRegistrar` → `CommandRegistrar` → `PermissionRegistrar` → `ListenerRegistrar` →
+  `GUIManager` → `TaskRegistrar` → `TeamManager.initializeTeam()` → `BingoObjectiveRegistry.init(...)` →
+  `CodeObjectiveLoader.load(...)` → `YamlObjectiveLoader.load(...)` → `BingoManager.init(...)` →
+  `ObjectiveTestManager.init(...)`.
+- `Main.onDisable()` does the reverse-style cleanup: `TaskRegistrar.unregisterAll()` →
+  `ObjectiveTestManager.shutdown()` → `RecipeRegistrar.unregisterAll()` → `PlayerDataManager.saveAll()` →
+  `BingoManager.save()` → `ServerDataManager.save()`.
 
 ## Package layout
+
 ```
 net.trilleo.mc.plugins.tribingo
 ├── Main.kt                        # Plugin entry point
@@ -107,24 +120,33 @@ net.trilleo.mc.plugins.tribingo
 ```
 
 ## Where to put things
-- **Commands**: `src/main/kotlin/net/trilleo/mc/plugins/tribingo/commands/**`. Default is a `/tribingo <subcommand>` entry; set `isMainCommand = true` for a standalone command. Category is derived from the subpackage name (e.g. `commands.bingo` → "Bingo", `commands.moderation` → "Moderation").
-- **GUIs**: `.../guis/**`; open them with `GUIManager.open(player, id)`. Base classes: `PluginGUI` (single page) and `PagedPluginGUI` (paginated).
+
+- **Commands**: `src/main/kotlin/net/trilleo/mc/plugins/tribingo/commands/**`. Default is a `/tribingo <subcommand>`
+  entry; set `isMainCommand = true` for a standalone command. Category is derived from the subpackage name (e.g.
+  `commands.bingo` → "Bingo", `commands.moderation` → "Moderation").
+- **GUIs**: `.../guis/**`; open them with `GUIManager.open(player, id)`. Base classes: `PluginGUI` (single page) and
+  `PagedPluginGUI` (paginated).
 - **Listeners**: `.../listeners/**`; `ListenerRegistrar` discovers and registers them automatically.
-- **Tasks**: `TaskRegistrar` currently scans `net.trilleo.mc.plugins.tribingo.tasks`. If you add tasks, either place them in that package or update the `TASKS_PACKAGE` constant in `TaskRegistrar.kt`.
-- **Code objectives**: `.../bingo/custom/**`; annotate concrete classes with `@CustomObjective` so `CodeObjectiveLoader` picks them up. No manual registration needed.
-- **YAML-backed objectives**: `.../bingo/objectives/**`; these are parameterized classes instantiated by `YamlObjectiveLoader` from `bingo_objectives.yml`.
+- **Tasks**: `TaskRegistrar` currently scans `net.trilleo.mc.plugins.tribingo.tasks`. If you add tasks, either place
+  them in that package or update the `TASKS_PACKAGE` constant in `TaskRegistrar.kt`.
+- **Code objectives**: `.../bingo/custom/**`; annotate concrete classes with `@CustomObjective` so `CodeObjectiveLoader`
+  picks them up. No manual registration needed.
+- **YAML-backed objectives**: `.../bingo/objectives/**`; these are parameterized classes instantiated by
+  `YamlObjectiveLoader` from `bingo_objectives.yml`.
 
 ## Objective system architecture
 
 ### Base classes (choose one)
-| Base class | When to use | Listener? |
-|:-----------|:------------|:----------|
-| `BingoObjective` | Snapshot-based (no events, checked on demand) | No |
-| `EventBingoObjective<T>` | Listens to exactly one Bukkit event type | Yes |
-| `MultiEventBingoObjective` | Listens to multiple Bukkit event types | Yes |
-| `SequentialBingoObjective` | Ordered sequence of steps via `advanceStep()` | Yes |
+
+| Base class                 | When to use                                   | Listener? |
+|:---------------------------|:----------------------------------------------|:----------|
+| `BingoObjective`           | Snapshot-based (no events, checked on demand) | No        |
+| `EventBingoObjective<T>`   | Listens to exactly one Bukkit event type      | Yes       |
+| `MultiEventBingoObjective` | Listens to multiple Bukkit event types        | Yes       |
+| `SequentialBingoObjective` | Ordered sequence of steps via `advanceStep()` | Yes       |
 
 ### Event objective pattern
+
 ```kotlin
 @CustomObjective
 class MyObjective : EventBingoObjective<SomeEvent>(...) {
@@ -151,24 +173,32 @@ class MyObjective : EventBingoObjective<SomeEvent>(...) {
 ```
 
 ### BingoPlayerState storage
-| Storage | API | Purpose |
-|:--------|:----|:--------|
-| `progressData` (Map<String, Int>) | `getProgress(id)`, `setProgress(id, value)` | Integer counters (kill counts, distances) |
-| `stringData` (Map<String, String>) | `getString(id, field)`, `setString(id, field, value)`, `removeString(id, field)` | Arbitrary string values (keyed `"objectiveId:fieldName"`) |
-| `stepData` (Map<String, MutableSet<String>>) | `getSteps(id)`, `addStep(id, step)`, `hasStep(id, step)`, `clearSteps(id)` | Ordered step tokens for sequential objectives |
+
+| Storage                                      | API                                                                              | Purpose                                                   |
+|:---------------------------------------------|:---------------------------------------------------------------------------------|:----------------------------------------------------------|
+| `progressData` (Map<String, Int>)            | `getProgress(id)`, `setProgress(id, value)`                                      | Integer counters (kill counts, distances)                 |
+| `stringData` (Map<String, String>)           | `getString(id, field)`, `setString(id, field, value)`, `removeString(id, field)` | Arbitrary string values (keyed `"objectiveId:fieldName"`) |
+| `stepData` (Map<String, MutableSet<String>>) | `getSteps(id)`, `addStep(id, step)`, `hasStep(id, step)`, `clearSteps(id)`       | Ordered step tokens for sequential objectives             |
 
 ### BingoObjectiveFactory
-For objectives requiring constructor parameters, implement `BingoObjectiveFactory` on the companion object rather than using a no-arg constructor.
+
+For objectives requiring constructor parameters, implement `BingoObjectiveFactory` on the companion object rather than
+using a no-arg constructor.
 
 ### YAML objective types
-Supported `type` values in `bingo_objectives.yml`: `kill_entity`, `mine_block`, `place_block`, `craft_item`, `fish_item`, `eat_food`, `enchant_item`, `travel_distance`, `breed_mob`, `tame_entity`. Custom types can be registered via `YamlObjectiveLoader.registerTypeHandler(...)`.
+
+Supported `type` values in `bingo_objectives.yml`: `kill_entity`, `mine_block`, `place_block`, `craft_item`,
+`fish_item`, `eat_food`, `enchant_item`, `travel_distance`, `breed_mob`, `tame_entity`. Custom types can be registered
+via `YamlObjectiveLoader.registerTypeHandler(...)`.
 
 ## Game lifecycle
+
 ```
 INACTIVE ──start()──► ACTIVE ──end()──► ENDED
    ▲                                       │
    └───────────────reset()─────────────────┘
 ```
+
 - `BingoManager.newGame()` creates a game in INACTIVE state.
 - `BingoGame.refresh(objectives)` shuffles objectives onto the board (must be INACTIVE).
 - `BingoGame.start()` transitions to ACTIVE, broadcasts start message.
@@ -177,19 +207,23 @@ INACTIVE ──start()──► ACTIVE ──end()──► ENDED
 - `BingoManager.save()` clears data for ACTIVE games on shutdown (no mid-game persistence across restarts).
 
 ## Team system
+
 - Two teams: `"player"` (active participants) and `"spectator"` (viewers in SPECTATOR mode during active games).
 - `TeamUtil.isInTeam(player, "player")` gates objective tracking — spectators cannot progress.
 - `TeamSelectGUI` prevents team switching while the game is ACTIVE.
 - `TeamManager.initializeTeam()` sets up teams on startup.
 
 ## GUI system
-- All GUIs extend `PluginGUI` (id, title, rows, fillMode) and are auto-discovered from `net.trilleo.mc.plugins.tribingo.guis`.
+
+- All GUIs extend `PluginGUI` (id, title, rows, fillMode) and are auto-discovered from
+  `net.trilleo.mc.plugins.tribingo.guis`.
 - `GUIManager.open(player, id)` creates an inventory, applies fill mode, calls `setup(player, inventory)`, and opens it.
 - `GUIManager` routes `InventoryClickEvent` and `InventoryCloseEvent` to the correct GUI instance.
 - Known GUIs: `main`, `bingo_board`, `settings`, `team-select`, `game-rule`, `credits`.
 - The `team-select` GUI is blocked from opening while a game is active.
 
 ## Objective test system
+
 - `ObjectiveTestManager` provides isolated test sessions for verifying objectives.
 - `/bingo test <id>` starts a test session; `/bingo test stop` ends it.
 - One session per player at a time. Game cannot start while test sessions are active.
@@ -198,69 +232,91 @@ INACTIVE ──start()──► ACTIVE ──end()──► ENDED
 - On completion, `ObjectiveTestManager.onTestCompleted(player, objective)` is called automatically.
 
 ## Board randomizer system
-- `BoardRandomizer` interface: `randomize(available: List<BingoObjective>): List<BingoObjective>` returns exactly 25 objectives in row-major order.
+
+- `BoardRandomizer` interface: `randomize(available: List<BingoObjective>): List<BingoObjective>` returns exactly 25
+  objectives in row-major order.
 - `BoardRandomizerRegistry` maps `GameDifficulty` → `BoardRandomizer` implementation.
 - Implementations: `EasyBoardRandomizer`, `MediumBoardRandomizer`, `HardBoardRandomizer`.
 - Randomizers control the distribution of objective difficulties based on game difficulty.
 
 ## Point system (from config.yml)
+
 - `bingo.points.objective` (default 1): Points per cell completed.
 - `bingo.points.line` (default 3): Bonus points for completing a row or column.
 - `bingo.points.diagonal` (default 5): Bonus points for completing a diagonal.
-- Line bonus tracking uses `BingoPlayerState.completedLines` with keys: `"row_N"`, `"col_N"`, `"diag_main"`, `"diag_anti"`.
+- Line bonus tracking uses `BingoPlayerState.completedLines` with keys: `"row_N"`, `"col_N"`, `"diag_main"`,
+  `"diag_anti"`.
 
 ## TriBingo-specific conventions
-- Objective IDs are persistence keys. Do not rename an ID that may already exist in `serverdata.json` or in `bingo_objectives.yml` without handling migration.
-- Event objectives gate on `BingoManager.getActiveState(player, id) ?: return`, update `BingoPlayerState`, then call `BingoManager.checkCompletion(player, this)`.
-- `BingoObjectiveRegistry.register(...)` auto-registers any objective that implements Bukkit `Listener`; do not register those listeners manually.
+
+- Objective IDs are persistence keys. Do not rename an ID that may already exist in `serverdata.json` or in
+  `bingo_objectives.yml` without handling migration.
+- Event objectives gate on `BingoManager.getActiveState(player, id) ?: return`, update `BingoPlayerState`, then call
+  `BingoManager.checkCompletion(player, this)`.
+- `BingoObjectiveRegistry.register(...)` auto-registers any objective that implements Bukkit `Listener`; do not register
+  those listeners manually.
 - Use `player.sendPrefixed(...)` (extension function) for player-facing messages. It uses MiniMessage formatting.
 - `config.yml` is wrapped by `PluginConfig`; `message-prefix` supports MiniMessage, and `/tribingo reload` re-reads it.
 - `BingoActions` encapsulates game management logic so commands and GUIs share the same code paths.
-- Registration framework uses `PackageScanner` to find concrete classes via JAR/directory scanning; constructors must be no-arg or accept a single `JavaPlugin` parameter.
+- Registration framework uses `PackageScanner` to find concrete classes via JAR/directory scanning; constructors must be
+  no-arg or accept a single `JavaPlugin` parameter.
 
 ## Persistence and loading
+
 - Player data lives under `<dataFolder>/playerdata/*.json`; server data lives at `<dataFolder>/serverdata.json`.
-- `bingo_objectives.yml` is bundled from `src/main/resources/bingo_objectives.yml`, copied on first run (via `saveResource`), and not overwritten later.
-- `YamlObjectiveLoader` parses the YAML objective file; `CodeObjectiveLoader` scans `net.trilleo.mc.plugins.tribingo.bingo.custom` by default.
+- `bingo_objectives.yml` is bundled from `src/main/resources/bingo_objectives.yml`, copied on first run (via
+  `saveResource`), and not overwritten later.
+- `YamlObjectiveLoader` parses the YAML objective file; `CodeObjectiveLoader` scans
+  `net.trilleo.mc.plugins.tribingo.bingo.custom` by default.
 - `BingoManager.save()` intentionally clears interrupted ACTIVE games during shutdown so the next boot starts clean.
-- `BingoServerData` stores: board size, game state, game difficulty, board layout (objective IDs), player states (cells, progress, strings, steps, lines, points), and timer seconds.
+- `BingoServerData` stores: board size, game state, game difficulty, board layout (objective IDs), player states (cells,
+  progress, strings, steps, lines, points), and timer seconds.
 
 ## Permissions
+
 - `tribingo.bingo.manage` — required for game management commands (start, stop, reset, refresh, time, test).
-- Permissions default to OP. `PermissionRegistrar` auto-creates `Permission` nodes from command definitions after `CommandRegistrar` runs.
+- Permissions default to OP. `PermissionRegistrar` auto-creates `Permission` nodes from command definitions after
+  `CommandRegistrar` runs.
 - The settings GUI is visible to all but only editable with `tribingo.bingo.manage`.
 
 ## Commands
-| Command | Type | Permission | Description |
-|:--------|:-----|:-----------|:------------|
-| `/tribingo <sub>` | Root (plugin.yml) | — | Parent dispatcher for sub-commands |
-| `/tribingo reload` | Sub-command | `tribingo.reload` | Reloads config.yml |
-| `/tribingo help` | Sub-command | — | Shows command help by category |
-| `/bingo` | Standalone | — | Opens main GUI (player) or shows usage (console) |
-| `/bingo board` | Sub-action | — | Opens bingo board GUI |
-| `/bingo start` | Sub-action | `tribingo.bingo.manage` | Starts the game |
-| `/bingo stop` | Sub-action | `tribingo.bingo.manage` | Ends the active game |
-| `/bingo reset` | Sub-action | `tribingo.bingo.manage` | Resets all player progress |
-| `/bingo refresh [difficulty]` | Sub-action | `tribingo.bingo.manage` | Picks new objectives (INACTIVE only) |
-| `/bingo time <h> <m> <s>` | Sub-action | `tribingo.bingo.manage` | Sets countdown timer |
-| `/bingo status` | Sub-action | — | Shows current game status |
-| `/bingo test <id\|stop>` | Sub-action | `tribingo.bingo.manage` | Tests objective completion logic |
+
+| Command                       | Type              | Permission              | Description                                      |
+|:------------------------------|:------------------|:------------------------|:-------------------------------------------------|
+| `/tribingo <sub>`             | Root (plugin.yml) | —                       | Parent dispatcher for sub-commands               |
+| `/tribingo reload`            | Sub-command       | `tribingo.reload`       | Reloads config.yml                               |
+| `/tribingo help`              | Sub-command       | —                       | Shows command help by category                   |
+| `/bingo`                      | Standalone        | —                       | Opens main GUI (player) or shows usage (console) |
+| `/bingo board`                | Sub-action        | —                       | Opens bingo board GUI                            |
+| `/bingo start`                | Sub-action        | `tribingo.bingo.manage` | Starts the game                                  |
+| `/bingo stop`                 | Sub-action        | `tribingo.bingo.manage` | Ends the active game                             |
+| `/bingo reset`                | Sub-action        | `tribingo.bingo.manage` | Resets all player progress                       |
+| `/bingo refresh [difficulty]` | Sub-action        | `tribingo.bingo.manage` | Picks new objectives (INACTIVE only)             |
+| `/bingo time <h> <m> <s>`     | Sub-action        | `tribingo.bingo.manage` | Sets countdown timer                             |
+| `/bingo status`               | Sub-action        | —                       | Shows current game status                        |
+| `/bingo test <id\|stop>`      | Sub-action        | `tribingo.bingo.manage` | Tests objective completion logic                 |
 
 ## Workflow notes
+
 - Prefer `./gradlew.bat build` (Windows) or `./gradlew build` (Linux/macOS) for a full local verification.
 - `./gradlew test` is available (JUnit 5 platform), but there is currently no `src/test` tree in the repo.
-- `./gradlew copyPlugin` copies the jar into `run/plugins`; `./gradlew startServer` depends on that and launches Paper from `run/`.
-- Current `TaskRegistrar` scans `net.trilleo.mc.plugins.tribingo.tasks`; if you add or move tasks, keep that package path in mind or update the `TASKS_PACKAGE` constant.
-- The fat-JAR (`tasks.jar`) includes all `runtimeClasspath` dependencies and sets `paperweight-mappings-namespace` to `"spigot"` in the manifest.
+- `./gradlew copyPlugin` copies the jar into `run/plugins`; `./gradlew startServer` depends on that and launches Paper
+  from `run/`.
+- Current `TaskRegistrar` scans `net.trilleo.mc.plugins.tribingo.tasks`; if you add or move tasks, keep that package
+  path in mind or update the `TASKS_PACKAGE` constant.
+- The fat-JAR (`tasks.jar`) includes all `runtimeClasspath` dependencies and sets `paperweight-mappings-namespace` to
+  `"spigot"` in the manifest.
 - No CI workflows are configured; validation is done locally.
 
 ## Documentation
+
 - `docs/BINGO_GUIDE.md` — comprehensive guide to the bingo system (objectives, testing, board generation).
 - `docs/DEVELOPER_GUIDE.md` — developer guide for extending the plugin.
 - `docs/UTILITY_GUIDE.md` — utility classes documentation.
 - `docs/COMMIT_STRUCTURE.md` — commit message format specification.
 
 ## Commit structure
+
 - Follow the repo's commit format: `<tag>: <message>`.
 - Approved tags: `Feature`, `Fix`, `Improvement`, `Internal`, `Backend`, `Update`.
 - Keep messages in present tense, specific, and without a trailing period.
