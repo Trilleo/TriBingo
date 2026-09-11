@@ -5,7 +5,7 @@
 - **TriBingo** is a Kotlin JVM Paper plugin (`api-version: 1.21`) that implements Minecraft Bingo with a 5×5 board, team
   system, point scoring, and configurable objectives.
 - Plugin version: `0.1.0`. Built with Kotlin `2.3.10`, JVM toolchain 25, against
-  `io.papermc.paper:paper-api:26.1.2.build.+`.
+  `io.papermc.paper:paper-api:26.2.build.+`.
 - Single declared root command in `plugin.yml`: `/tribingo` (alias `/tb`). The `/bingo` command is registered at runtime
   as a standalone "main command".
 - `src/main/kotlin/net/trilleo/mc/plugins/tribingo/Main.kt` is the startup/shutdown hub; its init order matters.
