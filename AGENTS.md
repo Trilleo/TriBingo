@@ -4,12 +4,37 @@
 
 - **TriBingo** is a Kotlin JVM Paper plugin (`api-version: 1.21`) that implements Minecraft Bingo with a 5×5 board, team
   system, point scoring, and configurable objectives.
-- Plugin version: `0.1.0`. Built with Kotlin `2.3.10`, JVM toolchain 25, against
+- Plugin version: `0.1.0`, set once as `plugin_version` in `gradle.properties` and expanded into `plugin.yml` at build
+  time — never hardcode it. Built with Kotlin `2.3.10`, JVM toolchain 25, against
   `io.papermc.paper:paper-api:26.2.build.+`.
 - Single declared root command in `plugin.yml`: `/tribingo` (alias `/tb`). The `/bingo` command is registered at runtime
   as a standalone "main command".
 - `src/main/kotlin/net/trilleo/mc/plugins/tribingo/Main.kt` is the startup/shutdown hub; its init order matters.
 - Paper/Adventure are the main integration points: use `Component` / MiniMessage for player-facing text.
+
+## After every change: keep the changelog and docs in sync
+
+Before finishing any task that changes the plugin, do all of the following:
+
+1. **Update the changelog** — add an entry for the change under `## Unreleased` in `CHANGELOG.md`, in the same commit
+   as the change. Every new feature (including every new objective) gets an entry, and so does every improvement and
+   fix.
+    - Follow the SkyHanni-style format documented in `docs/RELEASING.md`: category (`### New Features` /
+      `### Improvements` / `### Fixes` / `### Technical Details` / `### Removed Features`), then a `#### Feature Area`
+      heading (`Objectives`, `Board`, `Teams`, `GUI`, `Commands`, `Misc`, …), then `+` bullets.
+    - Reuse the category and feature-area headings already under `## Unreleased` instead of repeating them.
+    - Write player- and server-owner-facing entries for gameplay changes; put refactors, build, and tooling changes
+      under `### Technical Details`.
+    - Never edit the section of a version that has already been released.
+    - Skip changelog entries only for changes with no effect on the shipped plugin or its workflow (e.g. fixing a typo
+      in a doc).
+
+2. **Update the docs** — a change to objectives, board generation, or objective testing updates `docs/BINGO_GUIDE.md`;
+   a change to a base class, registrar, or utility updates `docs/DEVELOPER_GUIDE.md` / `docs/UTILITY_GUIDE.md`; a
+   change to a documented workflow (e.g. the release process in `docs/RELEASING.md`) updates that doc. Keep this
+   file's package layout, command, and permission sections accurate too.
+
+3. **Check the README** — if the change affects anything `README.md` mentions, update it.
 
 ## Startup / shutdown order
 
@@ -306,7 +331,9 @@ INACTIVE ──start()──► ACTIVE ──end()──► ENDED
   path in mind or update the `TASKS_PACKAGE` constant.
 - The fat-JAR (`tasks.jar`) includes all `runtimeClasspath` dependencies and sets `paperweight-mappings-namespace` to
   `"spigot"` in the manifest.
-- No CI workflows are configured; validation is done locally.
+- CI: `.github/workflows/build.yml` builds every push and pull request, and `.github/workflows/release.yml` publishes a
+  GitHub Release with the jar when a `vX.Y.Z` tag is pushed (see `docs/RELEASING.md`). Never tag or push tags unless
+  explicitly asked — pushing a tag publishes a release.
 
 ## Documentation
 
@@ -314,6 +341,8 @@ INACTIVE ──start()──► ACTIVE ──end()──► ENDED
 - `docs/DEVELOPER_GUIDE.md` — developer guide for extending the plugin.
 - `docs/UTILITY_GUIDE.md` — utility classes documentation.
 - `docs/COMMIT_STRUCTURE.md` — commit message format specification.
+- `docs/RELEASING.md` — changelog format and the release process.
+- `CHANGELOG.md` — player-facing change log; new entries go under `## Unreleased`.
 
 ## Commit structure
 
@@ -321,4 +350,7 @@ INACTIVE ──start()──► ACTIVE ──end()──► ENDED
 - Approved tags: `Feature`, `Fix`, `Improvement`, `Internal`, `Backend`, `Update`.
 - Keep messages in present tense, specific, and without a trailing period.
 - Example: `Fix: Handle missing objective IDs during rehydration`.
+- Tags map to changelog categories: `Feature` → `### New Features`, `Improvement` → `### Improvements`, `Fix` →
+  `### Fixes`, `Backend` / `Internal` → `### Technical Details`, `Update` → usually no entry. A `Feature`,
+  `Improvement`, or `Fix` commit carries its own changelog entry.
 

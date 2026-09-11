@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "net.trilleo"
-version = "0.1.0"
+version = providers.gradleProperty("plugin_version").get()
 
 idea {
     module {
@@ -36,6 +36,14 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.2.build.+")
+}
+
+tasks.processResources {
+    val props = mapOf("projectVersion" to version)
+    inputs.properties(props)
+    filesMatching("plugin.yml") {
+        expand(props)
+    }
 }
 
 tasks.jar {
